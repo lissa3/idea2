@@ -1,0 +1,14 @@
+1. likes
+API point likes: 
+model Idea 
+GET single idea or qs ideas
+thx to annotate qs attr idea.av_likes
+
+API handle like:
+model UserIdeaRelations
+
+PATCH (like/rating/both)
+resp {like:true/false} 
+
+bug: front like can be +1 if already done ( via optimistic mode)
+although after reload/re-built comp - real like amount displayed

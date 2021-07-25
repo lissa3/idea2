@@ -1,0 +1,18 @@
+idea create:
+
+POST 
+1.  tags should be sent are a string to dj server
+2.  tag's string should be treated with special functions
+    2.1
+    checkTagStringLength(tag_string):
+        """get initial input from user (string with tags) and check if it is not too long
+           max length of this string <50 
+        """
+    2.2    
+    get_json_tags(tag_string):
+        """ take a tag string with one or more separated by comma's  tags,
+        get rid of "" items (line 28) and convert it to a list in json format
+        """"
+
+        
+3.        
