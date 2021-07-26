@@ -2,6 +2,13 @@
     <div id="checkboxes"> 
         <form @submit.prevent="sortIt">
             <p>Sort</p>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" v-model="userChoice" value="rateOnTop"
+                id="zTop" active-class="active">
+                <label class="form-check-label" for="zTop">
+                    Highest Rating  to top
+                </label>
+            </div>
              <div class="form-check">
                 <input class="form-check-input" type="radio" v-model="userChoice" value="oldOnTop"
                 id="oldTop" active-class="active">
@@ -30,6 +37,7 @@
                     Z to top
                 </label>
             </div>
+            
             <p>Filter</p>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
@@ -66,8 +74,12 @@ export default {
             }        
             else if(this.userChoice==='aOnTop'){
                 return "title"
-            }else {
+            }else if(this.userChoice==='rateOnTop'){
+                return "-max_rating"
+            }else if(this.userChoice ==='-title') {
                 return "-title"
+            }else{
+                return '-created_at'
             }
         },
         showFeatured(){
@@ -82,6 +94,7 @@ export default {
         },
         reset(){
             this.userChoice=null,
+            this.featurePlus=false,
             this.onFront=null
         }
     }
