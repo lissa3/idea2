@@ -2,10 +2,10 @@
 
 <div class="list-group list-group-horizontal">
     <div :class="{'btn':true,'btn-sm':true,
-                'disabled':!isLoggedIn, 
+                'disabled':isAnonym, 
                 'btn-outline-secondary':likeToToggle,
                 'btn-outline-success':!likeToToggle}"
-         @click="doLike" :disabled="!isLoggedIn">
+         @click="doLike" :disabled="isAnonym">
         <div class="click-like">
           <div class="px-1 ">Like &nbsp; <b-icon-heart-fill></b-icon-heart-fill><span class="px-1"></span></div>
 
@@ -17,7 +17,7 @@
             
     </div> 
     <p v-if="needAuthMsg" class="warning">msg: {{needAuthMsg}}</p>
-    <!-- <p>{{localNewLike}}</p> -->
+    <p>Anonym? {{isAnonym}}</p>
    
         
     
@@ -37,10 +37,11 @@ export default {
             type:null||Number,
             // required:true
         },
-        isLoggedIn:{
+        isAnonym:{
             type:Boolean,
-            required:true
+            required:false
         }
+        
     },
     data(){
         return{        
@@ -99,7 +100,9 @@ export default {
 
     },
     created(){
+        if(!this.isAnonym){
         this.getInitialLikeState()
+        }
     }
 }
          

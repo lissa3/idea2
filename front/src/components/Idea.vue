@@ -43,6 +43,7 @@
                         <p>By <strong>{{idea.owner_idea}}</strong></p>
                     </router-link>
                 </div> 
+                <div>Featured: {{idea.featured}}</div>
                 <div class="idea-title mb-2 ">
                     <div>
                         <p v-if="idea.avg_rate">
@@ -68,7 +69,7 @@
                         <app-like 
                             :idea-id="idea.id"         
                             :idea-likes="idea.an_likes"  
-                            :is-logged-in="isLoggedIn"                         
+                            :is-anonym="isAnonym"                         
                             > 
                         </app-like>                        
                     </div>
@@ -162,7 +163,8 @@ export default {
             next:state=>state.ideas.next          
         }),
         ...mapGetters({
-           isLoggedIn:authGetterTypes.isLoggedIn
+           isLoggedIn:authGetterTypes.isLoggedIn,
+           isAnonymous:authGetterTypes.isAnonymous
         }),
         baseUrl() {
         //  console.log("route.path is",this.$route.path)
@@ -180,7 +182,10 @@ export default {
         }, 
         ideasToDisplay(){
             return this.total>0                
-        },        
+        },
+        isAnonym(){
+            return this.isAnonymous
+        }        
                   
     },    
     watch: {
@@ -194,7 +199,8 @@ export default {
         }
     },     
     created(){
-        this.fetchIdeas()       
+        this.fetchIdeas()   
+        // console.log("islogged?",this.isLoggedIn)    
     },
     methods:{
         fetchIdeas(){
@@ -215,10 +221,10 @@ export default {
             // console.log("calling store func for request")           
             //this.$store.dispatch(actionTypes.getIdeas, {apiUrl: this.apiUrl})       
             this.$store.dispatch(actionTypes.getIdeas, {apiUrl: apiUrlWithParams})
-            .then((resp)=>{
-                console.log("Ok")
-                console.log("resp.data",resp.data)
-            })
+            //.then((resp)=>{
+            //    console.log("Ok")
+                // console.log("resp.data",resp.data)
+           // })
             // .catch(err=>console.log("getIdea error",err))       
             },
         

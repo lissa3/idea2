@@ -81,16 +81,25 @@ Search ideas search_fields = ['title', 'lead_text', 'main_text']
 GET localhost:8000/api/v1/idea-collection/ideas/?search=yourWord
 
 H.1 
-Filter based on: filterset_fields = ['featured','view_count']
+Filter based on: filterset_fields = ['featured'] #,'view_count']
 GET /api/v1/ideas-collection/ideas/?title=&categ=&featured=true&status=&author=
 
 H.2 
-Ordering ordering = ('title','created_at')
+Ordering ordering = ('title','created_at','max_rating')
+default = '-created_at' (newest at top)
+set featured = false as default
 
 GET /api/v1/idea-collection/ideas/?ordering=title
 GET /api/v1/idea-collection/ideas/?ordering=-title
 GET /api/v1/idea-collection/ideas/?ordering=-created_at
 GET /api/v1/idea-collection/ideas/?ordering=-created_at
+GET /api/v1/ideas-collection/ideas/?limit=6&offset=0&ordering=-max_rating
+only oldest on top
+GET /api/v1/ideas-collection/ideas/?featured=false&limit=6&offset=0&ordering=created_at
+featured&& sort newest on top:
+GET /api/v1/ideas-collection/ideas/?featured=true&limit=6&offset=0&ordering=-created_at
+featured&&sort oldest on top
+GET /api/v1/ideas-collection/ideas/?featured=true&limit=6&offset=0&ordering=created_at
 
 I.
 mix filter and ordering

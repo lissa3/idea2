@@ -132,7 +132,7 @@
                       <app-like 
                         :idea-id="idea.id" 
                         :idea-likes="idea.an_likes"
-                        :is-logged-in="isLoggedIn"                                            
+                        :is-anonym="isAnonym"                                            
                         >
                       </app-like>
                     <small class="text-muted">9 mins</small>
@@ -171,9 +171,6 @@ import {mapState,mapGetters} from 'vuex'
 import {actionTypes as singleIdeaActionType} from '@/store/modules/singleIdea'
 import {getterTypes as authGetterTypes} from '@/store/modules/auth'
 
-
-
-
 export default {
   name: 'AppIdeaDetail',
   components:{
@@ -187,8 +184,7 @@ export default {
   data(){
     return{
       makeModalVisible: false,
-      thxRating:null
-      
+      thxRating:null      
       // ideaLikes:0 
     }
   },
@@ -200,7 +196,8 @@ export default {
         }),
         ...mapGetters({
           currentUser:authGetterTypes.currentUser,
-          isLoggedIn:authGetterTypes.isLoggedIn
+          isLoggedIn:authGetterTypes.isLoggedIn,
+          isAnonym:authGetterTypes.isAnonymous
         }),
         authorIsCurrentUser(){
           // async req with unknown data (anonymous/user/user=== idea author)
@@ -211,7 +208,8 @@ export default {
         },
         showLike(){
           return this.ideaLikes
-        }       
+        },
+               
         
   },
   created(){

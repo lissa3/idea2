@@ -39,7 +39,7 @@ const actions = {
         try{
             // instead of apiUrl(str)=> {object, к можно деструктурировать}
            const resp = await ideaAPI.getIdeas(apiUrl)            
-            console.log("response getIdeas is",resp.data)
+            // console.log("response getIdeas is",resp.data)
             commit(mutationTypes.GET_IDEAS_SUCCESS,resp.data.results)
             commit(mutationTypes.SET_NEXT,resp.data.next)
             commit(mutationTypes.SET_PREV,resp.data.previous)
