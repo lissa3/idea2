@@ -19,6 +19,8 @@ class Profile(TimeStamp):
     unid instead for safer url;
     badge_bg (creat random bg-color by creating profile object)
     """
+    # show_notifications = models.BooleanFieled(default=True)
+    # show_subscription_notif =  models.BooleanFieled(default=True)  
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -28,9 +30,13 @@ class Profile(TimeStamp):
     unid = models.CharField(max_length=6, blank=True, db_index=True)
     image = models.ImageField(blank=True, null=True, upload_to=upload_img,
                               validators=[FileExtensionValidator(ALLOWED_EXTENTIONS), validate_size]) 
-    bio = models.TextField(default = "")                             
+    bio = models.TextField(blank=True,default = "")                             
     website = models.URLField(max_length=100, default="", blank=True)
     badge_bg = models.CharField(max_length=30, default="", blank=True)
+    following = models.ManyToManyField(User,related_name="followed_by",blank=True)
+
+   
+
 
     def __str__(self):
         return f"{self.user.username}"
@@ -38,10 +44,15 @@ class Profile(TimeStamp):
     def get_absolute_url(self):
         return reverse('profiles:profile-info', kwargs={'profile_unid': self.unid})
 
-    @property
+    # def in_subscribers(self,user):
+    #     """check if a given user id belongs to a list of (id's ) my subscribers"""
+    #     return user.id in self.subscribed_to.values_list('id',flat=True)    
+    
+    # def in_followres(self):
+    #     """check if a given user id belongs to a list of (id's ) my subscribers"""
+    #     return self.id in self.followers.values_list('id',flat=True)    
+    
     def get_name(self):
-        """
-        """
         if self.user.first_name and self.user.last_name:
             return '{} {}'.format(
                 self.user.first_name.capitalize(),
@@ -57,14 +68,8 @@ class Profile(TimeStamp):
         # else:
         return '/assets/img/avatar.png'
 
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     # print('coming to save and re-sizing')
-    #     if self.image:  # and not kwargs.get('update_fields'):
-    #         # print('you are uploading an image')
-    #         image = Image.open(self.image.path)  # ?.path?
-    #         (x, y) = image.size
-    #         new_x = 320
-    #         new_y = int(new_x*(y/x))
-    #         resized_image = image.resize((new_x, new_y), Image.ANTIALIAS)
-    #         resized_image.save(self.image.path)
+  
+    
+    # subscribed_to = models.ForeignKey(User,related_name='myfollowers',null=True,blank=True,on_delete=models.SET_NULL )
+    # followers = models.ForeignKey(User,related_name='following',blank=True,null=True,on_delete=models.SET_NULL )
+    
