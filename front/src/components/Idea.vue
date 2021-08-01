@@ -14,17 +14,18 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12 mb-2">
-                            <ul class="list-group list-group-horizontal ul-cls">
-                                <li class="list-group-item">
-                                    <b-icon icon="bookmark-heart-fill"></b-icon>
-                                    
-                                </li>
-                                <!-- <li class="list-group-item tooltip"> -->
-                                <li class="list-group-item">
-                                    <b-icon icon="person-fill"></b-icon>
+                            <ul class="list-group list-group-horizontal ul-cls" :disabled="isAnonymous">
+                                <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="Add to favorites">
+                                    <b-icon icon="bookmark-heart-fill"></b-icon>                                   
+                                </li>                                
+                                <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="Author profile">
+                                    <router-link :to="{name:'profile',params:{id:idea.author}}" 
+                                    class="link" >
+                                        <b-icon icon="person-fill"></b-icon>                                        
+                                    </router-link >
                                     <!-- <span class="tooltiptext">See author profile</span> -->
                                 </li>
-                                <li class="list-group-item">
+                                <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="Write msg">
                                     <b-icon icon="envelope"></b-icon>
                                 </li>
                             </ul>
@@ -37,10 +38,10 @@
                        <router-link :to="{ name: 'ideaDetail',params:{slug:idea.slug} }"
                        class="link">{{idea.title}}-id={{idea.id}}</router-link>
                     </h3>
-                </div> 
+                </div>                
                 <div class="idea-title mb-2">
                     <router-link :to="{name:'profile',params:{id:idea.author}}" class="link">
-                        <p>By <strong>{{idea.owner_idea}}</strong></p>
+                        <p>By <b-icon icon="person-fill"></b-icon> <strong>{{idea.owner_idea}}</strong></p>
                     </router-link>
                 </div> 
                 <div>Featured: {{idea.featured}}</div>
@@ -69,7 +70,7 @@
                         <app-like 
                             :idea-id="idea.id"         
                             :idea-likes="idea.an_likes"  
-                            :is-anonym="isAnonym"                         
+                            :is-anonym="isAnonymous"                         
                             > 
                         </app-like>                        
                     </div>
@@ -86,7 +87,7 @@
                     </router-link>
                 </div>
                 <div class="idea-read-more mb-2">
-                   <div v-if="idea.tags">                      
+                   <div v-if="idea.tags.length>0">                      
                         <div class="d-flex justify-content-left">
                           <div class="px-1">Tags:</div>
                           <app-tags-list :tags="idea.tags"></app-tags-list>                                  
@@ -183,9 +184,7 @@ export default {
         ideasToDisplay(){
             return this.total>0                
         },
-        isAnonym(){
-            return this.isAnonymous
-        }        
+              
                   
     },    
     watch: {
@@ -325,5 +324,6 @@ export default {
 }
 .link:hover{
   color:rgb(33, 98, 84);
+  text-decoration: none;
 }
 </style>

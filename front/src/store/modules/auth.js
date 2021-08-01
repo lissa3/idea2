@@ -6,6 +6,7 @@ export const mutationTypes = {
   PASS_EMAIL_POTENTIAL_USER:'[auth] PASS_EMAIL_POTENTIAL_USER',
   REGISTER_SUCCESS:'[auth] REGISTER_SUCCESS',
   REGISTER_FAILURE:'[auth] REGISTER_FAILURE',
+
   SET_ACCESS_TOKEN:'[auth] SET_ACCESS_TOKEN',
   SET_CONFIRM:'[auth] SET_CONFIRM',
   SET_REFRESH_TOKEN:'[auth] SET_REFRESH_TOKEN',
@@ -27,7 +28,12 @@ export const mutationTypes = {
   // network-problem
   NETWORK_PROBELM:'[auth] NETWORK_PROBELM',
   STATUS_500:'[auth] STATUS 500 SERVER ERROR',
-  INCORRECT_PSW:'[auth] INCORRECT_PSW'
+  INCORRECT_PSW:'[auth] INCORRECT_PSW',
+  // delete account
+  START_DELETE_ACCOUNT:'[auth] DELETE account',
+  DELETE_ACCOUNT_SUCCESS:'[auth] DELETE account success',
+  DELETE_ACCOUNT_FAILURE:'[auth] SET_LOGIN_FAILURE',
+  
 
 }
 export const actionTypes = {
@@ -38,7 +44,8 @@ export const actionTypes = {
   signOut:'[auth] signOut',
   confirmEmailForgottenPsw:'[auth] confirmEmailForgottenPsw',
   setNewPswAfterForget:'[auth] setNewPswAfterForget',
-  setNewPswAChange:'[auth] setNewPswAChange'
+  setNewPswAChange:'[auth] setNewPswAChange',
+  deleteAccount:'[auth] delete user account'
 
 }
 export const getterTypes = {
@@ -74,7 +81,8 @@ const state ={
   pswResetFailure:false,
   netWorkErr:false,
   status500:false,
-  incorrectEmail:false
+  incorrectEmail:false,
+  errEvent:null
   
 
 }
@@ -188,7 +196,19 @@ const mutations = {
   [mutationTypes.RESET_NEW_PSW_FAILURE](state){
     state.pswResetFailure = true    
     state.isLoading=false    
-  }
+  },
+  
+  [ mutationTypes.START_DELETE_ACCOUNT ](state){
+    state.isLoading = true
+  },
+  [ mutationTypes.DELETE_ACCOUNT_SUCCESS ](state){
+    state.isLoading = false   
+    
+  },
+  [ mutationTypes.DELETE_ACCOUNT_FAILURE ](state,err){
+    state.isLoading = false
+    state.errEvent = err
+  },
   
 }
 const actions = {
@@ -317,7 +337,7 @@ const actions = {
         localStorage.clear()
       }
     },    
-    [actionTypes.signOut]({commit}){
+  async [actionTypes.signOut]({commit}){
       //console.log("store starts sign out")
       commit(mutationTypes.CLEAR_CREDS)
       console.log("local storage is clear")
@@ -417,6 +437,59 @@ const actions = {
       
     }
   },
+  async [actionTypes.deleteAccount]({commit},{psw}){
+    console.log("store starts to delete account")
+    const servResp = {}  
+    try{      
+      console.log("try to del block")         
+      const resp = await authAPI.deleteAccount({"current_password":psw})      
+      commit(mutationTypes.DELETE_ACCOUNT_SUCCESS)
+      servResp.status = resp.status
+      return servResp 
+      
+      // console.log("resp in auth.js",resp) 
+      /* if email exists in db=> resp.status=204,data="" statusText="No content" */     
+
+    }catch(err){
+      commit(mutationTypes.DELETE_ACCOUNT_FAILURE,err)      
+      if(err.response === undefined){
+        // DONE
+        commit(mutationTypes.NETWORK_PROBELM)
+        servResp.servDown = true  
+        return servResp         
+      }else if(err.response.status ===400){
+        // DONE частично
+        // console.dir(err)            
+        servResp.status = err.response.status             
+        servResp.pwsErr = err.response.data.current_password
+        
+        // console.log("sent to vue",servResp)
+        // console.log("sent to vue keys",Object.keys(servResp))
+        return servResp
+                    
+      }else if(err.response.status ===401){
+        // DONE частично
+        // console.dir(err)            
+        servResp.status = err.response.status             
+        // console.log("sent to vue",servResp)
+        // console.log("sent to vue keys",Object.keys(servResp))
+        return servResp
+                    
+      }else if(err.response.status ===500){
+        commit(mutationTypes. STATUS_500)
+        // DONE  
+        servResp.status = err.response.status
+        console.log("sending to vue page",servResp)
+        return servResp
+      }else if(err.response.status === 404){
+        console.log("page not found")
+        servResp.status=err.response.status
+        return servResp
+      }
+    
+    }
+    
+},
   
 } 
 

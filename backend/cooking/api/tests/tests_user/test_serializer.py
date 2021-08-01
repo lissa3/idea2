@@ -19,15 +19,7 @@ class UserSerializerTestCase(TestCase):
         expected_data = {
             "id": self.user.id,
             "username": self.user.username,
-            "unid": self.profile.unid
-            # "profile": {
-            #     "unid": self.profile.unid,
-            #     "user_id": self.user.id,
-            #     "image": None,
-            #     "website": "",
-            #     "linkedin_profile": "",
-
-            # }
+            "unid": self.profile.unid            
 
         }
         self.assertEqual(serial_user, expected_data)

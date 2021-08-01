@@ -1,14 +1,11 @@
 <template>
     <div>
         <section >
-
             <div v-if="isLoading"><app-loader></app-loader></div>        
             <div v-if="tags" class="tag-list">
                 <router-link v-for="tag in tags" :key="tag.id" :to="{name:'ideasBySlug',params:{slug:tag.slug}}" class="tag">
                     <b-badge variant="secondary" class="tag px-2 mx-1">{{tag.name}}</b-badge>          
-                </router-link> 
-            
-                        
+                </router-link>            
             </div>
             <!-- <div  v-for="tag in tags" :key="tag.id">
                 slug:{{tag.slug}}

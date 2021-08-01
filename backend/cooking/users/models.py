@@ -16,6 +16,7 @@ class User(AbstractUser):
     date_joined = models.DateTimeField(default=timezone.now)
     is_banned = models.BooleanField(default=False)
     blackListEmail = models.BooleanField(default=False)
+    # uuid = models.UUIDField(db_index=True, unique=True, default=uuid.uuid4)
     # TODO: check flow signup active via admin vs front (djoser)
     # subscribers = models.ManyToManyField(
     #             'self',related_name = 'subscriptions',symmetrical=False,blank=True)
@@ -25,6 +26,7 @@ class User(AbstractUser):
     # def in_subscribers(self,user):
     #     return user.id in self.subscribers.values_list('id',flat=True)
 
+    
     USERNAME_FIELD = 'email'
 
     # REQUIRED_FIELDS: to create superuser: list containing other fields than UUSERNAME_FIELD

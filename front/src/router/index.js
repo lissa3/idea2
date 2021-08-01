@@ -24,6 +24,7 @@ import PswForgotFailure from "@/views/auth/MsgPswResetFailure"
 import ProfileDetail from '@/views/auth/ProfileDetail'
 import AccountProfile from '@/views/auth/AccountProfile'
 import EditProfile from '@/views/auth/ProfileEdit'
+import DeleteAccount from '@/views/auth/DeleteAccount'
 import IdeasByTagSlug from '@/views/IdeasByTagSlug'
 import IdeasByTagName from '@/views/IdeasByTagName'
 import NotFound from '@/views/NotFound'
@@ -159,6 +160,11 @@ const routes = [
     path: '/profile-edit/:unid',
     name: 'editProfile',
     component: EditProfile
+  },
+  {
+    path: '/profile-delete',
+    name: 'deleteAccount',
+    component: DeleteAccount
   },
   {
    path: '/about',

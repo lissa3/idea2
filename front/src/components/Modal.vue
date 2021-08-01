@@ -66,7 +66,7 @@ export default {
 .modal-header {
   /* position: relative; */
   border-bottom: 1px solid #eeeeee;
-  color: lightcoral;
+  color: rgb(224, 55, 55);
   /* color: #4aae9b; */
   justify-content: space-between;
 }

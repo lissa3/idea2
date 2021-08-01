@@ -57,7 +57,7 @@ const googleAuth = async (state,code)=>{
     }
 }
 const getProfile = (id)=>{
-    // access not private
+    // public access profile
     return simpleAPI.get(`/api/v1/profile-info/${id}/`)
 }
 
@@ -69,6 +69,10 @@ const profileOwnerAction = (unid)=>{
 const profileOwnerEdit = (unid,profileData)=>{
     // private access to edit profile 
     return axios.patch(`/api/v1/profile-owner/${unid}/`,profileData)
+}
+
+const deleteAccount = (psw)=>{
+    return axios.delete(`api/v1/users/me/`,psw)
 }
 
 
@@ -84,7 +88,8 @@ export default {
     requestChangePsw,
     getProfile,
     profileOwnerAction,
-    profileOwnerEdit
+    profileOwnerEdit,
+    deleteAccount
     
 
 }    

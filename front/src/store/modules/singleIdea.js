@@ -64,8 +64,8 @@ const mutations = {
     [mutationTypes.LIKE_FAILURE](state,err){
         state.error,err
     },
-    [mutationTypes.GET_INITIAL_LIKE_START](state){},
-    [mutationTypes.GET_INITIAL_LIKE_SUCCESS](state){},
+    [mutationTypes.GET_INITIAL_LIKE_START](){},
+    [mutationTypes.GET_INITIAL_LIKE_SUCCESS](){},
     [mutationTypes.GET_INITIAL_LIKE_FAILURE](state,err){
         state.error,err
     },
@@ -135,12 +135,12 @@ const actions = {
         }          
     },
     async [actionTypes.getLikeState]({commit},ideaId){      
-        commit(mutationTypes.GET_INITIAL_LIKE_START);        
+        // commit(mutationTypes.GET_INITIAL_LIKE_START);        
         const servResp = {}         
         try{
             // console.log(obj.like) 
             const resp = await ideaAPI.getInitialLikeState(ideaId) 
-            commit(mutationTypes.GET_INITIAL_LIKE_SUCCESS);           
+            // commit(mutationTypes.GET_INITIAL_LIKE_SUCCESS);           
             // resp.data = {"like":true/false,"rating":null}
             servResp.status = resp.status
             servResp.data = resp.data 

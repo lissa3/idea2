@@ -1,4 +1,5 @@
 <template>
+<div>
 <header >     
 <div>
   <b-navbar toggleable="lg" type="dark" variant="dark">
@@ -29,10 +30,7 @@
       <b-nav-item href="#"><router-link :to="{ name: 'ideaGeneral' }" class="link-decor" active-class="active"
               >Ideas</router-link></b-nav-item>
       </b-navbar-nav>
-      <b-nav-item href="#" >
-            <router-link :to="{ name: 'ideaCreate' }" class="link-decor" active-class="active"
-              >New Idea</router-link>
-      </b-nav-item>
+      
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
@@ -41,8 +39,11 @@
           <b-button @click="doSearch" size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
         </b-nav-form>       
       <template v-if="isLoggedIn">
-          
-          <b-nav-item href="#">IsLoggedIn</b-nav-item>              
+          <b-nav-item href="#" >
+            <router-link :to="{ name: 'ideaCreate' }" class="link-decor" active-class="active"
+              >New Idea</router-link>
+        </b-nav-item>
+          <!-- <b-nav-item href="#">IsLoggedIn</b-nav-item>               -->
           <b-nav-item href="#" >
             <a href="#" @click="doSignOut" class="link-decor" >Sign Out</a>
           </b-nav-item> 
@@ -57,7 +58,7 @@
           </template>
             <b-dropdown-item href="#" @click="showProfile">Profile</b-dropdown-item>
             <b-dropdown-item href="#" @click="changePsw">Change Password</b-dropdown-item>
-            <!-- <b-dropdown-item href="#">Sign Out</b-dropdown-item> -->
+            <b-dropdown-item href="#" @click="deleteAccount" class="danger">Delete Account</b-dropdown-item>
             </b-nav-item-dropdown>  
           </template>
         
@@ -66,18 +67,41 @@
     </b-collapse>
   </b-navbar>
 </div>
-</header>   
+</header>  
+  <app-delete-account-confirmation v-if="makeModalVisible" @close="close" @deleteAccount="deleteAccount">
+    <template v-slot:header>
+        <h3>Warning</h3>
+    </template>
+      <template v-slot:body>
+        <h4>Do you really want to delete your account?</h4>
+    </template>
+    <template v-slot:modal-footer>
+        <button class="btn btn-sm btn-danger" @click="confirmDeleteAccount">
+          Yes,I want to delete this idea
+        </button>       
+        <button class="btn btn-sm btn-success" @click="close">No</button>
+    </template>
+  </app-delete-account-confirmation>
+</div> 
 </template>
 <script>
 import {actionTypes} from '@/store/modules/auth'
 import {actionTypes as profileActionTypes} from '@/store/modules/profile'
 import {getterTypes} from '@/store/modules/auth'
 import {mapGetters} from 'vuex'
+import AppDeleteAccountConfirmation from '@/components/Modal.vue'
+
+
 export default {
     name:'Menu',
+    components:{
+      AppDeleteAccountConfirmation
+    },
     data(){
       return {
-        term:''
+        term:'',
+        makeModalVisible: false,
+        
       }
     },
     computed:{
@@ -87,8 +111,7 @@ export default {
         isAnonymous:getterTypes.isAnonymous})
       // currentUser(){
       //   return this.$store.getters[getterTypes.currentUser]
-      // },
-     
+      // },    
      
     },
     methods:{
@@ -118,7 +141,22 @@ export default {
           }
         })          
         .catch(err=>console.log(err))
+      },
+      deleteAccount(){
+        console.log("user wants to delete his account")        
+        this.makeModalVisible = true;
+        this.$router.push({name:'deleteAccount'})
+      },
+      //close modal
+      close(){
+        this.makeModalVisible = false
+      },
+      confirmDeleteAccount(){
+        console.log("confirm delte account")
+         this.makeModalVisible=false
+        // this.$store.dispatch(singleIdeaActionType.deleteIdea,{slug})
       }
+      
     },
     mounted(){
       this.$store.dispatch(actionTypes.getUser)
@@ -129,6 +167,7 @@ export default {
 </script>
 
 <style scoped>
+
 .menu-nav{
     background-color: bisque;
 }
@@ -149,5 +188,9 @@ export default {
   padding:5px 10px;
   border: 1px solid white;
   border-radius: 3px;
+}
+.dropdowm-item .danger{
+  color:red;
+  background-color: burlywood;
 }
 </style>

@@ -39,7 +39,7 @@
               <div class="follow-block">Follow</div>
               <!-- <div class="favorite-block d-flex justify-content-between align-items-center"> -->
               <div class="favorite-block d-flex">
-                <p>Add to Favorite</p>
+                <p @click="AddToFavor(idea.author)">Add to Favorite</p>
                 <div class="col-lg-1 col-md-1 col-sm-1">
                   <b-icon icon="flower1"></b-icon>
                 </div>
@@ -116,7 +116,7 @@
                       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint suscipit laboriosam unde, vel nemo blanditiis voluptates? Perferendis similique qui labore porro aliquid, nobis quidem odio, quos neque aperiam placeat consectetur.</p>
                     </div>
                     <div class="idea-read-more mb-2">
-                      <div v-if="idea.tags">                      
+                      <div v-if="idea.tags.length>0">                      
                         <div class="d-flex justify-content-left">
                           <div class="px-1">Tags:</div>
                           <app-tags-list :tags="idea.tags"></app-tags-list>                                  
@@ -217,7 +217,7 @@ export default {
   },
   methods:{
     getOneIdea(){
-      console.log("component created")      
+      // console.log("component created")      
       this.$store.dispatch(singleIdeaActionType.getIdea,{slug:this.$route.params.slug})
       .then((resp)=>{
         // console.log("component calling; resp",resp)
@@ -268,6 +268,10 @@ export default {
         this.$router.push({name:'ideaGeneral'})
       }).catch(err=>console.log("err from component",err))
     },
+    AddToFavor(authorId){
+      console.log("trying to followe author with id",authorId)
+      
+    }
     
   },
   filters: {

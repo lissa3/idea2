@@ -14,7 +14,6 @@ class ProfilePublicSerializerTesCase(TestCase):
 
     def setUp(self):
         self.user = User.objects.create(username="nick", email="zoo@mail.com")
-        print("followers?",self.user.followed_by.all())
         self.profiles =  Profile.objects.all().annotate(
                 count_following=Count('following'),
                 
@@ -35,7 +34,7 @@ class ProfilePublicSerializerTesCase(TestCase):
             'name':'nick',
             'count_followers':0,
             'count_following':0,
-            'followed':[],
+            'followers':[],
             'following':[]
             
 

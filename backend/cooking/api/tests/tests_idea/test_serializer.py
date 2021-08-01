@@ -94,7 +94,7 @@ class IdeaTestSerializerTesCase(TestCase):
         print(serial_ideas)      
         
         serial_ideas = IdeaTestSerializer(self.ideas, many=True).data
-        # print("after ser-tion via view", serial_ideas)
+        print("after ser-tion via view", serial_ideas)
         expected_data = [
             {"id": self.idea1.id,
              "slug": self.idea1.slug,
@@ -132,6 +132,7 @@ class IdeaTestSerializerTesCase(TestCase):
 
         ]
         print("**************")
+        print("exp ideas data",expected_data)
         self.assertEqual(serial_ideas, expected_data)
 
 

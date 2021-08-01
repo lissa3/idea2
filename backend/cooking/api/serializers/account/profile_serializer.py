@@ -12,7 +12,7 @@ User = get_user_model()
 
 
 class ProfileSerializer(ser.ModelSerializer):
-    # TODO: do I need it? 
+    # no following followers info but option to crud operations
     name = ser.ReadOnlyField(source='get_name')     
     website = ser.URLField(required=False)    
     image = ser.ImageField(validators=[validate_size], required=False, allow_null=True)
@@ -25,12 +25,12 @@ class ProfileSerializer(ser.ModelSerializer):
         # fields = ('user_id', 'unid', 'website', 'image') 
 
 class ProfilePublicSerializer(ser.ModelSerializer):
-    # TODO: do I need it? 
+    # user will give reversed data about user = profile followers
     user = UserSerializer(many=False)
     name = ser.ReadOnlyField(source='get_name')   
     website = ser.URLField(required=False)    
     image = ser.ImageField(validators=[validate_size], required=False, allow_null=True)
-    followed =  ser.SerializerMethodField()    
+    followers =  ser.SerializerMethodField()    
     count_followers = ser.SerializerMethodField()
 
     following = ser.SerializerMethodField()    
@@ -39,20 +39,32 @@ class ProfilePublicSerializer(ser.ModelSerializer):
     
     class Meta:
         model = Profile
-        fields = ('bio','website', 'image','name','following','user','followed','count_following','count_followers')
+        fields = ('bio','website', 'image','name','following','user','followers','count_following','count_followers')
 
-    def get_followed(self,obj):             
+    def get_followers(self,obj): 
+        """current user(profile) should be excluded from list"""            
         qs = obj.user.followed_by.all()       
         data = [{'unid': obj.unid, 'user_id': obj.user_id,'username': obj.user.username} for obj in qs]       
         return data    
 
-    def get_following(self,obj):              
+    def get_following(self,obj): 
+        """current user(profile) should be excluded from list"""                 
         qs = obj.following.all()        
-        data = [{'unid': obj.profile.unid, 'username': obj.username} for obj in qs]
+        data = [{'unid': obj.profile.unid, 'username': obj.username,'id':obj.id} for obj in qs]
         return data 
 
     def get_count_followers(self,obj):
-        return obj.user.followed_by.count()      
+        # return obj.user.followed_by.count()      
+        return obj.user.followed_by.count() 
+
+    # def update(self, instance, validated_data):
+    #     instance.title = validated_data.get('title', instance.title)
+    #     instance.description = validated_data.get('description', instance.description)
+    #     instance.body = validated_data.get('body', instance.body)
+    #     instance.author_id = validated_data.get('author_id', instance.author_id)
+
+    #     instance.save()
+    #     return instance        
            
          
 

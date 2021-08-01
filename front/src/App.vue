@@ -31,6 +31,11 @@ html, body {
   height: 100%;
   min-height: 100%;
 } 
+.warn {
+  background-color: rgb(240, 194, 194);
+  border-radius: 3px;
+  padding:5px 10px;
+}
 /* .container {
     width: 600px;
     height: 350px;

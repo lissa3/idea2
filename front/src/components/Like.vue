@@ -17,7 +17,7 @@
             
     </div> 
     <p v-if="needAuthMsg" class="warning">msg: {{needAuthMsg}}</p>
-    <p>Anonym? {{isAnonym}}</p>
+    
    
         
     

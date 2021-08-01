@@ -110,6 +110,7 @@ class Idea(TimeStamp):
                                   validators=[FileExtensionValidator(allowed_extensions=ALLOWED_EXTENTIONS), validate_size])
 
     featured = models.BooleanField(blank=True, default=False)
+    # TODO: do I need it?
     fans = models.ManyToManyField(User, related_name='idea_fans', through='UserIdeaRelation')
     is_public = models.BooleanField(default=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=0)
@@ -118,10 +119,7 @@ class Idea(TimeStamp):
     objects = IdeaManager()
 
     def __str__(self):
-        return self.title
-
-    
-    
+        return self.title 
 
     # only for dev test ( for prod aws s3 url)
     # @property
@@ -148,6 +146,7 @@ class UserIdeaRelation(models.Model):
     dislike = models.BooleanField(blank=True, default=False)
     in_bookmark = models.BooleanField(blank=True, default=False)
     rating = models.PositiveSmallIntegerField(choices=RATING, null=True, blank=True)
+    # follow = models.BooleanField(blank=True,default=False)
 
     def __str__(self):
         return f'User: {self.user} gives buzy with action'

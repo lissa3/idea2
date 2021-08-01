@@ -10,6 +10,7 @@ from rest_framework.exceptions import APIException, PermissionDenied
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework import status
+# from rest_framework_simplejwt.tokens import RefreshToken (GOOD TO HAVE delete profile)
 
 
 from taggit.models import Tag
@@ -124,15 +125,24 @@ class ProfileRetrView(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)
     
     def get_queryset(self):
-        return  Profile.objects.annotate(
-                count_following=Count('following'),
-                
-                )           
+        return ( Profile.objects.annotate( count_following=Count('following')))
+    # def get_object(self):
+    #     try:            
+    #         obj = get_object_or_404(
+    #             self.queryset,
+    #             unid=self.kwargs.get('unid'),
+    #         )
+            
+    #     except Profile.DoesNotExist:            
+    #         return Response(status = status.HTTP_404_NOT_FOUND)   
+    #     return obj    
+        
 
 class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
     """profile info for private use:
-       readOnly: name,
-       can be changed: bio,website, image
+       request should be via form because of option upload profile image 
+       readOnly attr: name,
+       writable/changable attr's: bio,website, image
     """
     serializer_class = ProfileSerializer #ProfileSerializer
     permission_classes = (IsOwnerOrIsStaff,)
@@ -172,7 +182,7 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
         if serializer.is_valid():
             print("ser-er is valid")
             # print("img attr in ser-er", serializer.data['image'])
-            # print('img data', serializer.data['image'])
+            # print('following this user', serializer.data['image'])
         else:
             # print("data", serializer.data)
             print("ser errors:", serializer.errors)
@@ -185,7 +195,34 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
 
 
 
-from rest_framework_simplejwt.tokens import RefreshToken
+class FollowAuthorView(APIView):
+    """profile for dealing with followers:
+    """
+    # serializer_class = ProfileSerializer #ProfileSerializer
+    authentication_class = (IsAuthenticated,)
+    permission_classes = (IsOwnerOrIsStaff,)
+    # queryset = Profile.objects.all()
+
+    def post(self,request):        
+        try:
+            user = request.user        
+            person_to_follow_id = request.data.get('following_id')        
+            profile = get_object_or_404(Profile,id=user.id)
+            user_obj_to_follow = get_object_or_404(User,id=person_to_follow_id)
+            print(profile,user_obj_to_follow)
+            profile.following.add(user_obj_to_follow)
+            return Response({'success':'Successfully added user to follow'},status=status.HTTP_204_NO_CONTENT)
+        except:
+            return Response({'error':'User is not found'},status=status.HTTP_404_NOT_FOUND)   
+
+    # def put(self, request, pk):
+    # profile_obj = get_object_or_404(Profile.objects.all(), pk=pk)
+    # data = request.data.get('following_id')
+    # serializer = Profile(instance=profile, data=data, partial=True
+    # if serializer.is_valid(raise_exception=True):
+    #     profile_saved = serializer.save()
+    # return Response({"success": "Profile updated with followers")})
+
 
 class UserDeleteAPIView(APIView):
     print("inside user delete view")
@@ -201,18 +238,6 @@ class UserDeleteAPIView(APIView):
             return Response({'error':'Failed to delete user account'},status = status.HTTP_500_INTERNAL_SERVER_ERROR)   
 
 """
-{'_state': <django.db.models.base.ModelState object at 0x7fae19f4acd0>, 'id': 5, 'created_at': datetime.datetime(2021, 6, 21, 9, 14, 36, 816249, tzinfo=<UTC>), 'updated_at': datetime.datetime(2021, 6, 21, 11, 57, 14, 263355, tzinfo=<UTC>), 'user_id': 1, 'unid': 'abcT3', 'image': '', 'bio': '', 'website': 'http://www.snork.com', 'badge_bg': '(119,174,139)', 'countFolow': 0}
 
-{'_state': <django.db.models.base.ModelState object at 0x7fae19f59100>, 'id': 1, 'created_at': datetime.datetime(2021, 6, 21, 8, 50, 23, 764715, tzinfo=<UTC>), 'updated_at': datetime.datetime(2021, 6, 21, 8, 50, 23, 764751, tzinfo=<UTC>), 'user_id': 2, 'unid': 'XBVDg', 'image': '', 'bio': '', 'website': '', 'badge_bg': '(42,101,35)', 'countFolow': 0}
-
-{'_state': <django.db.models.base.ModelState object at 0x7fae19f591f0>, 'id': 2, 'created_at': datetime.datetime(2021, 6, 21, 8, 53, 27, 979333, tzinfo=<UTC>), 'updated_at': datetime.datetime(2021, 6, 21, 8, 53, 27, 979447, tzinfo=<UTC>), 'user_id': 3, 'unid': 'rlpIT', 'image': '', 'bio': '', 'website': '', 'badge_bg': '(75,84,241)', 'countFolow': 0}
-
-{'_state': <django.db.models.base.ModelState object at 0x7fae19f592e0>, 'id': 4, 'created_at': datetime.datetime(2021, 6, 21, 9, 1, 7, 173459, tzinfo=<UTC>), 'updated_at': datetime.datetime(2021, 6, 21, 9, 1, 7, 173494, tzinfo=<UTC>), 'user_id': 5, 'unid': 'kscv4', 'image': '', 'bio': '', 'website': '', 'badge_bg': '(42,140,238)', 'countFolow': 0}
-
-
-{'_state': <django.db.models.base.ModelState object at 0x7fae19f593d0>, 'id': 6, 'created_at': datetime.datetime(2021, 6, 21, 22, 29, 31, 659766, tzinfo=<UTC>), 'updated_at': datetime.datetime(2021, 7, 28, 12, 25, 57, 260303, tzinfo=<UTC>), 'user_id': 6, 'unid': 'kmuX5', 'image': '', 'bio': 'love fun, parties and so on', 'website': 'http://mumla-fun.nk', 'badge_bg': '(95,35,150)', 'countFolow': 4}
-
-
-{'_state': <django.db.models.base.ModelState object at 0x7fae19f594c0>, 'id': 7, 'created_at': datetime.datetime(2021, 7, 6, 21, 27, 51, 232186, tzinfo=<UTC>), 'updated_at': datetime.datetime(2021, 7, 6, 21, 27, 51, 232225, tzinfo=<UTC>), 'user_id': 7, 'unid': 't7ZK4', 'image': '', 'bio': '', 'website': '', 'badge_bg': '(11,183,35)', 'countFolow': 0}
-{'_state': <django.db.models.base.ModelState object at 0x7fae19f595b0>, 'id': 8, 'created_at': datetime.datetime(2021, 7, 27, 10, 37, 36, 659202, tzinfo=<UTC>), 'updated_at': datetime.datetime(2021, 7, 27, 10, 37, 36, 659291, tzinfo=<UTC>), 'user_id': 8, 'unid': 'WU7c1', 'image': '', 'bio': '', 'website': '', 'badge_bg': '(210,52,155)', 'countFolow': 0}
+bar0 {'_state': <django.db.models.base.ModelState object at 0x7fdd9800f2b0>, 'id': 3, 'created_at': datetime.datetime(2021, 7, 30, 20, 25, 58, 229587, tzinfo=<UTC>), 'updated_at': datetime.datetime(2021, 7, 31, 19, 56, 0, 95018, tzinfo=<UTC>), 'user_id': 3, 'unid': 'TssQg', 'image': '', 'bio': '', 'website': '', 'badge_bg': '(14,158,147)', 'count_following': 2}
 """

@@ -8,10 +8,12 @@ from rest_framework import viewsets  # , permissions
 from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter # built-in filters
 from rest_framework.mixins import UpdateModelMixin,RetrieveModelMixin
-from rest_framework.pagination import LimitOffsetPagination
+# from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+
 
 
 from django_filters.rest_framework import DjangoFilterBackend # third party
@@ -48,14 +50,7 @@ class IdeaRelations(RetrieveModelMixin,UpdateModelMixin,viewsets.GenericViewSet)
         obj, _ = UserIdeaRelation.objects.get_or_create(idea_id=self.kwargs['idea'], user=self.request.user)
         print("object created or updated", obj)
         return obj
-    # def get_queryset(self):
-    #     # let op: 2 times qs:? |=> distinct() in postgres
-    #     queryset = UserIdeaRelation.objects.annotate(
-    #         an_likes=Count(Case(When(like=True, then=1))),
-            
-    #         )
-    #     print("qs is",queryset)    
-    #     return queryset        
+         
 
 class IdeaViewSet(viewsets.ModelViewSet):
     """ custom filter:'title','categ','featured','status','author;

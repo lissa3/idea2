@@ -1,6 +1,7 @@
 <template>
     <div>
         <section >           
+                  
             <div v-if="isLoading"><app-loader></app-loader></div>        
             <div  class="categ-list">
                 <div class="section-categs">Categories:</div>

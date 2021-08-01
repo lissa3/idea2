@@ -76,9 +76,9 @@ export default {
                 return "title"
             }else if(this.userChoice==='rateOnTop'){
                 return "-max_rating"
-            }else if(this.userChoice ==='-title') {
-                return "-title"
-            }else{
+            }else if(this.userChoice ==='zOnTop') {
+                return "-title"            }
+            else{
                 return '-created_at'
             }
         },

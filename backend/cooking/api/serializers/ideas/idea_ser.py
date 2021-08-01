@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
-from django.core.validators import FileExtensionValidator
+# from django.core.validators import FileExtensionValidator
 
 from rest_framework import serializers as ser
 # help module for taggit

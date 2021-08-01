@@ -71,18 +71,27 @@ const mutations = {
 }
 const actions = {
     async [actionTypes.retrieveProfile]({commit},id){
+        // retrieve public info
         console.log("store dispatching get profile,id",id)       
         commit(mutationTypes.START_PROFILE_LOADING);
+        const servResp={}
         try{
         //    console.log(profileAPI.getProfile ) 
            const resp = await profileAPI.getProfile(id)            
             console.log("response getProfile is",resp)
-            commit(mutationTypes.GET_PROFILE_SUCCESS,resp.data)                        
-            return resp            
+            commit(mutationTypes.GET_PROFILE_SUCCESS,resp.data)   
+            servResp.data = resp.data; 
+            servResp.status = resp.status                       
+            return servResp            
 
         } catch(err){
             commit(mutationTypes.GET_PROFILE_FAILURE,err)
-            return err
+            if(err.response === undefined){
+                servResp.servDown = true
+                return servResp                
+            }
+            servResp.status = err.response.status
+            return servResp
         }          
     },
     async [actionTypes.showPersonalInfo]({commit},unid){
