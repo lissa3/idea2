@@ -1,8 +1,8 @@
 <template>
   <div class="container-fluid">
-    
+        <app-toggle-feed :tag-slug="tagSlug"></app-toggle-feed>
         <div class="row">
-          <h3>I am a tag idea component</h3>
+          <h3>I am a tag idea by slug component</h3>
           <div class="col col-md-2">
             <section class="categs-space">
               <app-categs></app-categs>            
@@ -22,12 +22,14 @@
 import AppIdea from '@/components/Idea'
 import AppTags from '@/components/Tags'
 import AppCategs from '@/components/categs/Categs'
+import AppToggleFeed from '@/components/ToggleFeed'
 export default {
   name:'AppTagIdeas',
   components:{
       AppIdea,
       AppTags,
       AppCategs,
+      AppToggleFeed
       
   },
   computed: {

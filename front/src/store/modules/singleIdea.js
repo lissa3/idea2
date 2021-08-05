@@ -83,7 +83,7 @@ const actions = {
         try{
            // let op: you can get resp.data already ( see api) if you want            
            const resp = await ideaAPI.getOneIdea(slug)  
-            console.log("response getIdeas is",resp)
+            // console.log("response getIdeas is",resp)
             commit(mutationTypes.GET_IDEA_SUCCESS,resp.data)                        
             return resp           
 

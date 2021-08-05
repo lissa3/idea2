@@ -8,6 +8,7 @@ import ideas from '@/store/modules/ideas'
 import idea from '@/store/modules/singleIdea'
 import ideaCreative from '@/store/modules/ideaCreative'
 import ideaEdit from '@/store/modules/ideaEdit'
+import follow from '@/store/modules/follow'
 import tags from '@/store/modules/tags'
 
 
@@ -22,14 +23,15 @@ export default new Vuex.Store({
   },
   modules: {   
     auth,
-    profile,
-    ideas,
-    tags,
     categs,
+    categsForForm,
     idea,
+    ideas,
     ideaCreative,
     ideaEdit,
-    categsForForm
+    follow,
+    profile,
+    tags,
 
   }
 })

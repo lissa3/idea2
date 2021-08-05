@@ -1,4 +1,5 @@
-A. Auth (djoser)
+A. 
+A1 Auth (djoser)
 ====================================================================================================
 
 1.sign-up:
@@ -12,11 +13,10 @@ POST localhost:8000/auth/jwt/create/ (email,password)
 
 4.Get info about user
 GET localhost:8000/auth/users/me/ (in headers: 'JWT ey...gghghgh')
-Auth (custom)
+
+A2 Auth (custom)
+==================================================================================================
 1.delete account
-
-
-delete-account
 DELETE/POST(?) localhost:8000/api/v1/delete-account/
 user is not deleted but user.is_active = False (no access via even still valid jwt)
 
@@ -82,11 +82,13 @@ GET localhost:8000/api/v1/tags/slug/                 (list ideas for a given tag
 GET localhost:8000/api/v1/tags-name/name/            (list ideas for a given tag name)  
     
 G Search
+==========================================================================================
 Search ideas search_fields = ['title', 'lead_text', 'main_text']
-=========================================================================================================
     
 GET localhost:8000/api/v1/idea-collection/ideas/?search=yourWord
 
+H Filter
+=============================================================================================
 H.1 
 Filter based on: filterset_fields = ['featured'] #,'view_count']
 GET /api/v1/ideas-collection/ideas/?title=&categ=&featured=true&status=&author=
@@ -108,8 +110,20 @@ GET /api/v1/ideas-collection/ideas/?featured=true&limit=6&offset=0&ordering=-cre
 featured&&sort oldest on top
 GET /api/v1/ideas-collection/ideas/?featured=true&limit=6&offset=0&ordering=created_at
 
-I.
+H.3
 mix filter and ordering
 GET /api/v1/ideas-collection/ideas/?featured=true&ordering=-title
 
 GET /api/v1/ideas-collection/ideas/?featured=true&ordering=-title&limit=2&offset=2
+
+I Followers/Following
+===============================================================================================
+I.1 Get following (profile unid=> get list of users whom this person is following)
+                                              -----
+GET /api/v1/following/<unid>/
+
+I.2 Get followers (user id=> get list of followers(profiles))
+GET followers/<id>/
+
+F Idea list (ideas of people whom a given person is following)
+GET /api/v1/feed-ideas/<unid>/

@@ -29,6 +29,8 @@ export const mutationTypes = {
   NETWORK_PROBELM:'[auth] NETWORK_PROBELM',
   STATUS_500:'[auth] STATUS 500 SERVER ERROR',
   INCORRECT_PSW:'[auth] INCORRECT_PSW',
+  RESET_NETWORK_PROBELM:'[auth] RESET NETWORK_PROBELM',
+  RESET_STATUS_500:'[auth] RESET STATUS 500 SERVER ERROR',
   // delete account
   START_DELETE_ACCOUNT:'[auth] DELETE account',
   DELETE_ACCOUNT_SUCCESS:'[auth] DELETE account success',
@@ -53,7 +55,6 @@ export const getterTypes = {
   isLoggedIn:'[auth] isLoggedIn',
   isAnonymous:'[auth] isAnonymous'
 }
-
 const state ={
   // waiting for ....
   isLoading:false,
@@ -79,11 +80,11 @@ const state ={
   emailPswResetFailure:false,
   resetPswSuccess:false,
   pswResetFailure:false,
+  incorrectEmail:false,
+  errEvent:null,
+
   netWorkErr:false,
   status500:false,
-  incorrectEmail:false,
-  errEvent:null
-  
 
 }
 const getters = {
@@ -101,7 +102,6 @@ const getters = {
     return state.isLogIn === null
   }
 }
-
 const mutations = {
   [mutationTypes.CLEAR_CREDS](state){
     state.isLogIn=false
@@ -143,8 +143,7 @@ const mutations = {
   },
   [mutationTypes.SET_LOGIN_FAILURE](state){
     state.loginFailure = true
-  },  
-  
+  }, 
   [mutationTypes.SET_REFRESH_TOKEN](state,refresh){
     localStorage.setItem("refreshToken",refresh)
     state.refreshToken = refresh
@@ -162,8 +161,7 @@ const mutations = {
     state.isLoading = false,
     state.isLogIn = null,
     state.currentUser = null
-  },
-  
+  },  
   [mutationTypes.START_CONFIRM_PSW_RESET](state){
     state.isLoading = true    
   },
@@ -184,20 +182,25 @@ const mutations = {
     state.status500 = true    
     state.isLoading=false
   },
+  [mutationTypes.RESET_NETWORK_PROBELM](state){
+    state.netWorkErr = false      
+  },
+  [mutationTypes.RESET_STATUS_500](state){
+    state.status500 = false  
+    
+  },
   [mutationTypes.INCORRECT_PSW](state){
     state.incorrectEmail = true    
     state.isLoading=false
   },
   [mutationTypes.RESET_NEW_PSW_SUCCESS](state){
     state.isLoading = false
-    state.resetPswSuccess = true
-    
+    state.resetPswSuccess = true    
   },
   [mutationTypes.RESET_NEW_PSW_FAILURE](state){
     state.pswResetFailure = true    
     state.isLoading=false    
-  },
-  
+  },  
   [ mutationTypes.START_DELETE_ACCOUNT ](state){
     state.isLoading = true
   },
@@ -213,9 +216,9 @@ const mutations = {
 }
 const actions = {
     async [actionTypes.register]({commit},creds){
-        // console.log("store dispatching with creds",creds) 
-        // Sally2020#
-        const servResp = {}       
+      commit(mutationTypes.RESET_NETWORK_PROBELM)     
+      commit(mutationTypes.RESET_STATUS_500)   
+      const servResp = {}       
         try{
           const resp = await authAPI.register(creds)        
             //console.log("response is",resp) //.config,.data (f_name,l_name,email),status=201
@@ -252,7 +255,7 @@ const actions = {
             return servResp
                         
           }else if(err.response.status ===500){
-            commit(mutationTypes. STATUS_500)
+            commit(mutationTypes.STATUS_500)
             // DONE  
             servResp.status = err.response.status
             console.log("sending to vue page",servResp)
@@ -294,9 +297,11 @@ const actions = {
     })
   },
   async [actionTypes.login]({commit},creds){
-    console.log("ac types",actionTypes.login)
+    const servResp = {}
     try{
-    const resp = await authAPI.login(creds)         
+      const resp = await authAPI.login(creds) 
+        commit(mutationTypes.RESET_NETWORK_PROBELM)     
+        commit(mutationTypes.RESET_STATUS_500)   
         //console.log("got from server",resp) 
         if(resp.status ===200){   
           console.log("making mutaions in store")     
@@ -307,14 +312,28 @@ const actions = {
         console.log("passing resp to component",resp)
         console.log("calling for getUser for info")
         // call for user data (user = {id,first_name,last_name,email})
-            
+        servResp.status = resp.status
+        servResp.data = resp.data   
         return resp
     }  catch(err){
-        //console.log("store passes this error to component:",err)           
+        console.log("store passes this error to component:",err)           
         commit(mutationTypes.SET_LOGIN_FAILURE)
-        localStorage.clear()
-        //console.log("login failed and Local storage is cleaned")        
-        return err
+        if(err.response === undefined){
+          // DONE
+          console.log("chec mutaion nwp?")
+          commit(mutationTypes.NETWORK_PROBELM)
+          servResp.servDown = true  
+          return servResp         
+        }else if(err.response.status ===500){
+          commit(mutationTypes.STATUS_500)
+          // DONE  
+           return resp
+        }else{
+          localStorage.clear()
+          //console.log("login failed and Local storage is cleaned")        
+          return err
+        }        
+        
       }
     
   },  

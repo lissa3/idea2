@@ -15,7 +15,7 @@
                     <div class="row">
                         <div class="col-sm-12 mb-2">
                             <ul class="list-group list-group-horizontal ul-cls" :disabled="isAnonymous">
-                                <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="Add to favorites">
+                                <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="Follow ideas of this author">
                                     <b-icon icon="bookmark-heart-fill"></b-icon>                                   
                                 </li>                                
                                 <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="Author profile">

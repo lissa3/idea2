@@ -14,6 +14,7 @@ import IdeaDetail from '@/views/IdeaDetail'
 import IdeaCreate from '@/views/IdeaCreate'
 import IdeaEdit from '@/views/IdeaEdit'
 import IdeaFilter from '@/views/IdeaFilter'
+import PersonalFeed from '@/views/PersonalFeed'
 import CategIdeas from '@/views/CategIdeas'
 import Login from '@/views/auth/Login'
 import SignUp from "@/views/auth/SignUp";
@@ -27,6 +28,7 @@ import EditProfile from '@/views/auth/ProfileEdit'
 import DeleteAccount from '@/views/auth/DeleteAccount'
 import IdeasByTagSlug from '@/views/IdeasByTagSlug'
 import IdeasByTagName from '@/views/IdeasByTagName'
+import FollowList from '@/views/FollowList'
 import NotFound from '@/views/NotFound'
 
 Vue.use(VueRouter)
@@ -100,6 +102,11 @@ const routes = [
     component: IdeaGeneral
   },
   {
+    path: '/personal-feed/',
+    name: 'personalFeed',
+    component: PersonalFeed
+  },
+  {
     path: '/idea-detail/:slug',
     name: 'ideaDetail',
     component: IdeaDetail
@@ -154,7 +161,10 @@ const routes = [
   {
     path: '/account-profile/:unid',
     name: 'accountProfile',
-    component: AccountProfile
+    component: AccountProfile,
+    // meta:{
+    //   requiresLogin:true
+    // }
   },
   {
     path: '/profile-edit/:unid',
@@ -165,6 +175,11 @@ const routes = [
     path: '/profile-delete',
     name: 'deleteAccount',
     component: DeleteAccount
+  },
+  {
+    path: '/follow-view',
+    name: 'followList',
+    component: FollowList
   },
   {
    path: '/about',

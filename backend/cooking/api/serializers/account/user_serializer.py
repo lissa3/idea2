@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers as ser
 from djoser.serializers import UserSerializer as DjoserUserSer
-from django.db.models import Count
+# from django.db.models import Count
 User = get_user_model()
 
 class UserSerializer(DjoserUserSer):

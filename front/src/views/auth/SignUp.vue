@@ -83,7 +83,8 @@
                     v-model.trim="psw"
                     :type="showPassword ? 'text' : 'password'"
                     @blur="$v.psw.$touch()"
-                    :class="{ 'is-invalid warning': this.$v.psw.$error }"          
+                    :class="{ 'is-invalid warning': this.$v.psw.$error }"   
+                    autocomplete="off"       
                   ></b-form-input>
                 </div>
                 <div class="col-md-2  pt-1 point-it">
@@ -124,7 +125,8 @@
                 placeholder="Repeat your password, please"
                 v-model="psw2"
                 @blur="$v.psw2.$touch()"
-              :class="{ 'is-invalid warning': this.$v.psw2.$error }"         
+              :class="{ 'is-invalid warning': this.$v.psw2.$error }"  
+              autocomplete="off"        
               ></b-form-input>
 <!-- front re-psw errors    -->
               <b-form-invalid-feedback
@@ -181,12 +183,12 @@
 
 <script>
 import {actionTypes} from '@/store/modules/auth'
-
+import {mutationTypes} from '@/store/modules/auth'
 import { required,  email,  minLength,  maxLength,  sameAs,} from  "vuelidate/lib/validators";
 export default {
     name:'AppSignUp',
-     data(){
-    return {
+    data(){
+     return {
       show:true,
       email:"",
       username:"",
@@ -296,6 +298,7 @@ export default {
   },
   methods:{
       onSubmit(){
+        console.log("statrting line 303")
           this.$store.dispatch(actionTypes.register,{
               email:this.email,
               username:this.username,
@@ -344,7 +347,11 @@ export default {
       this.servResp.err500=null      
     }    
     
-  }
+  },
+  created(){
+      this.$store.commit(mutationTypes.RESET_NETWORK_PROBELM)
+      this.$store.commit(mutationTypes.RESET_STATUS_500)
+  }, 
 }
 </script>
 

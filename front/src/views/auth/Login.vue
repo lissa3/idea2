@@ -1,7 +1,21 @@
 <template>
     <div class="container">
       <div class="flash-msg"></div>
-        <div class="row mx-auto  my-5 main-login">            
+        <div class="row mx-auto  my-5 main-login"> 
+
+<!-- loader     -->
+        <div class="col-xs-12 col-md-10 py-3 text-center offset-md-1">
+            <app-loader v-if="isLoading"></app-loader>
+        </div>
+            <!-- errors          -->          
+<!-- django server is down ect-->
+            <!-- <div class="warn mb-3" v-if="error">
+              <div class="px-1">{{error}}</div>              
+            </div>   -->
+            <div class="warn mb-3" v-if="err500">
+              <div class="px-1">{{errMsg500}}</div>              
+            </div>  
+                                
             <div class="col col-md-10 col-sm-6 py-3" > 
               <b-form @submit.prevent="onSubmit"> 
 <!-- email  -->
@@ -77,6 +91,7 @@
                   </ul>
                 </div>
                 <!-- django server is down -->
+<!-- TO FIX if 1st serv down err, then user tries to loggin err msg keeps hanging-->
                 <div class="warn mb-3" v-if="netWorkErr">
                   <div class="px-1">Sorry. Our server has temporary problems.Please try to login later</div>
                 </div>
@@ -99,7 +114,7 @@
         <p class="mt-3">Forgot your password?<span><router-link :to="{name:'resetForgotPsw'}"> Reset password</router-link></span></p>    
         
            
-            </b-form> 
+         </b-form> 
         <!-- <p class="mt-3">Not registed?<span class="mute-link"><router-link :to='{name:"signup"}'>Sign Up</router-link></span>  </p>
         <p class="mt-3">Forgot yout password?<span class="mute-link"><a href="#">Here</a></span></p> -->
       </div>
@@ -111,9 +126,16 @@
 
 import {required, email}  from "vuelidate/lib/validators";
 import {actionTypes} from '@/store/modules/auth'
+import {mutationTypes} from '@/store/modules/auth'
+import {mapState} from 'vuex'
+import AppLoader from '@/components/Loader'
+
 export default {
     name:'AppLogin',
-     data(){
+    components:{
+      AppLoader
+    },
+    data(){
       return {
         user:{},
         email:'',
@@ -122,14 +144,16 @@ export default {
         emailErr:null,
         pswErr:null,
         nonFieldErr:null,
-        netWorkErr:null,
+        // netWorkErr:null,
         unAuthorized:null,
         finalErr:false,
         successMsg:'',
         // front valid 
         fieldRequired: "This field is required",
         // toggle password visiabilty
-        showPassword: false, 
+        showPassword: false,
+        // netWorkMsgErr:'A network error occured.Sorry about this - we will get it fixed shortly',      
+        errMsg500:"A server network error occured.Sorry about this - we will get it fixed shortly" 
       } 
     },
      validations: {
@@ -139,16 +163,24 @@ export default {
     computed:{
       formInValid() {
       return this.$v.$invalid;
-    },
-    pswRequired() {
-      return this.$v.psw.$dirty && !this.$v.psw.required;
-    },
-    emailRequired() {
-      return this.$v.email.$dirty && !this.$v.email.required;
-    },
-    inValidEmail() {
-      return this.$v.email.$dirty && !this.$v.email.email;
-    },
+      },
+      pswRequired() {
+        return this.$v.psw.$dirty && !this.$v.psw.required;
+      },
+      emailRequired() {
+        return this.$v.email.$dirty && !this.$v.email.required;
+      },
+      inValidEmail() {
+        return this.$v.email.$dirty && !this.$v.email.email;
+      },
+      ...mapState({            
+            // profile:state=>state.profile.data,
+            isLoading:state=>state.auth.isLoading,
+            // error:state=>state.auth.error,
+            err500:state=>state.auth.err500,
+            netWorkErr:state=>state.auth.netWorkErr
+                      
+        }),
     },
      methods:{
        onSubmit(){
@@ -157,34 +189,41 @@ export default {
          this.$store.dispatch(actionTypes.login,data)
          .then((resp)=>{  
            console.log("got resp from store:",resp)
-           if(resp.status ===200){
-             console.log("Login comp and status 200")
-           this.$store.dispatch(actionTypes.getUser)
-           .then((resp)=>{ 
-              console.log("do smth with this resp",resp)
-              if(resp){
-                console.log("status",resp.status)
-                this.successMsg = "Success in login"
-                setTimeout(()=>{
-                 this.$router.push({name:"home"})
-               },2000)
-              }             
-                                      
-             }).catch((err)=>{
-               console.log(err)
-             })            
+            if(resp.servDown){
+              console.log("serv down")
+                // already from store this.netWorkErr = 'Network Error; no response from the server'
+                alert("Sorry.Network Error.No response from the server.Try to login later");
+                
+            }else if(resp.status===500){
+              console.log("500 err")
+              // this.netWorkErr = 'status 500'
+            }else if(resp.status ===200){
+              console.log("Login comp and status 200")
+              this.$store.dispatch(actionTypes.getUser)
+              .then((resp)=>{ 
+                console.log("do smth with this resp",resp)
+                if(resp){
+                    console.log("status",resp.status)
+                    this.successMsg = "Success in login"
+                    setTimeout(()=>{
+                    this.$router.push({name:"home"})
+                  },2000)
+                }             
+                                        
+              }).catch((err)=>{
+                console.log(err)
+              })            
            }else if(resp.response.status === 401){
              // No active account found with the given credentials
              console.log(Object.keys(resp.response.data))
              this.unAuthorized = resp.response.data.detail 
+// to fix: err msg keeps hanging  
              // serv.msg: No active account found with given creds( email OK,psw incorrect or both)          
            }else if(resp.response.status === 400){
              // This field (email/psw) may not be blank (user sent empty form)
              this.emailErr=resp.response.data.email
              this.pswErr=resp.response.data.password             
-           } else{
-             this.netWorkErr = 'Network Error; no response from the server'
-           }        
+           }       
          }) 
          .catch((err)=>{   
            // user banned?        
@@ -197,7 +236,11 @@ export default {
        toggleShowPws() {
       this.showPassword = !this.showPassword;
     },
-     }  
+  },
+  created(){
+      this.$store.commit(mutationTypes.RESET_NETWORK_PROBELM)
+      this.$store.commit(mutationTypes.RESET_STATUS_500)
+  },  
 }
 </script>
 <style scoped>

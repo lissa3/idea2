@@ -108,6 +108,7 @@ class IdeaViewSet(viewsets.ModelViewSet):
         # from taggit error{"tags": ["Invalid json list. A tag list submitted in string form must be valid json."]}
 
     def create(self, request, *args, **kwargs):
+
         """ create object but before adding auth user to request.data and clean tags input before adding them to data"""
         # print("check where i am.................")
         setattr(request.data, '_mutable', True)
@@ -119,3 +120,5 @@ class IdeaViewSet(viewsets.ModelViewSet):
                 request.data['tags'] = get_json_tags(tags)
         setattr(request.data, '_mutable', False)
         return super().create(request, *args, **kwargs)
+
+   

@@ -21,9 +21,9 @@
             </div>                   
             <!-- <img  v-else alt="profile image" class="rounded-circle" src="/220px.jpg"> -->
             <h1 class="display-4">Profile: {{profile.name}}</h1>
-            <div class="d-flex justify-content-between col-md-12 p-4">
 <!-- people i'm following -->
-            <div v-if="profile.count_following"  class="d-flex flex-column">
+            <div class="d-flex justify-content-between col-md-12 p-4">
+            <div v-if="profile.count_following"  class="d-flex">
               <!-- <p> Follows:  ({{profile.count_following}}) </p> -->
               <b-button v-b-toggle.collapse-1 class="m-1  btn-light">
                 Follows {{profile.count_following}}  <b-avatar size="sm"></b-avatar>
@@ -37,6 +37,10 @@
                   
                 </b-card>
               </b-collapse>
+               <button class="btn-light m-1 rounded-corner"
+              data-toggle="tooltip" data-placement="right" title="See more">
+                  <b-icon-eyeglasses></b-icon-eyeglasses>
+              </button>  
               
             </div>
 <!-- people following me -->
@@ -63,6 +67,7 @@
                 </div>
               </ul> -->
             </div>
+<!-- end followers             -->
             <!-- <div class="d-flex  mx-auto"> -->
             <p class="mb-3 lead"><strong>Bio: </strong> {{profile.bio}}Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum itaque nam ipsa, officia fugiat maxime molestiae voluptas explicabo error, expedita autem suscipit, accusamus eligendi obcaecati corrupti culpa veniam eos nesciunt.
             </p>
@@ -149,4 +154,9 @@ export default {
 .custom-wrap{
   background-color: blanchedalmond;
 } 
+/* button to see list of "following" */
+.rounded-corner {
+  border-radius: 5px;
+  cursor: pointer;
+}
 </style>

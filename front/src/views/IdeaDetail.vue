@@ -1,6 +1,8 @@
 <template>
+
 <div class="container-fluid mt-3">
-  <section  v-if="idea" class="jumbotron text-center">
+    
+  <section  v-if="idea" class="jumbotron text-center px-2 py-2">
         <div class="container banner">
           <h1 class="jumbotron-heading">Title: {{idea.title}} </h1>
           <div >
@@ -36,13 +38,16 @@
               </router-link>
             </div>
             <template v-if="!authorIsCurrentUser">
-              <div class="follow-block">Follow</div>
+                <button type="button" class="btn btn-secondary" @click="addToFollow(idea.author)">
+                   Follow
+                </button>
+              
               <!-- <div class="favorite-block d-flex justify-content-between align-items-center"> -->
-              <div class="favorite-block d-flex">
-                <p @click="AddToFavor(idea.author)">Add to Favorite</p>
+              <div class="favorite-block d-flex">                
+                <p >Add to Favorite</p>
                 <div class="col-lg-1 col-md-1 col-sm-1">
-                  <b-icon icon="flower1"></b-icon>
-                </div>
+                  <b-icon icon="flower1"></b-icon> 
+                </div>                 
               </div>
             </template> 
             <template v-if="authorIsCurrentUser">
@@ -59,11 +64,17 @@
             </template>   
           </div>          
         </div>
-    </section>    
-    <section >
+  </section>    
+  <section >
         <div v-if="isLoading"><app-loader></app-loader></div>  
         <div v-if="error" :message="error"><app-error-msg></app-error-msg>Ms</div>  
-    </section>
+  </section>
+<!-- flash messages: following OK and Failure -->
+  <section>
+    <div v-if="addToFollowMsg" class="flash-msg px-1 py-2 mb-2 pb-4">Successfully added to Following</div>
+    <div v-if="errMsg" class="flash-msg-warning px-1 py-2 mb-2 pb-4">Sorry.Something went wrong.Try to add authore later</div>
+    
+  </section>
 <!-- body Idea -->
       <div v-if="idea" class="album py-5 ">
         <div class="container">
@@ -169,6 +180,7 @@ import AppLike from '@/components/Like'
 import AppTagsList from '@/components/TagsList'
 import {mapState,mapGetters} from 'vuex'
 import {actionTypes as singleIdeaActionType} from '@/store/modules/singleIdea'
+import {actionTypes as followActionType} from '@/store/modules/follow'
 import {getterTypes as authGetterTypes} from '@/store/modules/auth'
 
 export default {
@@ -184,7 +196,10 @@ export default {
   data(){
     return{
       makeModalVisible: false,
-      thxRating:null      
+      thxRating:null,
+      addToFollowMsg:false,
+      errMsg:false,
+      netWorkErr:false      
       // ideaLikes:0 
     }
   },
@@ -268,9 +283,30 @@ export default {
         this.$router.push({name:'ideaGeneral'})
       }).catch(err=>console.log("err from component",err))
     },
-    AddToFavor(authorId){
-      console.log("trying to followe author with id",authorId)
-      
+    addToFollow(authorId){
+      console.log("adding to following",authorId)
+      this.$store.dispatch(followActionType.addToFollowing,{authorId})
+      .then((resp)=>{
+        console.log("resp",resp)
+        if(resp.servDown){
+          setTimeout(()=>{
+          this.errMsg = false
+          },2000)
+        }else{
+          console.log("resp",resp.status)
+          this.addToFollowMsg = true
+          setTimeout(()=>{
+            this.addToFollowMsg = false
+            },4000)
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+        this.errMsg = true
+        setTimeout(()=>{
+          this.errMsg = false
+          },2000)
+      })
     }
     
   },
@@ -289,9 +325,9 @@ export default {
 </script>
 <style scoped>
 .banner{
-  height: 300px;
-  max-height: 350px;
-  background-color: burlywood;
+  height: 200px;
+  max-height: 250px;
+  background-color: #e2ede8;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -314,7 +350,19 @@ export default {
   cursor: pointer;
   padding:6px;
 }
-
+/* flash msg at the top when req OK */
+.flash-msg{
+  height: 40px;
+  background-color:#caefde;
+  text-align: center;
+  font-size: 20px;
+}
+.flash-msg-warning{
+  height: 40px;
+  background-color:#eed2c4;
+  text-align: center;
+  font-size: 20px;
+}
 /* box with stars */
 .box{
     direction:rtl;

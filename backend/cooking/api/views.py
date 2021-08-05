@@ -5,12 +5,18 @@ from django.db.models import Count
 
 from rest_framework import generics
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView,RetrieveAPIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.exceptions import APIException, PermissionDenied
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework import status
 # from rest_framework_simplejwt.tokens import RefreshToken (GOOD TO HAVE delete profile)
+
+from api.serializers.account.user_serializer import UserSerializer
+
+
+User = get_user_model()
 
 
 from taggit.models import Tag
@@ -117,7 +123,33 @@ class TagIdeasListName(generics.ListAPIView):
         else:
             return Response(status=400)            
 
-# Profile
+
+class ShowFollowingRetrView(APIView):
+    """return a list whom a given person is following (for both public AND private view)"""
+    permission_classes = (AllowAny,)
+    
+    def get(self,request,unid,format=None):
+        try:
+            profile = get_object_or_404(Profile,unid=unid)
+            users_to_follow = profile.following.all().order_by('username')
+            users = UserSerializer(users_to_follow,many=True)
+            return Response({'data':users.data},status=status.HTTP_200_OK)
+        except:
+            return Response({'error':'List not found'},status=status.HTTP_404_NOT_FOUND)
+
+class RetrieveFollowers(APIView):
+    """return a list of followers of a given person (for both public AND private view)"""
+    permission_classes = (AllowAny,)
+    
+    def get(self,request,id,format=None):
+        try:
+            user = get_object_or_404(User,id=id)
+            followers = user.followed_by.all()
+            print(followers)
+            profiles = ProfilePublicSerializer(followers,many=True)
+            return Response({'data':profiles.data},status=status.HTTP_200_OK)
+        except:
+            return Response({'error':'List followers not found'},status=status.HTTP_404_NOT_FOUND)
 
 class ProfileRetrView(generics.RetrieveAPIView):
     """return profile info for public view"""
@@ -125,19 +157,10 @@ class ProfileRetrView(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)
     
     def get_queryset(self):
-        return ( Profile.objects.annotate( count_following=Count('following')))
-    # def get_object(self):
-    #     try:            
-    #         obj = get_object_or_404(
-    #             self.queryset,
-    #             unid=self.kwargs.get('unid'),
-    #         )
-            
-    #     except Profile.DoesNotExist:            
-    #         return Response(status = status.HTTP_404_NOT_FOUND)   
-    #     return obj    
-        
-
+        print("public profile info: qs")
+        return  Profile.objects.annotate( count_following=Count('following'))
+    
+    
 class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
     """profile info for private use:
        request should be via form because of option upload profile image 
@@ -159,7 +182,7 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
             # print("req data", self.request.data)
             # print("in kwargs unid:", self.kwargs.get('unid'))
             obj = get_object_or_404(
-                self.queryset,
+                Profile,
                 unid=self.kwargs.get('unid'),
             )
             # print("profile object is ", obj)
@@ -168,7 +191,7 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
             # TODO log attempt to get to this point
             print("fighting with perms")
             raise PermissionDenied
-            # return
+            
 
         return obj
 
@@ -176,7 +199,7 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
         """let op: don't save twice to avoid err msg: file not img||corrupt"""
         partial = kwargs.pop('partial', False)
         profile = self.get_object()
-        print("server got the following data:", request.data)
+        # print("server got the following data:", request.data)
         serializer = self.get_serializer(profile, data=request.data, partial=partial)
         print("is ser-er valid?")
         if serializer.is_valid():
@@ -193,39 +216,47 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_update(serializer)
         return Response(serializer.data)
 
-
-
-class FollowAuthorView(APIView):
-    """profile for dealing with followers:
-    """
-    # serializer_class = ProfileSerializer #ProfileSerializer
+class UnFollowUser(APIView):
+    """auth-ed user can remove item from the list of following"""
     authentication_class = (IsAuthenticated,)
     permission_classes = (IsOwnerOrIsStaff,)
-    # queryset = Profile.objects.all()
 
     def post(self,request):        
         try:
             user = request.user        
-            person_to_follow_id = request.data.get('following_id')        
+            person_to_unfollow_id = request.data.get('userId')        
+            profile = get_object_or_404(Profile,id=user.id)
+            user_obj_to_unfollow = get_object_or_404(User,id=person_to_unfollow_id)
+            profile.following.remove(user_obj_to_unfollow)
+            return Response({'success':'Successfully removed user to follow'},status=status.HTTP_200_OK)
+        except:
+            return Response({'error':'User is not found'},status=status.HTTP_404_NOT_FOUND)
+
+class FollowAuthorView(APIView):
+    """auth-ed user can add to 'following' :
+    """
+    authentication_class = (IsAuthenticated,)
+    # permission_classes = (IsOwnerOrIsStaff,)
+
+    def post(self,request):   
+        print('line 241', request.data.get('authorId'))     
+        try:
+            user = request.user        
+            person_to_follow_id = request.data.get('authorId')        
             profile = get_object_or_404(Profile,id=user.id)
             user_obj_to_follow = get_object_or_404(User,id=person_to_follow_id)
             print(profile,user_obj_to_follow)
             profile.following.add(user_obj_to_follow)
-            return Response({'success':'Successfully added user to follow'},status=status.HTTP_204_NO_CONTENT)
+            return Response({'success':'Successfully added user to follow'},status=status.HTTP_200_OK)
         except:
+            print('inside except in view')
             return Response({'error':'User is not found'},status=status.HTTP_404_NOT_FOUND)   
 
-    # def put(self, request, pk):
-    # profile_obj = get_object_or_404(Profile.objects.all(), pk=pk)
-    # data = request.data.get('following_id')
-    # serializer = Profile(instance=profile, data=data, partial=True
-    # if serializer.is_valid(raise_exception=True):
-    #     profile_saved = serializer.save()
-    # return Response({"success": "Profile updated with followers")})
+    
 
 
 class UserDeleteAPIView(APIView):
-    print("inside user delete view")
+    # print("inside user delete view")
     permission_classes = (IsAuthenticated,)
     def delete(self, request,format=None):
         try:
@@ -235,9 +266,29 @@ class UserDeleteAPIView(APIView):
             user.save()
             return Response({'success':'Successfully deleted user acoount'},status=status.HTTP_204_NO_CONTENT)
         except:
-            return Response({'error':'Failed to delete user account'},status = status.HTTP_500_INTERNAL_SERVER_ERROR)   
+            return Response({'error':'Failed to delete user account'},status = status.HTTP_500_INTERNAL_SERVER_ERROR)  
 
-"""
 
-bar0 {'_state': <django.db.models.base.ModelState object at 0x7fdd9800f2b0>, 'id': 3, 'created_at': datetime.datetime(2021, 7, 30, 20, 25, 58, 229587, tzinfo=<UTC>), 'updated_at': datetime.datetime(2021, 7, 31, 19, 56, 0, 95018, tzinfo=<UTC>), 'user_id': 3, 'unid': 'TssQg', 'image': '', 'bio': '', 'website': '', 'badge_bg': '(14,158,147)', 'count_following': 2}
-"""
+class IdeasFollowing(ListAPIView):
+    """list of ideas (user is following): newest on top"""
+    serializer_class = IdeaSerializer
+    # authentication_class = (IsAuthenticated,)
+    ordering_fields = ('title', 'created_at','max_rating')
+    # default ordering
+    ordering = ('-created_at',)     
+    
+    def get_queryset(self):
+        unid = self.kwargs.get('unid')        
+        person = get_object_or_404(Profile,unid=unid)
+        person_following_list = person.following.values_list('id',flat=True)
+        qs = Idea.objects.filter(author_id__in=person_following_list)  
+       
+        return qs
+        
+   
+
+
+
+
+
+

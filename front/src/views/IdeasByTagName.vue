@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">    
         <div class="row">
-          <h3>I am a tag idea component</h3>
+          <h3>I am a tag idea by name component</h3>
           <div class="col col-md-2">
             <section class="categs-space">
               <app-categs></app-categs>            

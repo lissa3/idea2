@@ -1,6 +1,7 @@
 <template>
     <div class="container-fluid">
-      <h3 class="mb-2 text-center mt-2">This is a main idea place</h3>
+      <h3 class="mb-2 text-center mt-2">This is a main idea place</h3>      
+        
         <app-toggle-feed></app-toggle-feed>
         <div class="row py-3">
           <div class="col col-md-2 py-3">
@@ -9,11 +10,10 @@
             </section>
           </div>
           <div class="col col-md-8 py-3">
-            <app-idea :api-url="apiUrl"></app-idea>
+            <app-idea :api-url="getApiUrl"></app-idea>
           </div>
           <div class="col col-md-2 py-3">
-            <section class="tags-space">
-             
+            <section class="tags-space">             
             <app-tags></app-tags>
             </section>
           </div>
@@ -25,20 +25,28 @@ import AppCategs from '@/components/categs/Categs'
 import AppIdea from '@/components/Idea'
 import AppTags from '@/components/Tags'
 import AppToggleFeed from '@/components/ToggleFeed'
+import {mapGetters} from 'vuex'
+import {getterTypes} from '@/store/modules/auth'
 
 export default {
-    name:'AppIdeaGeneral',
+    name:'AppPersonalFeed',
     components:{
       AppCategs,
       AppIdea,
       AppTags,
-      AppToggleFeed
-        
+      AppToggleFeed        
     },
-    data(){
-      return {
-        apiUrl:'/api/v1/ideas-collection/ideas/'
-      }
+    computed:{
+         ...mapGetters({
+        currentUser:getterTypes.currentUser,
+        //isLoggedIn:getterTypes.isLoggedIn,
+        // isAnonymous:getterTypes.isAnonymous,
+        
+        }),
+        getApiUrl(){
+            return `/api/v1/feed-ideas/${this.currentUser.unid}/`
+            
+        }
     }, 
     
 }
@@ -47,5 +55,4 @@ export default {
 .row > div{
   border:1px solid black;
 }
-
 </style>

@@ -4,9 +4,7 @@
 <div>
   <b-navbar toggleable="lg" type="dark" variant="dark">
     <b-navbar-brand href="#"><b-icon-house-door></b-icon-house-door></b-navbar-brand>
-
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
         <b-nav-item href="#">
@@ -25,7 +23,7 @@
             <router-link :to="{ name: 'google' }" class="link-decor" active-class="active"
               >Login via Google</router-link>
         </b-nav-item>
-      </template>       
+      </template>    
 
       <b-nav-item href="#"><router-link :to="{ name: 'ideaGeneral' }" class="link-decor" active-class="active"
               >Ideas</router-link></b-nav-item>
@@ -60,7 +58,7 @@
             <b-dropdown-item href="#" @click="changePsw">Change Password</b-dropdown-item>
             <b-dropdown-item href="#" @click="deleteAccount" class="danger">Delete Account</b-dropdown-item>
             </b-nav-item-dropdown>  
-          </template>
+      </template>
         
         
       </b-navbar-nav>
@@ -85,10 +83,11 @@
 </div> 
 </template>
 <script>
+import {mapGetters} from 'vuex'
 import {actionTypes} from '@/store/modules/auth'
 import {actionTypes as profileActionTypes} from '@/store/modules/profile'
 import {getterTypes} from '@/store/modules/auth'
-import {mapGetters} from 'vuex'
+
 import AppDeleteAccountConfirmation from '@/components/Modal.vue'
 
 
@@ -108,10 +107,11 @@ export default {
       ...mapGetters({
         currentUser:getterTypes.currentUser,
         isLoggedIn:getterTypes.isLoggedIn,
-        isAnonymous:getterTypes.isAnonymous})
-      // currentUser(){
-      //   return this.$store.getters[getterTypes.currentUser]
-      // },    
+        isAnonymous:getterTypes.isAnonymous,
+        // foo: gT.fooProfile
+        }),
+        
+          
      
     },
     methods:{
@@ -131,16 +131,30 @@ export default {
         
       },
       showProfile(){
-        console.log("looking for profile",this.currentUser.unid)
-        const unid = this.currentUser.unid
-        console.log("str url",profileActionTypes.showPersonalInfo)
-        this.$store.dispatch(profileActionTypes.showPersonalInfo,unid)
+        //  console.log("looking for profile",this.currentUser.unid)
+         const unid = this.currentUser.unid
+         console.log(this.$store.state.profile.myprofile)
+         this.$store.dispatch(actionTypes.getUser)
+         this.$store.dispatch(profileActionTypes.showPersonalInfo,unid)
         .then((resp)=>{
           if(resp.status===200){
+            console.log("from store status 200?",resp.status)
+            this.$router.push({name:'accountProfile',params:{unid}})
+          }else if(resp.status===401){
+            this.$router.push({name:'login'})
+          }else if(resp.status===500){
+            alert("err 500 from Menu")
+            
+          }else{
+            console.log("gor from store: status",resp.status)
+            console.log("pushing to account Profile")
             this.$router.push({name:'accountProfile',params:{unid}})
           }
         })          
-        .catch(err=>console.log(err))
+        .catch((err)=>{
+          console.log(err.servDown)
+          this.$router.push({name:'accountProfile',params:{unid}})
+        })
       },
       deleteAccount(){
         console.log("user wants to delete his account")        
