@@ -4,6 +4,7 @@ import auth from '@/store/modules/auth'
 import profile from '@/store/modules/profile'
 import categs from '@/store/modules/categs'
 import categsForForm from '@/store/modules/categForm'
+import comments from '@/store/modules/comments'
 import ideas from '@/store/modules/ideas'
 import idea from '@/store/modules/singleIdea'
 import ideaCreative from '@/store/modules/ideaCreative'
@@ -25,6 +26,7 @@ export default new Vuex.Store({
     auth,
     categs,
     categsForForm,
+    comments,
     idea,
     ideas,
     ideaCreative,

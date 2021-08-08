@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from rest_framework.urlpatterns import format_suffix_patterns
+# from rest_framework.urlpatterns import format_suffix_patterns
 
 from api.views import (
                     CatListIdeaForm,CategoryList,
@@ -8,21 +8,24 @@ from api.views import (
                     IdeasPerCategListView,IdeasPerCategListView,IdeasFollowing,
                     TagList, TagIdeasListSlug, TagIdeasListName, 
                     UserDeleteAPIView, ShowFollowingRetrView,
-                    RetrieveFollowers,UnFollowUser,FollowAuthorView                            
+                    RetrieveFollowers,UnFollowUser,FollowAuthorView,
+                                           
                     #FollowAuthorView
                     )
+from api.comment_views import CommentAPIView,CommentListView                    
 from api.viewsets import IdeaViewSet, IdeaRelations
 
 router = routers.DefaultRouter()
 
 router.register(r'relations', IdeaRelations) #,basename='useridearelation')
 router.register(r'ideas', IdeaViewSet, basename="idea")
+router.register(r'comments', CommentAPIView, basename='comment')
 
 urlpatterns = [
     path('categories/', CategoryList.as_view(), name='category-list'),
     path('categories-create-idea/', CatListIdeaForm.as_view(), name='category-create-idea'),
     path('cats/<slug>/', IdeasPerCategListView.as_view(), name="cat-per-idea"),
-    path('ideas-collection/', include(router.urls)),
+    path('ideas-collection/', include(router.urls)),# ideas,relations,comments
     path('feed-ideas/<unid>/',IdeasFollowing.as_view(),name='user-following-ideas'),
     # private api for profile,userinfo (profile + user)
     path('profile-owner/<unid>/', ProfileRetrUpdateDestrView.as_view(), name="profile-owner"),
@@ -39,6 +42,10 @@ urlpatterns = [
     path('following/<unid>/',ShowFollowingRetrView.as_view(),name='show-following'),
     path('followers/<id>/',RetrieveFollowers.as_view(),name='show-followers'), # add follow
     path('unfollow/',UnFollowUser.as_view(),name='unfollow-user'),
-    path('add-following/',FollowAuthorView.as_view(),name='add-to-following')
+    path('add-following/',FollowAuthorView.as_view(),name='add-to-following'),
+    # fetch all comments
+    path('idea/comments/<slug>',CommentListView.as_view(),name='fetch-comments')
+    
+    
 ]
 

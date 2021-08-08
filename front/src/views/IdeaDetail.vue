@@ -1,7 +1,6 @@
 <template>
 
 <div class="container-fluid mt-3">
-    
   <section  v-if="idea" class="jumbotron text-center px-2 py-2">
         <div class="container banner">
           <h1 class="jumbotron-heading">Title: {{idea.title}} </h1>
@@ -76,7 +75,7 @@
     
   </section>
 <!-- body Idea -->
-      <div v-if="idea" class="album py-5 ">
+      <div v-if="idea" class="album py-2 ">
         <div class="container">
           <div class="row idea-container">
             <div class="col-xs-12">
@@ -136,23 +135,79 @@
                     </div>
                   </div>
                   <div class="d-flex justify-content-between align-items-center px-3 mb-3">
-                    <!-- <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div> -->
                       <app-like 
                         :idea-id="idea.id" 
                         :idea-likes="idea.an_likes"
                         :is-anonym="isAnonym"                                            
                         >
                       </app-like>
+                      <div>  
+                        <div v-if="idea.users_comments>0">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" @click="fetchComments(idea.slug)">
+                          Show Comments ({{idea.users_comments}})
+                        </button>    
+                        </div>  
+                        <p v-else>                 
+                          No comments yet
+                        </p>                          
+                      </div>                     
                     <small class="text-muted">9 mins</small>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center px-3 mb-3">
+                    <div class="">
+                      <button type="button" class="btn btn-sm btn-success" @click="showCommentForm">
+                        Leave a comment
+                      </button>                      
+                    </div>                  
                   </div>
                 </div>
               </div>
             </div>            
         </div>
       </div>
+<!-- start comment  form-->
+        <div class="mb-5"  :class="startComment?'show-comment-form':'comment-form-invisible'">
+          <form @submit.prevent="addComment">  
+            <div class="form-group">
+              <label for="body">Leave you comment here, please</label>
+                <textarea id="body" 
+                cols="30" rows="5"
+                v-model="commentBody"
+                placeholder="Remember, be nice"></textarea>
+            </div>           
+            <input type="submit" class="">
+          </form>
+        </div>
+<!-- end comment form -->
+<!-- section render all comments users_comments-->
+<div class="" v-if="treeDataComments">
+  <div class="py-3" v-for="node in treeDataComments" :key="node.id">
+    <div v-if="node.children&&node.children.length" class="left-shift">
+      <!-- AppComNodeTree -->
+      <node-tree      
+      :body="node.body"
+      :children="node.children"
+      :depth="0" 
+      :author="node.author_comment" 
+      :created="node.created_at"
+      :updated="node.updated_at"
+      :reply-to-id="node.reply_to_id"
+      :idea-id="node.idea_id"
+      
+      :user-id="node.user_id"
+
+     ></node-tree>
+    </div>    
+    <div v-else class="left-shift">
+     <div class="">
+        <p><strong>Written by: {{node.author_comment}}</strong></p>
+        <p>Comment without children: {{node.body}}...</p>
+      </div>      
+    </div>
+    
+    
+  </div>
+</div>
 <!-- Modal component should be at the bottom: otherwise possible issues with z-index and position fixed of the parent component -->
     <app-delete-idea-confirmation @close="close" v-if="makeModalVisible">
       <template v-slot:header>
@@ -178,10 +233,12 @@ import AppDeleteIdeaConfirmation from '@/components/Modal.vue'
 import AppRatingShow from '@/components/RatingShow'
 import AppLike from '@/components/Like'
 import AppTagsList from '@/components/TagsList'
+import NodeTree from '@/views/NodeTree'
 import {mapState,mapGetters} from 'vuex'
-import {actionTypes as singleIdeaActionType} from '@/store/modules/singleIdea'
-import {actionTypes as followActionType} from '@/store/modules/follow'
 import {getterTypes as authGetterTypes} from '@/store/modules/auth'
+import {actionTypes as commentActionType} from '@/store/modules/comments'
+import {actionTypes as followActionType} from '@/store/modules/follow'
+import {actionTypes as singleIdeaActionType} from '@/store/modules/singleIdea'
 
 export default {
   name: 'AppIdeaDetail',
@@ -191,7 +248,8 @@ export default {
     AppDeleteIdeaConfirmation,
     AppTagsList,
     AppLike,
-    AppRatingShow
+    AppRatingShow,
+    NodeTree
   },
   data(){
     return{
@@ -199,15 +257,22 @@ export default {
       thxRating:null,
       addToFollowMsg:false,
       errMsg:false,
-      netWorkErr:false      
-      // ideaLikes:0 
+      netWorkErr:false,      
+      // comment form (idea in mapState)
+      startComment:false,
+      commentBody:"",
+      
+
     }
   },
   computed:{            
         ...mapState({            
             isLoading:state=>state.idea.isLoading,
             idea:state=>state.idea.data,
-            error:state=>state.idea.error
+            error:state=>state.idea.error,
+            treeDataComments:state=>state.comments.data,
+            commentsErr:state=>state.comments.error,
+            commentsisLoading:state=>state.comments.isLoading
         }),
         ...mapGetters({
           currentUser:authGetterTypes.currentUser,
@@ -215,7 +280,7 @@ export default {
           isAnonym:authGetterTypes.isAnonymous
         }),
         authorIsCurrentUser(){
-          // async req with unknown data (anonymous/user/user=== idea author)
+          // button "Follow" will be displayed for all auth-ed users besides idea's author self          
           if(!this.currentUser||!this.idea.author){
             return false}
           console.log("calc if current user is the author")  
@@ -223,8 +288,7 @@ export default {
         },
         showLike(){
           return this.ideaLikes
-        },
-               
+        },               
         
   },
   created(){
@@ -238,7 +302,7 @@ export default {
         // console.log("component calling; resp",resp)
         // console.log("with keys",Object.keys(resp))
         if(resp.status ===200){
-          console.log("OK 200")
+          // console.log("OK 200")
           // this.ideaObj = resp.data
         }else if(resp.status ===404){
           console.log("404 not found")
@@ -307,7 +371,38 @@ export default {
           this.errMsg = false
           },2000)
       })
+    },
+    showCommentForm(){
+      console.log("sending comment to ... from ..")
+      this.startComment = !this.startComment
+    },
+    addComment(){
+      console.log("adding comment...")
+      let commentBody = this.commentBody
+      // let user = this.currentUser
+      let ideaId = this.idea.id
+      let commentData = {
+        body: commentBody,
+        // user: user,
+        idea:ideaId,
+        parent:null,
+        }
+        console.log("data",commentData)
+        this.$store.dispatch(commentActionType.sendRootComm,{commentData})
+        .then((resp)=>{
+          console.log("resp",resp)
+        })
+        .catch(err=>console.log(err))
+    },
+    fetchComments(ideaSlug){
+      console.log("fetching comments",ideaSlug)
+      this.$store.dispatch(commentActionType.fetchCommentList,ideaSlug)
+      .then((resp)=>{
+        console.log(resp.status)
+      })
+      .catch(err=>console.log(err))
     }
+   
     
   },
   filters: {
@@ -318,7 +413,8 @@ export default {
       return `
           ${initialDate.getDate()}.${
         initialDate.getMonth() + 1
-      }.${initialDate.getFullYear()}-${initialDate.getHours()}:${initialDate.getMinutes()} UTC ${initialDate.getUTCHours()}:${initialDate.getMinutes()}`;
+      }.${initialDate.getFullYear()} at ${initialDate.getHours()} h :${initialDate.getMinutes()} min
+      (Universal Time: ${initialDate.getUTCHours()} h ${initialDate.getMinutes()} min)`;
     },
     }    
 }
@@ -394,5 +490,73 @@ export default {
 
 .thanks{
   background-color: rgb(229, 205, 173);
+}
+/* comment form  */
+.comment-form-invisible{
+  display: none;
+}
+.show-comment-form{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  min-height: 100px;
+  max-width: 100%;
+  padding: 0.5rem 1rem;
+  border:1px solid black;
+}
+/* comment button */
+input[type=submit] {
+  background-color: #e2cca8;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+input[type=submit]:hover {
+  background-color: #d1860c;
+}
+input[type=text],  textarea {
+  width: 100%; 
+  padding: 12px; 
+  border: 1px solid #ccc;
+  border-radius: 4px; 
+  box-sizing: border-box;
+  margin-top: 6px; 
+  margin-bottom: 16px; 
+  resize: vertical;
+  outline:none;
+  /* for scroll-bar in IE */
+  overflow: auto;
+  
+}
+/* textarea focus {background-color:#000;color:#FFF;} */
+/* comments to display */
+/* .comment-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding:0.5rem;
+  border:1px solid black;
+  background-color: cornsilk;
+} */
+.comment-body{
+  border:1px solid black;
+  border-radius: 3px; 
+
+}
+.left-shift {
+  text-align: left;
+  padding: 0.2rem 0 0.5rem 0.5rem;
+  margin-left: 1rem;
+  /* margin-left: 0.5rem; */
+  cursor: pointer;
+}
+/* temp for recurs */
+.roze{
+  background-color: cornsilk;
+}
+.groen{
+  background-color: darkcyan;
 }
 </style>

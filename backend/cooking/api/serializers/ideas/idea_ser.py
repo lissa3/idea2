@@ -30,9 +30,13 @@ class IdeaSerializer(TaggitSerializer, ser.ModelSerializer):
     # ERROR: nexpected keyword argument 'allowed_extentions
     # thumbnail = ser.ImageField(validators=[validate_size], allowed_extentions=[
     #                            'jpeg', 'jpg', 'png'], required=False, allow_null=True)
-    tags = TagListSerializerField(required=False)    
+    tags = TagListSerializerField(required=False) 
+    users_comments = ser.SerializerMethodField()
     class Meta:
         model = Idea
         fields = ('id', 'title', 'author', 'lead_text', 'main_text', 'slug',
-                  'owner_idea','author_unid','categ_name', 'categ', 'created_at', 'status', 'thumbnail', 'an_likes', 'avg_rate', 'featured', 'tags','max_rating')
-        
+                  'owner_idea','author_unid','categ_name', 'categ', 'created_at', 'status', 'thumbnail', 'an_likes', 'avg_rate', 'featured', 'tags','max_rating','users_comments')
+
+    def get_users_comments(self,obj):
+        # temp solution ( till postgres overstap)
+        return  obj.comments.count()   
