@@ -1,7 +1,7 @@
 <template>
 
 <div class="container-fluid mt-3">
-  <section  v-if="idea" class="jumbotron text-center px-2 py-2">
+    <section  v-if="idea" class="jumbotron text-center px-2 py-2">
         <div class="container banner">
           <h1 class="jumbotron-heading">Title: {{idea.title}} </h1>
           <div >
@@ -63,19 +63,19 @@
             </template>   
           </div>          
         </div>
-  </section>    
-  <section >
-        <div v-if="isLoading"><app-loader></app-loader></div>  
-        <div v-if="error" :message="error"><app-error-msg></app-error-msg>Ms</div>  
-  </section>
+      </section>    
+      <section >
+    <div v-if="isLoading"><app-loader></app-loader></div>  
+    <div v-if="error" :message="error"><app-error-msg></app-error-msg>Ms</div>  
+    </section>
 <!-- flash messages: following OK and Failure -->
-  <section>
+    <section>
     <div v-if="addToFollowMsg" class="flash-msg px-1 py-2 mb-2 pb-4">Successfully added to Following</div>
     <div v-if="errMsg" class="flash-msg-warning px-1 py-2 mb-2 pb-4">Sorry.Something went wrong.Try to add authore later</div>
     
-  </section>
+    </section>
 <!-- body Idea -->
-      <div v-if="idea" class="album py-2 ">
+    <div v-if="idea" class="py-2 ">
         <div class="container">
           <div class="row idea-container">
             <div class="col-xs-12">
@@ -164,9 +164,9 @@
               </div>
             </div>            
         </div>
-      </div>
+    </div>
 <!-- start comment  form-->
-        <div class="mb-5"  :class="startComment?'show-comment-form':'comment-form-invisible'">
+    <div class="mb-5"  :class="startComment?'show-comment-form':'comment-form-invisible'">
           <form @submit.prevent="addComment">  
             <div class="form-group">
               <label for="body">Leave you comment here, please</label>
@@ -177,35 +177,62 @@
             </div>           
             <input type="submit" class="">
           </form>
-        </div>
+    </div>
 <!-- end comment form -->
 <!-- section render all comments users_comments-->
-<div class="" v-if="treeDataComments">
-  <div class="py-3" v-for="node in treeDataComments" :key="node.id">
+<div class="row" v-if="treeDataComments">
+  <div class="col-md-11 py-3" v-for="node in treeDataComments" :key="node.id">
     <div v-if="node.children&&node.children.length" class="left-shift">
       <!-- AppComNodeTree -->
-      <node-tree      
-      :body="node.body"
-      :children="node.children"
-      :depth="0" 
-      :author="node.author_comment" 
-      :created="node.created_at"
-      :updated="node.updated_at"
-      :reply-to-id="node.reply_to_id"
-      :idea-id="node.idea_id"
-      
-      :user-id="node.user_id"
-
-     ></node-tree>
+      <div v-if=currentUser>
+          <app-node-tree      
+          :body="node.body"
+          :children="node.children"
+          :depth="0" 
+          :author="node.author_comment" 
+          :created="node.created_at"
+          :updated="node.updated_at"
+          :reply-to-id="node.reply_to_id"
+          :idea-id="node.idea_id"      
+          :user-id="node.user_id"
+          :current-user-id="currentUser.id"
+        ></app-node-tree>
+      </div>
+      <div v-else>
+          <app-node-tree      
+          :body="node.body"
+          :children="node.children"
+          :depth="0" 
+          :author="node.author_comment" 
+          :created="node.created_at"
+          :updated="node.updated_at"
+          :reply-to-id="node.reply_to_id"
+          :idea-id="node.idea_id"      
+          :user-id="node.user_id"          
+        ></app-node-tree>
+      </div>
     </div>    
     <div v-else class="left-shift">
-     <div class="">
-        <p><strong>Written by: {{node.author_comment}}</strong></p>
-        <p>Comment without children: {{node.body}}...</p>
-      </div>      
-    </div>
-    
-    
+     <div class="label-wrapper">
+        <div class="row">
+          <div v-if="node.body"> 
+            <div class=" col-md-6 d-flex  justify-content-left">       
+                <p class="pl-1">Written by:</p>                
+                <p class="pl-1 mr-2"><strong>{{node.author_comment}}</strong></p>
+                <template v-if="currentUser&&currentUser.id==node.user_id">
+                  <div class="pl-1 ml-4"><b-icon-pencil></b-icon-pencil></div>
+                  <div class="pl-1 ml-4"><b-icon-trash></b-icon-trash></div>
+                </template>
+            </div> 
+            <div class="col-md-6 px-1 text-right">Date <strong>{{node.created_at|filterDateTime}}</strong></div>
+            <p class="px-1"><strong>Msg:</strong> {{node.body}}</p>         
+        </div>       
+        <div v-else>
+          <div class="px-2 py-2 comm-deleted">Note is deleted</div>         
+        </div>
+        </div>      
+    </div> 
+    </div>  
   </div>
 </div>
 <!-- Modal component should be at the bottom: otherwise possible issues with z-index and position fixed of the parent component -->
@@ -233,7 +260,7 @@ import AppDeleteIdeaConfirmation from '@/components/Modal.vue'
 import AppRatingShow from '@/components/RatingShow'
 import AppLike from '@/components/Like'
 import AppTagsList from '@/components/TagsList'
-import NodeTree from '@/views/NodeTree'
+import AppNodeTree from '@/components/comments/NodeTree'
 import {mapState,mapGetters} from 'vuex'
 import {getterTypes as authGetterTypes} from '@/store/modules/auth'
 import {actionTypes as commentActionType} from '@/store/modules/comments'
@@ -249,7 +276,7 @@ export default {
     AppTagsList,
     AppLike,
     AppRatingShow,
-    NodeTree
+    AppNodeTree
   },
   data(){
     return{
@@ -283,12 +310,13 @@ export default {
           // button "Follow" will be displayed for all auth-ed users besides idea's author self          
           if(!this.currentUser||!this.idea.author){
             return false}
-          console.log("calc if current user is the author")  
+          // console.log("calc if current user is the author")  
           return this.currentUser.id === this.idea.author          
         },
         showLike(){
           return this.ideaLikes
-        },               
+        }, 
+                 
         
   },
   created(){
@@ -532,18 +560,10 @@ input[type=text],  textarea {
 }
 /* textarea focus {background-color:#000;color:#FFF;} */
 /* comments to display */
-/* .comment-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding:0.5rem;
-  border:1px solid black;
-  background-color: cornsilk;
-} */
+
 .comment-body{
   border:1px solid black;
   border-radius: 3px; 
-
 }
 .left-shift {
   text-align: left;
@@ -552,11 +572,16 @@ input[type=text],  textarea {
   /* margin-left: 0.5rem; */
   cursor: pointer;
 }
-/* temp for recurs */
-.roze{
-  background-color: cornsilk;
+.label-wrapper {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
 }
-.groen{
-  background-color: darkcyan;
+.comm-deleted{
+  background-color:#faf3f4f7;
+  border-radius: 3px;
+  
+  max-width: 100%;
 }
 </style>
