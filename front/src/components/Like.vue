@@ -1,28 +1,23 @@
 <template>
-
-<div class="list-group list-group-horizontal">
-    <div :class="{'btn':true,'btn-sm':true,
-                'disabled':isAnonym, 
-                'btn-outline-secondary':likeToToggle,
-                'btn-outline-success':!likeToToggle}"
-         @click="doLike" :disabled="isAnonym">
-        <div class="click-like">
-          <div class="px-1 ">Like &nbsp; <b-icon-heart-fill></b-icon-heart-fill><span class="px-1"></span></div>
-
+    <div class="list-group list-group-horizontal">
+        <div :class="{'btn':true,'btn-sm':true,
+                    'disabled':isAnonym, 
+                    'btn-outline-secondary':likeToToggle,
+                    'btn-outline-success':!likeToToggle}"
+            @click="doLike" :disabled="isAnonym">
+            <div class="click-like">
+            <div class="px-1 ">Like &nbsp; <b-icon-heart-fill></b-icon-heart-fill><span class="px-1"></span></div>
+            </div>
         </div>
-    </div>
-    <div class="px-2 zoo">
-            <span class="px-1" v-if="likeStatus===null">{{ideaLikes}}</span>
-            <span class="px-1" v-else>{{newLikeVal}}</span>
-            
-    </div> 
-    <p v-if="needAuthMsg" class="warning">msg: {{needAuthMsg}}</p>
-    
-   
-        
-    
-</div>
+        <div class="px-2 zoo">
+                <span class="px-1" v-if="likeStatus===null">{{ideaLikes}}</span>
+                <span class="px-1" v-else>{{newLikeVal}}</span>            
+        </div> 
+        <p v-if="needAuthMsg" class="warning">msg: {{needAuthMsg}}</p>  
+        </div>
 </template>
+   
+    
 
 <script>
 import {actionTypes} from '@/store/modules/singleIdea'

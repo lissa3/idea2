@@ -1,10 +1,12 @@
 from datetime import date
 from django.contrib import admin
-from .models import Category
+from django.utils.safestring import mark_safe
+
 from mptt.admin import MPTTModelAdmin
 from mptt.admin import TreeRelatedFieldListFilter
 
 
+from .models import Category
 from .models import Idea, Category, UserIdeaRelation
 
 # mptt_level_indent = 20 on settings.py
@@ -54,7 +56,8 @@ class IdeaAdmin(admin.ModelAdmin):
     search_fields = ('title', 'lead_text', 'main_text', 'categ', 'featured')
     list_filter = ('created_at', 'is_public', 'featured', 'tags',
                    ('categ', TreeRelatedFieldListFilter), YearIdeaFilter)
-    list_display = ['id', 'title', 'thumbnail', 'author', 'status', 'is_public', 'created_at', 'featured']
+    list_display = ['id', 'title', 'thumbnail', 'author', 'status', 'is_public', 'created_at', 'featured',
+                    'image_show']
     list_editable = ['status', 'featured']
     list_display_links = ['id', 'title']
     fieldsets = (
@@ -75,6 +78,15 @@ class IdeaAdmin(admin.ModelAdmin):
     # categ = built-in drop-down with indentaion
     actions = [make_published]
 
+
+    def image_show(self, obj):
+        if obj.thumbnail:
+            return mark_safe("<img src='{}' width='60' />".format(obj.thumbnail.url))
+        return "None"
+    
+
+    image_show.__name__ = "Picure idea"
+    
 
 class UserIdeaRelationAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'idea', 'like', 'rating')

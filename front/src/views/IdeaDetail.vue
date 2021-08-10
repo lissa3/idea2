@@ -215,16 +215,20 @@
     <div v-else class="left-shift">
      <div class="label-wrapper">
         <div class="row">
-          <div v-if="node.body"> 
-            <div class=" col-md-6 d-flex  justify-content-left">       
-                <p class="pl-1">Written by:</p>                
-                <p class="pl-1 mr-2"><strong>{{node.author_comment}}</strong></p>
-                <template v-if="currentUser&&currentUser.id==node.user_id">
-                  <div class="pl-1 ml-4"><b-icon-pencil></b-icon-pencil></div>
-                  <div class="pl-1 ml-4"><b-icon-trash></b-icon-trash></div>
-                </template>
-            </div> 
-            <div class="col-md-6 px-1 text-right">Date <strong>{{node.created_at|filterDateTime}}</strong></div>
+          <div v-if="node.body" class="col-md-12"> 
+            <div class="row">              
+              <div class=" col-md-6 d-flex  justify-content-left">       
+                  <p class="pl-1">Written by:</p>                
+                  <p class="pl-1 mr-2"><strong>{{node.author_comment}}</strong></p>
+                  <template v-if="currentUser&&currentUser.id==node.user_id">
+                    <div class="pl-1 ml-4"><b-icon-pencil></b-icon-pencil></div>
+                    <div class="pl-1 ml-4"><b-icon-trash></b-icon-trash></div>
+                  </template>
+              </div> 
+              <div class="col-md-6 px-1 text-right">Date <strong>{{node.created_at|filterDateTime}}</strong>
+              </div>
+            </div>
+
             <p class="px-1"><strong>Msg:</strong> {{node.body}}</p>         
         </div>       
         <div v-else>
@@ -266,7 +270,7 @@ import {getterTypes as authGetterTypes} from '@/store/modules/auth'
 import {actionTypes as commentActionType} from '@/store/modules/comments'
 import {actionTypes as followActionType} from '@/store/modules/follow'
 import {actionTypes as singleIdeaActionType} from '@/store/modules/singleIdea'
-
+// import axios from '@/api/axios'
 export default {
   name: 'AppIdeaDetail',
   components:{
@@ -287,7 +291,9 @@ export default {
       netWorkErr:false,      
       // comment form (idea in mapState)
       startComment:false,
-      commentBody:"",
+      commentBody:null,
+      //comment err
+      
       
 
     }
@@ -407,20 +413,28 @@ export default {
     addComment(){
       console.log("adding comment...")
       let commentBody = this.commentBody
-      // let user = this.currentUser
       let ideaId = this.idea.id
       let commentData = {
         body: commentBody,
-        // user: user,
         idea:ideaId,
         parent:null,
         }
-        console.log("data",commentData)
-        this.$store.dispatch(commentActionType.sendRootComm,{commentData})
+        console.log("data to store to dispatch",commentData)
+        this.$store.dispatch(commentActionType.sendRootComm,commentData)
         .then((resp)=>{
-          console.log("resp",resp)
+          console.log("resp",resp.status)
+          if(resp.servDown){
+            this.netWorkErr = true
+          }else if(resp.status===201){
+            // if comment successfully created: hide comment form and clear comment body
+            this.startComment = false
+            this.commentBody = null
+            // does not work this.$router.push({name:'ideaDetail',params:{slug:this.idea.slug}})
+          }else if(resp.status===500){
+            this.errMsg = true
+          }
         })
-        .catch(err=>console.log(err))
+        .catch(err=>console.log('final error',err))
     },
     fetchComments(ideaSlug){
       console.log("fetching comments",ideaSlug)
@@ -429,8 +443,7 @@ export default {
         console.log(resp.status)
       })
       .catch(err=>console.log(err))
-    }
-   
+    }  
     
   },
   filters: {

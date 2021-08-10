@@ -48,7 +48,7 @@ class IdeaRelations(RetrieveModelMixin,UpdateModelMixin,viewsets.GenericViewSet)
         # print("user is", self.request.user)
         # print("idea", self.kwargs.get('idea'))
         obj, _ = UserIdeaRelation.objects.get_or_create(idea_id=self.kwargs['idea'], user=self.request.user)
-        print("object created or updated", obj)
+        # print("object created or updated", obj)
         return obj
          
 
@@ -78,8 +78,14 @@ class IdeaViewSet(viewsets.ModelViewSet):
         queryset = Idea.objects.annotate(
             an_likes=Count(Case(When(useridearelation__like=True, then=1))),
             avg_rate=Avg('useridearelation__rating'),
-            max_rating=Max('useridearelation__rating')
+            max_rating=Max('useridearelation__rating')           
             )
+        # queryset = Idea.objects.annotate(
+        #     an_likes=Count(Case(When(useridearelation__like=True, then=1))),
+        #     avg_rate=Avg('useridearelation__rating'),
+        #     max_rating=Max('useridearelation__rating'),
+        #     users_comments=Count('comments')
+        #     ).distinct('users_comments')
         # print("qs",queryset)    
         return queryset    
     def update(self, request, *args, **kwargs):
@@ -120,5 +126,8 @@ class IdeaViewSet(viewsets.ModelViewSet):
                 request.data['tags'] = get_json_tags(tags)
         setattr(request.data, '_mutable', False)
         return super().create(request, *args, **kwargs)
+    # def _allowed_methods(self):
+    #     print([m.upper() for m in self.http_method_names if hasattr(self, m)])
+    #     return [m.upper() for m in self.http_method_names if hasattr(self, m)]     
 
    

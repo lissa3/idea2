@@ -29,20 +29,27 @@ class CommentAPIView(CreateModelMixin,DestroyModelMixin,RetrieveModelMixin, Upda
     authentication_class = (IsAuthenticated,)
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
+    print("inside drf view")
 
     def perform_create(self, serializer):
-        # print("req:",self.request.data)
+        print("self is",self)
+        print("self.data",self.request.data)
+        print("line 35 inside perform create",self.request.data)
+        user = self.request.user
+        print("line 35",user)
+        print("req:",self.request.data)
         # {'body': 'Greet', 'idea': 7, 'parent': None}
         idea = get_object_or_404(Idea,id=self.request.data['idea'])
+        # print("line 37",idea)
         serializer.save(user=self.request.user,idea=idea)
 
     def perform_destroy(self, instance):
         instance.deleted = True
         instance.save()
 
-    def _allowed_methods(self):
-        print([m.upper() for m in self.http_method_names if hasattr(self, m)])
-        return [m.upper() for m in self.http_method_names if hasattr(self, m)]    
+    # def _allowed_methods(self):
+    #     print([m.upper() for m in self.http_method_names if hasattr(self, m)])
+    #     return [m.upper() for m in self.http_method_names if hasattr(self, m)]    
 
 class CommentListView(ListAPIView):
     """ get list of comments"""
@@ -59,6 +66,8 @@ class CommentListView(ListAPIView):
         idea_slug = self.kwargs.get('slug')
         idea = get_object_or_404(Idea, slug=idea_slug)
         queryset = Comment.objects.filter(idea=idea)
-        print("length qs is", queryset.count())
-        # queryset = Comment.objects.get_descendants(Comment.objects.filter(idea=idea),include_self=True).select_related('user', 'parent', 'idea')
+        
+        # print("length qs is", queryset.count())
+        # ? for each obj Comment.objects.get_descendants(Comment.objects.filter(idea=idea),include_self=True).select_related('user', 'parent', 'idea')
+        
         return queryset

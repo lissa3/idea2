@@ -59,7 +59,7 @@ class CategoryList(generics.ListAPIView):
         # print("view for cats works with qs:", Category.objects.all())
         print("about categs line 60")
         queryset = Category.objects.all()
-        print(type(Category.objects.all()))        
+        # print(type(Category.objects.all()))        
         return queryset
 #       # return queryset.get_cached_trees()
 

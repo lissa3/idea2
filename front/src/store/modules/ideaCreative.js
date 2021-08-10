@@ -77,7 +77,7 @@ const actions = {
                 servResp.servDown = true  
                 return servResp
             }else if(err.response.status === 500) {
-                commit(mutationTypes. STATUS_500)
+                commit(mutationTypes.STATUS_500)
                 // DONE  
                 servResp.status = err.response.status
                 console.log("500 error gets sent to vue page",servResp)

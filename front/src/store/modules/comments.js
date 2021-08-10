@@ -14,12 +14,20 @@ export const mutationTypes = {
     LOADING_COMMENTS_START:'[comm] Load comments start',
     FETCH_COMMENTS_SUCCESS:'[comm] Fetch comments success',
     FETCH_COMMENTS_FAILURE:'[comm] Fetch comments failure',
+
+    NETWORK_PROBELM:'[Comment] NETWORK_PROBELM',
+    STATUS_500:'[Comment] STATUS 500 SERVER ERROR',
     
 }
 const state ={
     isLoading:false,
     data:null,
-    error:null
+    error:null,
+    servErrs:{
+        status:null,       
+        netWorkErr:null,
+        status500:null
+      },
 
 }  
 
@@ -46,20 +54,42 @@ const mutations = {
     [mutationTypes.FETCH_COMMENTS_FAILURE](state,error){
         state.isLoading = false
         state.error = error
-
-    }
+    },
+    [mutationTypes.NETWORK_PROBELM](state){
+        state.netWorkErr = true  
+        state.servErrs.netWorkErr=true 
+    },
+    [mutationTypes.STATUS_500](state){
+        state.err500 = true  
+        state.servErrs.status500=true  
+    },    
 }
 const actions = {
     async [actionTypes.sendRootComm]({commit},commentData){ 
-        console.log(actionTypes.sendRootComm)
+        const serResp = {}
         commit(mutationTypes.LOADING_COMMENT_FORM);  
-        try{
-          // commit(mutationTypes.GET_CURRENT_USER_START)   
-        //   console.log("trying to fetch cats")
+        try{          
         const resp= await getCommentAPI.sendRootComment(commentData) 
-        console.log("resp",resp)
+        commit(mutationTypes.SEND_COMMENT_SUCCESS)
+        serResp.status = 201
+        return serResp
+        
         }catch(err){
-            console.log(err)
+            commit(mutationTypes.SEND_COMMENT_FAILURE,err)
+            if(err.response ===undefined){
+                commit(mutationTypes.NETWORK_PROBELM)
+                servResp.servDown = true  
+                return servResp  
+            }else if(err.response.status===500){
+                commit(mutationTypes.STATUS_500)
+                serResp.status =err.response.status
+                return serResp
+            }else{
+                serResp.status=err.response.status
+                servResp.body=err.response.body
+                return servResp
+            }
+            
         }        
     },    
     async [actionTypes.fetchCommentList]({commit},ideaSlug){         

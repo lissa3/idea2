@@ -44,7 +44,7 @@ urlpatterns = [
     path('unfollow/',UnFollowUser.as_view(),name='unfollow-user'),
     path('add-following/',FollowAuthorView.as_view(),name='add-to-following'),
     # fetch all comments
-    path('idea/comments/<slug>',CommentListView.as_view(),name='fetch-comments')
+    path('idea/comments/<slug>/',CommentListView.as_view(),name='fetch-comments')
     
     
 ]
