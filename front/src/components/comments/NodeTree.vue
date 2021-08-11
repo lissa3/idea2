@@ -8,12 +8,12 @@
                   <div>
                     <div class="row">
                       <div class="col-md-6 d-flex  justify-content-left">
-                      <p class="pl-1">Written by:</p>                
-                      <p class="pl-1 mr-2"><strong>{{author}}</strong></p>
-                      <template v-if="currentUserId===userId">                   
+                      <p class="pl-1">Written by:</p> 
+                      <template v-if="currentUser&&currentUser.id==user_id">
                         <div class="pl-1 ml-4"><b-icon-pencil></b-icon-pencil></div>
                         <div class="pl-1 ml-4"><b-icon-trash></b-icon-trash></div>
-                      </template> 
+                      </template>               
+                      <p class="pl-1 mr-2"><strong>{{author}}</strong></p>
                       </div> 
                       <div class="col-md-6 d-flex justify-content-right">            
                          <p >Date <strong>{{created|filterDateTime}}</strong></p>
@@ -30,26 +30,7 @@
         </div>  
       </div> 
       <!-- class="col-md-6 px-1 text-right" -->
-     
-        <div v-if="currentUserId">
-          <tree-menu
-              v-for="node in children"
-              :key="node.id"
-              :children="node.children"
-              :body="node.body"
-              :depth="depth + 1"
-              :author="node.author_comment" 
-              :created="node.created_at"
-              :updated="node.updated_at"
-              :reply-to-id="node.reply_to_id"
-              :idea-id="node.idea_id"          
-              :user-id="node.user_id" 
-              :current-user-id="currentUserId"               
-            >
-            </tree-menu>
-        </div> 
-        <div v-else>
-          <tree-menu
+      <tree-menu
               v-for="node in children"
               :key="node.id"
               :children="node.children"
@@ -64,41 +45,45 @@
                             
             >
             </tree-menu>
-        </div> 
+     
+        
+        
     </div> 
-    </div>   
+      
 </template>
 <script>
-
+import {mapGetters} from 'vuex'
+import {getterTypes} from '@/store/modules/auth'
 export default {
   props: ['body', 'children', 'depth','id','author',
-          'created','updated','replyToId','userId','ideaId','currentUserId'],
+          'created','updated','replyToId','userId',],
+  
   name: "tree-menu",
   computed: {
     indent() {
       // console.log("indent "),this.depth
       return { transform: `translate(${this.depth * 25}px)` };
     },
+     ...mapGetters({
+          currentUser:getterTypes.currentUser,
+          // isLoggedIn:getterTypes.isLoggedIn,
+          // isAnonym:getterTypes.isAnonymous
+        }),
+
+    
   },
   data() {
-    return {
-      // showChildren: false,
-       
-    };
+    return { // showChildren: false,
+     };
   },
-  methods: {    
-    //async toggleChildren(id) {
-      // console.log("show children")
-     // this.showChildren = !this.showChildren;       
-    //},      
-  },
+  
   filters: {
     // Filter full date with (local+) time
     // 2020-07-23 20:41:43.833825
     filterDateTime(item) {
       let initialDate = new Date(item);
       return `
-          ${initialDate.getDate()}.${
+        ${initialDate.getDate()}.${
         initialDate.getMonth() + 1
       }.${initialDate.getFullYear()} at ${initialDate.getHours()} h :${initialDate.getMinutes()} min
       (UTC: ${initialDate.getUTCHours()} h ${initialDate.getMinutes()} min)`;

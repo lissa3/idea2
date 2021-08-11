@@ -1,54 +1,27 @@
 <template>
-
-<div class="container-fluid mt-3">
-    <section  v-if="idea" class="jumbotron text-center px-2 py-2">
-        <div class="container banner">
-          <h1 class="jumbotron-heading">Title: {{idea.title}} </h1>
-          <div >
-              <div class="idea-date  text-center">
-                <span>{{idea.created_at| filterDateTime}}</span>
-              </div>
-               <!-- <div class="d-flex justify-content-around offset-md-2"> -->
-               <!-- <div class="d-flex justify-content-around">
-                <div>
-                    <p><span>Rating: </span><b-icon-star-fill></b-icon-star-fill>
-                      <span class="px-1"><strong>5</strong></span>
-                    </p>
+    <div class="container-fluid mt-3">
+        <section  v-if="idea" class="jumbotron text-center px-2 py-2">
+            <div class="container banner">
+            <h1 class="jumbotron-heading">Title: {{idea.title}} </h1>
+            <div >
+                <div class="idea-date  text-center">
+                    <span>{{idea.created_at| filterDateTime}}</span>
                 </div>             
-                <div>
-                  <span><b-icon-heart-fill></b-icon-heart-fill><span class="px-1">{{idea.an_likes}}</span></span>
-                 </div> 
-              </div> -->
-              <!-- <div>
-                 <div class="box d-flex ">              
-                  <p class="b1" @click="doStar(5)"><b-icon-star-fill></b-icon-star-fill></p> 
-                  <p class="b2" @click="doStar(4)"><b-icon-star-fill></b-icon-star-fill></p> 
-                  <p class="b3" @click="doStar(3)"><b-icon-star-fill></b-icon-star-fill></p> 
-                  <p class="b4" @click="doStar(2)"><b-icon-star-fill></b-icon-star-fill></p> 
-                  <p class="b5" @click="doStar(1)"><b-icon-star-fill></b-icon-star-fill></p>             
-                </div> 
-              </div>               -->
-          </div>
-          <div class="banner-collection">
-            <div class="author-info d-flex align-items-center justify-content-around">              
-              <b-avatar></b-avatar>
-              <router-link :to="{name:'profile',params:{id:idea.author}}" class="px-2">
-                {{idea.owner_idea}}
-              </router-link>
             </div>
-            <template v-if="!authorIsCurrentUser">
+            <div class="banner-collection">
+                <div class="author-info d-flex align-items-center justify-content-around">              
+                <b-avatar></b-avatar>
+                <router-link :to="{name:'profile',params:{id:idea.author}}" class="px-2">
+                    {{idea.owner_idea}}
+                </router-link>
+                </div>
+                <template v-if="!isAnonym">
+              <div v-if="!authorIsCurrentUser">
                 <button type="button" class="btn btn-secondary" @click="addToFollow(idea.author)">
                    Follow
                 </button>
-              
-              <!-- <div class="favorite-block d-flex justify-content-between align-items-center"> -->
-              <div class="favorite-block d-flex">                
-                <p >Add to Favorite</p>
-                <div class="col-lg-1 col-md-1 col-sm-1">
-                  <b-icon icon="flower1"></b-icon> 
-                </div>                 
-              </div>
-            </template> 
+              </div>              
+            </template>      
             <template v-if="authorIsCurrentUser">
               <div class="edit-block">
                 <router-link class="btn btn-outline-secondary btn-sm" :to="{name:'editIdea',params:{slug:idea.slug}}">
@@ -60,21 +33,20 @@
                   <b-icon-trash></b-icon-trash>Delete Idea 
                 </div>            
               </div>     
-            </template>   
-          </div>          
-        </div>
-      </section>    
-      <section >
+            </template>         
+            </div> 
+            </div>            
+        </section >
+        <section >
     <div v-if="isLoading"><app-loader></app-loader></div>  
     <div v-if="error" :message="error"><app-error-msg></app-error-msg>Ms</div>  
-    </section>
-<!-- flash messages: following OK and Failure -->
-    <section>
-    <div v-if="addToFollowMsg" class="flash-msg px-1 py-2 mb-2 pb-4">Successfully added to Following</div>
-    <div v-if="errMsg" class="flash-msg-warning px-1 py-2 mb-2 pb-4">Sorry.Something went wrong.Try to add authore later</div>
-    
-    </section>
-<!-- body Idea -->
+        </section>
+    <!-- flash messages: following OK and Failure -->
+        <section>
+        <div v-if="addToFollowMsg" class="flash-msg px-1 py-2 mb-2 pb-4">Successfully added to Following</div>
+        <div v-if="errMsg" class="flash-msg-warning px-1 py-2 mb-2 pb-4">Sorry.Something went wrong.Try to add authore later</div>
+        
+        </section>
     <div v-if="idea" class="py-2 ">
         <div class="container">
           <div class="row idea-container">
@@ -82,24 +54,21 @@
               <div class="card mb-4 box-shadow">
                 <div   class="col-lg-4 col-md-12 col-sm-12">
                     <div class="idea-img mb-2">
-                        <div v-if="idea.thumbnail">
+                         <div v-if="idea.thumbnail">
                             <img  :src="idea.thumbnail" alt="img idea">                            
                         </div>
                         <div v-else>
                           <img class="card-img-top"  style="height: 225px; width: 100%; display: block;" src="../assets/logo.png" data-holder-rendered="true">                        
                         </div>
+                        
                     </div>
-                </div>  
-                <!-- <div class="d-flex justify-content-end mt-3 px-3 "> -->
-                <div class="d-flex justify-content-between mt-3 px-3 ">
-                  <!-- <div class="d-flex justify-content-between"> -->
-                   
-                    <div class="d-flex justify-content-start">
+                </div>
+                <div class="d-flex justify-content-between mt-3 px-3 ">                 
+                  <div class="d-flex justify-content-start">
                       <div class="lead">Current rating:&nbsp; </div>
                        <app-rating-show :rating="idea.avg_rate"></app-rating-show> 
-                       <div><span class="px-1"><strong>&nbsp;&nbsp;{{idea.avg_rate}}</strong></span></div>                   
-                   
-                    </div>
+                       <div><span class="px-1"><strong>&nbsp;&nbsp;{{idea.avg_rate}}</strong></span></div>                  
+                  </div>
 <!-- add rating for auth-ed users                     -->
                 <template v-if="isLoggedIn">
                     <div class="d-flex justify-content-start">
@@ -112,16 +81,13 @@
                         <p class="b5" @click="doStar(1)"><b-icon-star-fill></b-icon-star-fill></p>             
                       </div>
                   </div>  
-                </template>             
-                  
+                </template>           
                 </div>
-                <div class="d-flex justify-content-end mt-3 px-3 ">                  
+                 <div class="d-flex justify-content-end mt-3 px-3 ">                  
                     <p v-if="thxRating" class="thanks">Thank you for giving a rating</p>                
-                </div>         
-                               
+                </div>  
                 <div class="card-text px-3 offset-md-2">
-                    <div class="mb-2 text-left">
-                      
+                    <div class="mb-2 text-left">                      
                       <p>{{idea.lead_text}}Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur architecto eum atque odio deserunt! Eaque velit possimus, repellat quis adipisci at accusamus dolores ex sequi corrupti fugiat delectus asperiores non.</p>
                       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint suscipit laboriosam unde, vel nemo blanditiis voluptates? Perferendis similique qui labore porro aliquid, nobis quidem odio, quos neque aperiam placeat consectetur.</p>
                     </div>
@@ -142,17 +108,18 @@
                         >
                       </app-like>
                       <div>  
-                        <div v-if="idea.users_comments>0">
+                        <!-- <div v-if="idea.users_comments>0">
                           <button type="button" class="btn btn-sm btn-outline-secondary" @click="fetchComments(idea.slug)">
                           Show Comments ({{idea.users_comments}})
                         </button>    
-                        </div>  
-                        <p v-else>                 
+                        </div>   -->
+                        <p v-if="!idea.users_comments">                 
                           No comments yet
                         </p>                          
                       </div>                     
                     <small class="text-muted">9 mins</small>
                   </div>
+                  <div v-if="currentUser">
                   <div class="d-flex justify-content-between align-items-center px-3 mb-3">
                     <div class="">
                       <button type="button" class="btn btn-sm btn-success" @click="showCommentForm">
@@ -160,12 +127,13 @@
                       </button>                      
                     </div>                  
                   </div>
-                </div>
+                  </div>
               </div>
-            </div>            
-        </div>
-    </div>
-<!-- start comment  form-->
+            </div> 
+         </div>
+     </div>      
+   </div>
+   <!-- start comment  form-->
     <div class="mb-5"  :class="startComment?'show-comment-form':'comment-form-invisible'">
           <form @submit.prevent="addComment">  
             <div class="form-group">
@@ -179,66 +147,11 @@
           </form>
     </div>
 <!-- end comment form -->
-<!-- section render all comments users_comments-->
-<div class="row" v-if="treeDataComments">
-  <div class="col-md-11 py-3" v-for="node in treeDataComments" :key="node.id">
-    <div v-if="node.children&&node.children.length" class="left-shift">
-      <!-- AppComNodeTree -->
-      <div v-if=currentUser>
-          <app-node-tree      
-          :body="node.body"
-          :children="node.children"
-          :depth="0" 
-          :author="node.author_comment" 
-          :created="node.created_at"
-          :updated="node.updated_at"
-          :reply-to-id="node.reply_to_id"
-          :idea-id="node.idea_id"      
-          :user-id="node.user_id"
-          :current-user-id="currentUser.id"
-        ></app-node-tree>
-      </div>
-      <div v-else>
-          <app-node-tree      
-          :body="node.body"
-          :children="node.children"
-          :depth="0" 
-          :author="node.author_comment" 
-          :created="node.created_at"
-          :updated="node.updated_at"
-          :reply-to-id="node.reply_to_id"
-          :idea-id="node.idea_id"      
-          :user-id="node.user_id"          
-        ></app-node-tree>
-      </div>
-    </div>    
-    <div v-else class="left-shift">
-     <div class="label-wrapper">
         <div class="row">
-          <div v-if="node.body" class="col-md-12"> 
-            <div class="row">              
-              <div class=" col-md-6 d-flex  justify-content-left">       
-                  <p class="pl-1">Written by:</p>                
-                  <p class="pl-1 mr-2"><strong>{{node.author_comment}}</strong></p>
-                  <template v-if="currentUser&&currentUser.id==node.user_id">
-                    <div class="pl-1 ml-4"><b-icon-pencil></b-icon-pencil></div>
-                    <div class="pl-1 ml-4"><b-icon-trash></b-icon-trash></div>
-                  </template>
-              </div> 
-              <div class="col-md-6 px-1 text-right">Date <strong>{{node.created_at|filterDateTime}}</strong>
-              </div>
+            <div v-if="idea">            
+            <app-comm-list  :idea-slug="idea.slug"></app-comm-list>
             </div>
-
-            <p class="px-1"><strong>Msg:</strong> {{node.body}}</p>         
-        </div>       
-        <div v-else>
-          <div class="px-2 py-2 comm-deleted">Note is deleted</div>         
         </div>
-        </div>      
-    </div> 
-    </div>  
-  </div>
-</div>
 <!-- Modal component should be at the bottom: otherwise possible issues with z-index and position fixed of the parent component -->
     <app-delete-idea-confirmation @close="close" v-if="makeModalVisible">
       <template v-slot:header>
@@ -254,7 +167,7 @@
         <button class="btn btn-sm btn-success" @click="close">No</button>
       </template>
     </app-delete-idea-confirmation>
-  </div>
+  </div> 
 </template>
 
 <script>
@@ -264,13 +177,13 @@ import AppDeleteIdeaConfirmation from '@/components/Modal.vue'
 import AppRatingShow from '@/components/RatingShow'
 import AppLike from '@/components/Like'
 import AppTagsList from '@/components/TagsList'
-import AppNodeTree from '@/components/comments/NodeTree'
+import AppCommList from '@/components/comments/CommList'
 import {mapState,mapGetters} from 'vuex'
 import {getterTypes as authGetterTypes} from '@/store/modules/auth'
 import {actionTypes as commentActionType} from '@/store/modules/comments'
 import {actionTypes as followActionType} from '@/store/modules/follow'
 import {actionTypes as singleIdeaActionType} from '@/store/modules/singleIdea'
-// import axios from '@/api/axios'
+
 export default {
   name: 'AppIdeaDetail',
   components:{
@@ -280,7 +193,7 @@ export default {
     AppTagsList,
     AppLike,
     AppRatingShow,
-    AppNodeTree
+    AppCommList
   },
   data(){
     return{
@@ -293,9 +206,6 @@ export default {
       startComment:false,
       commentBody:null,
       //comment err
-      
-      
-
     }
   },
   computed:{            
@@ -319,9 +229,9 @@ export default {
           // console.log("calc if current user is the author")  
           return this.currentUser.id === this.idea.author          
         },
-        showLike(){
-          return this.ideaLikes
-        }, 
+        // showLike(){
+        //   return this.ideaLikes
+        // }, 
                  
         
   },
@@ -330,7 +240,7 @@ export default {
   },
   methods:{
     getOneIdea(){
-      // console.log("component created")      
+      console.log("component created, slug:",this.$route.params.slug)      
       this.$store.dispatch(singleIdeaActionType.getIdea,{slug:this.$route.params.slug})
       .then((resp)=>{
         // console.log("component calling; resp",resp)
@@ -414,6 +324,7 @@ export default {
       console.log("adding comment...")
       let commentBody = this.commentBody
       let ideaId = this.idea.id
+      console.log("line 364 id of idea is",this.idea.id)
       let commentData = {
         body: commentBody,
         idea:ideaId,

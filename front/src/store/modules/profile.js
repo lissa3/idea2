@@ -121,7 +121,7 @@ const actions = {
 }
 
 export const getterTypes = {
-    fooProfile:'[profile] currentProfile',
+    currentProfile:'[profile] currentProfile',
     
 }
 export const mutationTypes = {

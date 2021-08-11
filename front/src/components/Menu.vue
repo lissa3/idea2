@@ -75,7 +75,7 @@
     </template>
     <template v-slot:modal-footer>
         <button class="btn btn-sm btn-danger" @click="confirmDeleteAccount">
-          Yes,I want to delete this idea
+          Yes,I want to delete my account
         </button>       
         <button class="btn btn-sm btn-success" @click="close">No</button>
     </template>
