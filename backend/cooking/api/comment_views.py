@@ -18,14 +18,14 @@ from rest_framework.filters import OrderingFilter
 from comments.models import Comment
 from ideas.models import Idea
 from api.serializers.comments.comment_ser import CommentSerializer,ListCommentSerializer
-from .permissions import IsAuthorOrIsStaffOrReadOnly
+from .permissions import IsOwnerOrIsStaff
 
 
 User = get_user_model()
 
 class CommentAPIView(CreateModelMixin,DestroyModelMixin,RetrieveModelMixin, UpdateModelMixin,viewsets.GenericViewSet):
     """create comment instance """
-    permission_classes = (IsAuthorOrIsStaffOrReadOnly,)
+    permission_classes = (IsOwnerOrIsStaff,)
     authentication_class = (IsAuthenticated,)
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
@@ -58,7 +58,7 @@ class CommentListView(ListAPIView):
     filter_backends = [ OrderingFilter]
     ordering_fields = ('created_at')
     # This will be used as the default ordering
-    ordering = ('created_at',) 
+    ordering = ('-created_at',) 
     pagination_class = None  
     
 
