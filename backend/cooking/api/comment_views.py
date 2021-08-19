@@ -44,8 +44,11 @@ class CommentAPIView(CreateModelMixin,DestroyModelMixin,RetrieveModelMixin, Upda
         serializer.save(user=self.request.user,idea=idea)
 
     def perform_destroy(self, instance):
-        instance.deleted = True
+        # instance.deleted = True
+        instance.body="" 
+        instance.deleted = True       
         instance.save()
+        
     def perform_update(self, serializer):
         print("inside 50 line",self.request.data)
         serializer.save()
