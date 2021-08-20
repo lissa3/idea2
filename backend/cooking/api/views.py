@@ -160,7 +160,7 @@ class ProfileRetrView(generics.RetrieveAPIView):
     
     def get_queryset(self):
         print("public profile info: qs")
-        return  Profile.objects.annotate( count_following=Count('following'))
+        return  Profile.objects.annotate(count_following=Count('following')).select_related('user').prefetch_related('following')
     
     
 class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):

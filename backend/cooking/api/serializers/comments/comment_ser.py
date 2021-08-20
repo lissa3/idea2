@@ -7,21 +7,15 @@ from comments.models import Comment
 class CommentSerializer(ser.ModelSerializer):
     """ serializer for creating-editing-deleting a comment"""    
     author_comment = ser.CharField(source='user.username',read_only=True)
-    body = ser.SerializerMethodField()
-    # children = ser.SerializerMethodField()
+    # body = ser.SerializerMethodField()
     # children = ser.SerializerMethodField(source='get_descendants')    
     class Meta:
         model = Comment
         fields = ('id','created_at','body','idea_id',
                 'user_id','reply_to_id','parent','author_comment','deleted'
-                #'children'
+                
         )
-    def get_body(self,obj):
-        if obj.deleted:
-            obj.body = ""
-            obj.author_comment=""
-                      
-        return obj.body     
+        
     
     # def get_children(self, obj):
     #     # children = self.context['children'].get(obj.id, [])

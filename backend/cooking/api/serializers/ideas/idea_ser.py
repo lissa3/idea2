@@ -21,17 +21,13 @@ class IdeaSerializer(TaggitSerializer, ser.ModelSerializer):
     an_likes = ser.IntegerField(read_only=True)
     avg_rate = ser.DecimalField(read_only=True, max_digits=5, decimal_places=2, default='0.00')
     max_rating = ser.DecimalField(read_only=True, max_digits=5, decimal_places=2, default='0.00')
-    author = ser.PrimaryKeyRelatedField(queryset=User.objects.all(),
-                                        default=ser.CurrentUserDefault())
-    # author = ser.HiddenField(queryset=User.objects.all(),
-    #                          default=ser.CurrentUserDefault())
-    # , allow_null=True)  # , validate_extention])
+    author = ser.PrimaryKeyRelatedField(queryset=User.objects.all(), default=ser.CurrentUserDefault())
+    tags = TagListSerializerField(required=False) 
+    users_comments = ser.SerializerMethodField()
     thumbnail = ser.ImageField(validators=[validate_size], required=False, allow_null=True)
     # ERROR: nexpected keyword argument 'allowed_extentions
     # thumbnail = ser.ImageField(validators=[validate_size], allowed_extentions=[
     #                            'jpeg', 'jpg', 'png'], required=False, allow_null=True)
-    tags = TagListSerializerField(required=False) 
-    users_comments = ser.SerializerMethodField()
     class Meta:
         model = Idea
         fields = ('id', 'title', 'author', 'lead_text', 'main_text', 'slug',
@@ -39,4 +35,9 @@ class IdeaSerializer(TaggitSerializer, ser.ModelSerializer):
 
     def get_users_comments(self,obj):
         # temp solution ( till postgres overstap)
-        return  obj.comments.count()   
+        return  obj.comments.count()  
+    # for testing orm ( without comments)     
+    # class Meta:
+    #     model = Idea
+    #     fields = ('id', 'title', 'author', 'lead_text', 'main_text', 'slug',
+    #               'owner_idea','author_unid','categ_name', 'categ', 'created_at', 'status', 'thumbnail', 'an_likes', 'avg_rate', 'featured', 'tags','max_rating')
