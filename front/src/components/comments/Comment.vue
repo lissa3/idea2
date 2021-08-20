@@ -4,10 +4,11 @@
 <!-- auth user&&author comment can delete comment -->
 <!-- auth user can reply on a comment-->
   <div class="mr-2 pr-1">
+ <!-- start render if comment not deleted     -->
      <div v-if="!comment.deleted" class="label-wrapper ">
         <div class="row">                    
          <div class="comment-wrap ">
-<!-- comment-prefix            -->
+<!-- comment-menu(top)            -->
         <div div class="">
           <div class="row pt-2">
             <div class=" col-md-6 author-space-creds col-sm-12">   
@@ -64,25 +65,30 @@
                 <button class="btn btn-outline-success mb-2" @click="commReply(comment.id)">
                     Reply
                 </button>                
-                <!-- <button class="btn btn-outline-danger" @click="showModal">
-                    Delete
-                </button>  -->
+                
             </div>
-          </div>  <!--end if comment not delete-->
+          </div> 
         </div>
       </div> 
      </div> 
-     <div v-if="comment.deleted" class="comment-wrap-deleted">
+<!--end if comment not deleted-->
+
+<!-- start render section if comment deleted -->
+     <div v-if="comment.deleted" class="comment-wrap-deleted mt-1 mb-1">
        <div>Comment deleted</div>
       </div>
-    <div v-if="replies&&replies.length>0" class=" ml-3 mb-2 mt-2">
+<!-- end section render deleted comment     -->
+<!-- start render if comment has replies: Instagram stile == "onle one indentation defined by var indent
+see computed -->
+    <div v-if="replies&&replies.length>0" class="zoo mt-2" :style="indent">
         <app-comment 
           v-for="comment in replies"
           :key="comment.id"
           :comment="comment"
           :parent-id="comment.id"
           :active-comment="activeComment" 
-          :comments="comments"               
+          :comments="comments"
+          :depth=0               
           @replyComment="replyComment"
           @updateComment="updateComment"
           @commEdit="commEdit"
@@ -94,7 +100,7 @@
     </div>
       
 <!-- The Modal -->
-    <div class="modal-bg" v-if="showMe">
+    <div class="modal-bg" v-if="showConfirmDelete">
         <div class="confirm-modal">
           <button type="button" class="btn-close" @click="close"></button>
           <header class="modal-header">
@@ -105,7 +111,7 @@
           </section>
           <section class="modal-footer"> 
             <button class="btn btn-sm btn-danger" @click="commDelete(comment.id)">
-              Yes,I want to delete this idea
+              Yes,I want to delete this comment
             </button>        
             <button type="button" class="btn-green" @click="close">Cancel</button>
           </section>
@@ -129,7 +135,7 @@ export default {
     },
     data(){
       return {
-        showMe:false        
+        showConfirmDelete:false        
       }
     },
     props: {
@@ -145,8 +151,8 @@ export default {
         comments:{
           type:Array
         },
-        hasChildren:{
-          type:Boolean
+        depth:{
+          type:Number
         }         
     }, 
     methods:{  
@@ -161,7 +167,7 @@ export default {
         },
         commDelete(commId){
             // console.log('deleting comment',commId)
-            this.showMe = false
+            this.showConfirmDelete = false
             this.$emit('commDelete',commId)
         },
         updateComment(commentBody){
@@ -193,10 +199,10 @@ export default {
         },
         close() {
           console.log("closing modal");
-          this.showMe = false;
+          this.showConfirmDelete = false;
         }, 
         showModal(){
-          this.showMe = !this.showMe
+          this.showConfirmDelete = !this.showConfirmDelete
         }      
 
   },
@@ -224,6 +230,9 @@ export default {
             (a,b)=>new Date(a.created_at).getTime() - new date(b.created_at).getTime()
           )           
         },
+    indent() {
+      return { transform: `translate(${this.depth * 50}px)` };
+    },    
   },
   filters: {
     // Filter full date with (local+) time

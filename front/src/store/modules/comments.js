@@ -86,22 +86,20 @@ const mutations = {
         console.log("edited obj id:",editedComm.id)
         console.log("new body:",editedComm.body)
         state.data.forEach((comm)=>{
-            console.log("vs",comm.id===editedComm.id)
-            if(comm.id===editedComm.id&&!editedComm.parent){
+            console.log("found" ,comm.id===editedComm.id)
+            if(comm.id===editedComm.id){
                 console.log("found match line 81")
-                console.log(comm.body)
+                console.log('old body is',comm.body)
                 comm.body=editedComm.body
-            }else{
-                console.log("comment should have a patent",editedComm.parent)
-                console.log("searching for parent")                
-            }            
+                console.log('new body:',comm.body)
+            }          
         })        
     },
     [mutationTypes.EDIT_COMMENT_FAILURE](state,error){
         state.isLoading = false
         state.error = error
     },
-    [mutationTypes.DELETE_COMMENT_START](state){},
+    [mutationTypes.DELETE_COMMENT_START](){},
         
     [mutationTypes.DELETE_COMMENT_SUCCESS](state,commId){    
         console.log("mutation is dealing with del comm",commId)    

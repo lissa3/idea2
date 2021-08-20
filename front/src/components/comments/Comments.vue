@@ -8,16 +8,15 @@
                 <h5>Write your comment</h5>
                 <app-comment-form
                 submitLabel="Write"
+                :clean-form = "cleanForm"
                 @addRootComment="addRootComment">
                 </app-comment-form>
             </div>        
             <div  class="comment-list ml-2 col-md-12">
                 <div class="section-comments">
-                    <h4>Comments</h4>                   
-                    
+                    <h4>Comments</h4>                
                     <div v-if="warning" class="warning px-1 py-1">{{warning}}</div>                         
-                </div> 
-                              
+                </div>                              
                 <app-comment 
                 v-for="comment in getRootComms"
                 :key="comment.id"
@@ -25,22 +24,20 @@
                 :parent-id="comment.id"
                 :active-comment="activeComment"                
                 :comments="comments"
-                :hasChildren="comment.children"
+                :depth=1
                 @replyComment="replyComment"
                 @updateComment="updateComment"
                 @commEdit="handleEdit"
                 @commReply="handleReply"
                 @commDelete="handleDelete"
                 @handleCancel="handleCancel"                
-                ></app-comment>  
-                              
+                ></app-comment>                               
             </div>
-            <div v-if="error">Smth went wrong</div> 
-                 
+            <div v-if="error">Smth went wrong</div>                 
         </section>
-
     </div>    
 </template>
+
 <script>
 import AppCommentForm from '@/components/comments/CommentForm.vue'
 import AppComment  from '@/components/comments/Comment'
@@ -59,6 +56,7 @@ export default {
     data(){
         return {
             activeComment:null,
+            cleanForm:false,
             warning:'',            
         }
     },
@@ -84,15 +82,15 @@ export default {
         // methods to set active comment 
         handleReply(commId){           
             this.activeComment={id:commId,type:'replying'}
-            console.log("parent sets type",this.activeComment.type)
+            //console.log("parent sets type",this.activeComment.type)
         },
         handleEdit(commId){            
             this.activeComment={id:commId,type:'editing'}
-            console.log("parent sets type",this.activeComment.type)
+            //console.log("parent sets type",this.activeComment.type)
         },
         handleDelete(commId){
             this.activeComment={id:commId,type:'deleting'}
-            console.log("parent delete comm ",commId)
+            //console.log("parent delete comm ",commId)
             this.deleteComment(commId)
         },
         handleCancel(){
@@ -114,6 +112,7 @@ export default {
                 .then((resp)=>{
                 console.log("resp",resp)
                 this.activeComment = null
+                console.log("replied done, active comment null")
                 })
                 .catch(err=>console.log(err))    
         },       
@@ -134,6 +133,8 @@ export default {
                     if(resp.status===201){
                         console.log("successfully created a new comment")
                         this.activeComment=null
+                        this.cleanForm = true
+                        console.log("add root comment done, active comment null")
                     }
                     
                     })
@@ -146,7 +147,10 @@ export default {
                 console.log("resp",resp)
                 if(resp.status===403){
                     console.log("permission denied")
-                    this.warning = "Permission denied"                }
+                    this.warning = "Permission denied"
+                }
+                    this.activeComment=null
+                    console.log("update comment done, active comment null")
                 })
                 .catch(err=>console.log(err))        
         }, 

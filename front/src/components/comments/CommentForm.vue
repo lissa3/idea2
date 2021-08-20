@@ -2,7 +2,7 @@
     <div>
         <div class="mb-5 mx-auto" >
             <!-- <p>submit label</p>{{submitLabel}}-->
-            <p>parent Id: {{parentId}}</p> 
+            <p>creaning the form: {{cleanForm}}</p>
           <form @submit.prevent="onSubmit" >  
             <div class="form-group">
               <label for="body">Comment</label>
@@ -33,10 +33,9 @@
 export default {
     name:'CommentForm',
     props:{
-        submitLabel:{
-            type:String,
-            required:true
-        },
+        cleanForm:{
+            type:Boolean
+        },        
         hasCancelButton:{
             type:Boolean
         },
@@ -45,6 +44,10 @@ export default {
         },
         parentId:{
             type:Number||null
+        },
+        submitLabel:{
+            type:String,
+            required:true
         },
         success:{
             type:Boolean
@@ -79,6 +82,11 @@ export default {
                 parent:null
                 }
                 this.$emit('addRootComment',commentData)
+                if(this.cleanForm){
+                    console.log("form tries to clean body")
+                    this.body = ""
+                    console.log("body clean")
+                }
             }
             
         },
@@ -94,7 +102,16 @@ export default {
         isTextareaDisabled(){
             return false
             // return this.body.length===0
+        },
+        cleaning(){
+            return this.cleanForm
         }
+    },
+    watch: {
+        cleaning() {
+            // console.log("watcher here; see changes")
+            this.body=''
+        },
     }
 }
 </script>
