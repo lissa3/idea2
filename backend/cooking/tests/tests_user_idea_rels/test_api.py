@@ -63,13 +63,13 @@ class IdeaTestCase(APITestCase):
         calc_rating(self.idea1)
         self.idea1.refresh_from_db()
         # print(type(self.idea1.rating)) <class 'decimal.Decimal'>
-        self.assertEqual('4.00',str(self.idea1.rating))
+        self.assertEqual('4.00',str(self.idea1.avg_rate))
 
     def test_calc_count_likes(self):
         print('line 71 starts',self.idea1)    
         calc_count_likes(self.idea1)
         self.idea1.refresh_from_db()
-        self.assertEqual(2,self.idea1.likes)
+        self.assertEqual(2,self.idea1.an_likes)
 
 
 

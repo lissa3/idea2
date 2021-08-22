@@ -33,7 +33,7 @@ class IdeaSerializer(TaggitSerializer, ser.ModelSerializer):
         model = Idea
         fields = ('id', 'title', 'author', 'lead_text', 'main_text', 'slug',
                   'owner_idea','author_unid','categ_name', 'categ', 'created_at', 'status', 'thumbnail', 
-                  'rating','likes', 'featured', 'tags','max_rating','users_comments')
+                  'avg_rate','an_likes', 'featured', 'tags','max_rating','users_comments')
 
     # def get_users_comments(self,obj):
     #     # temp solution ( till postgres overstap)
