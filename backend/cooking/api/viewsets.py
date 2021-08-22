@@ -70,34 +70,19 @@ class IdeaViewSet(viewsets.ModelViewSet):
     # Explicitly specify which fields the API may be ordered against
     ordering_fields = ('title', 'created_at','max_rating')
     # This will be used as the default ordering
-    ordering = ('-created_at',)   
+    ordering = ('-created_at',)  
     
 
     def get_queryset(self):
-        # let op: 2 times qs:? |=> distinct() in postgres
-        
-        # queryset = Idea.objects.annotate(
-        #     an_likes=Count(Case(When(useridearelation__like=True, then=1))),
-        #     avg_rate=Avg('useridearelation__rating'),
-        #     max_rating=Max('useridearelation__rating')           
-        #     ).select_related('author','categ').prefetch_related('tags')
+        # let op: 2 times qs:? |=> distinct() in postgres        
         queryset = Idea.objects.annotate(
-            an_likes=Count(Case(When(useridearelation__like=True, then=1))),
             max_rating=Max('useridearelation__rating'),
             users_comments=Count('comments',distinct=True)
             ).select_related('author','categ').prefetch_related('tags')
+        return queryset 
 
-        # queryset = Idea.objects.annotate(
-        #     an_likes=Count(Case(When(useridearelation__like=True, then=1))),
-        #     avg_rate=Avg('useridearelation__rating'),
-        #     max_rating=Max('useridearelation__rating'),
-        #     users_comments=Count('comments',distinct=True)
-        #     ).select_related('author','categ').prefetch_related('tags')
-        # print("qs",queryset) # Count('comments',distinct=True)   
-        return queryset    
     def update(self, request, *args, **kwargs):
         """let op: don't save twice to avoid err msg: file not img||corrupt"""
-
         idea = self.get_object()
         setattr(request.data, '_mutable', True)
         tags = request.data.get('tags')

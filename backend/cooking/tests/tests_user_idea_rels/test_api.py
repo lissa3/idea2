@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 
 from ideas.models import UserIdeaRelation,Idea,Category
-from ideas.logic import calc_rating
+from ideas.logic import calc_rating, calc_count_likes
 
 User = get_user_model()
 
@@ -51,13 +51,11 @@ class IdeaTestCase(APITestCase):
         )
         self.useridearelation3 = UserIdeaRelation.objects.create(
             user=self.user2,
-            idea=self.idea1,
-            like=True,
+            idea=self.idea1,           
             
         )
 
-        self.ideas = Idea.objects.annotate(an_likes=Count(
-            Case(When(useridearelation__like=True, then=1)))).order_by('-created_at')
+        self.ideas = Idea.objects.order_by('-created_at')
         self.idea1 = self.ideas.get(id=self.idea1.id)
 
     def test_calc_rating(self):
@@ -66,6 +64,13 @@ class IdeaTestCase(APITestCase):
         self.idea1.refresh_from_db()
         # print(type(self.idea1.rating)) <class 'decimal.Decimal'>
         self.assertEqual('4.00',str(self.idea1.rating))
+
+    def test_calc_count_likes(self):
+        print('line 71 starts',self.idea1)    
+        calc_count_likes(self.idea1)
+        self.idea1.refresh_from_db()
+        self.assertEqual(2,self.idea1.likes)
+
 
 
 
