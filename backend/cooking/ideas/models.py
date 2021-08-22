@@ -115,6 +115,7 @@ class Idea(TimeStamp):
     is_public = models.BooleanField(default=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=0)
     tags = TaggableManager(blank=True, verbose_name="Tags", help_text="Tags should be separated by comma")
+    rating = models.DecimalField(decimal_places=2,max_digits=5,default=None,null=True)
 
     objects = IdeaManager()
 
@@ -131,8 +132,11 @@ class Idea(TimeStamp):
     def get_absolute_url(self):
         return reverse('ideas:detail', kwargs={'slug': self.slug})
 
+    
+
 
 class UserIdeaRelation(models.Model):
+    """ rating here stores value, idea attr rating calc avg and chach it in .save() Idea"""
     RATING = (
         (1, 'OK'),
         (2, 'Fine'),
@@ -150,4 +154,17 @@ class UserIdeaRelation(models.Model):
 
     def __str__(self):
         return f'User: {self.user} gives buzy with action'
+
+    def save(self,*args,**kwargs):
+        from .logic import calc_rating
+        old_rating = self.idea.rating
+        print("old rating",self.rating)
+        start_creating = not self.idea.pk
+        super().save(*args,**kwargs) # here idea gets (if triggered by change rating event) 
+        new_rating = self.idea.rating
+        print("new rating",new_rating)
+        if start_creating and new_rating!=old_rating:
+            calc_rating(self.idea)
+            print("don in model save method")
+    
 

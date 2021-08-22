@@ -83,12 +83,17 @@ class IdeaViewSet(viewsets.ModelViewSet):
         #     ).select_related('author','categ').prefetch_related('tags')
         queryset = Idea.objects.annotate(
             an_likes=Count(Case(When(useridearelation__like=True, then=1))),
-            avg_rate=Avg('useridearelation__rating'),
             max_rating=Max('useridearelation__rating'),
             users_comments=Count('comments',distinct=True)
             ).select_related('author','categ').prefetch_related('tags')
-            #.distinct('users_comments')
-        print("qs",queryset) # Count('comments',distinct=True)   
+
+        # queryset = Idea.objects.annotate(
+        #     an_likes=Count(Case(When(useridearelation__like=True, then=1))),
+        #     avg_rate=Avg('useridearelation__rating'),
+        #     max_rating=Max('useridearelation__rating'),
+        #     users_comments=Count('comments',distinct=True)
+        #     ).select_related('author','categ').prefetch_related('tags')
+        # print("qs",queryset) # Count('comments',distinct=True)   
         return queryset    
     def update(self, request, *args, **kwargs):
         """let op: don't save twice to avoid err msg: file not img||corrupt"""
