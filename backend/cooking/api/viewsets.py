@@ -76,7 +76,6 @@ class IdeaViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # let op: 2 times qs:? |=> distinct() in postgres        
         queryset = Idea.objects.annotate(
-            max_rating=Max('useridearelation__rating'),
             users_comments=Count('comments',distinct=True)
             ).select_related('author','categ').prefetch_related('tags')
         return queryset 

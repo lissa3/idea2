@@ -118,7 +118,7 @@ class Idea(TimeStamp):
     # two cached fields (db calc only if like,rating gets updated)
     avg_rate = models.DecimalField(decimal_places=2,max_digits=5,default=None,null=True)
     an_likes = models.IntegerField(default=None,null=True)
-    # max_rating = models.DecimalField(decimal_places=2,max_digits=5,default=None,null=True)
+    max_rating = models.DecimalField(decimal_places=2,max_digits=5,default=None,null=True)
 
     objects = IdeaManager()
 
@@ -160,17 +160,22 @@ class UserIdeaRelation(models.Model):
 
     def save(self,*args,**kwargs):
         """ import here to avoide circular import (idea-user-relation calls idea-user-relation)"""
-        from .logic import calc_rating,calc_count_likes
+        from .logic import calc_rating,calc_count_likes,calc_max_rating
         old_rating = self.idea.avg_rate
         old_likes_total = self.idea.an_likes
+        old_max_rating = self.idea.max_rating
         start_creating = not self.idea.pk
         super().save(*args,**kwargs) # here idea gets (if triggered by change rating event) 
         new_rating = self.idea.avg_rate
         new_likes_total = self.idea.an_likes
+        new_max_rating = self.idea.max_rating
         print("new rating",new_rating)
         if start_creating and new_rating!=old_rating:
             calc_rating(self.idea)
         if start_creating and new_likes_total != old_likes_total:
-            calc_count_likes    
+            calc_count_likes(self.idea)    
+        if start_creating and new_max_rating != old_max_rating:
+            calc_max_rating(self.idea)
+              
     
 

@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 
 from ideas.models import UserIdeaRelation,Idea,Category
-from ideas.logic import calc_rating, calc_count_likes
+from ideas.logic import calc_rating, calc_count_likes,calc_max_rating
 
 User = get_user_model()
 
@@ -47,7 +47,7 @@ class IdeaTestCase(APITestCase):
             user=self.user2,
             idea=self.idea1,
             like=True,
-            rating=3
+            rating=2
         )
         self.useridearelation3 = UserIdeaRelation.objects.create(
             user=self.user2,
@@ -63,13 +63,19 @@ class IdeaTestCase(APITestCase):
         calc_rating(self.idea1)
         self.idea1.refresh_from_db()
         # print(type(self.idea1.rating)) <class 'decimal.Decimal'>
-        self.assertEqual('4.00',str(self.idea1.avg_rate))
+        self.assertEqual('3.50',str(self.idea1.avg_rate))
 
     def test_calc_count_likes(self):
         print('line 71 starts',self.idea1)    
         calc_count_likes(self.idea1)
         self.idea1.refresh_from_db()
         self.assertEqual(2,self.idea1.an_likes)
+
+    def test_calc_max_rating(self):
+        print('line 75 starts',self.idea1)    
+        calc_max_rating(self.idea1)
+        self.idea1.refresh_from_db()
+        self.assertEqual(5,self.idea1.max_rating)
 
 
 

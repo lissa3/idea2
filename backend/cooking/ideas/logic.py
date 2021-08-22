@@ -12,10 +12,7 @@ def calc_count_likes(obj):
     obj.an_likes = agr_likes.get('like_total',None)    
     obj.save()
 
-# def calc_max_rating(obj):
-#     agr_likes=UserIdeaRelation.objects.filter(idea=obj).aggregate(max_rating=Max('rating'))   
-#     # arrg_likes = UserIdeaRelation.objects.filter(idea=obj).aggregate(count_likes=(Count('like')))
-#     print("dict",agr_likes)
-#     obj.likes = agr_likes.get('like_total',None)
-#     print("calc rating is:",obj.likes)
-#     obj.save()
+def calc_max_rating(obj):
+    max_rate = UserIdeaRelation.objects.filter(idea=obj).aggregate(max_rating=Max('rating'))   
+    obj.max_rating = max_rate.get('max_rating',None)
+    obj.save()
