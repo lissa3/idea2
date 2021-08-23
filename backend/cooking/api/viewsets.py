@@ -48,7 +48,7 @@ class IdeaRelations(RetrieveModelMixin,UpdateModelMixin,viewsets.GenericViewSet)
     def get_object(self):
         # print("data from vue.js is", self.request.data)
         # print("user is", self.request.user)
-        print("idea", self.kwargs.get('idea'))
+        # print("idea", self.kwargs.get('idea'))
         obj, _ = UserIdeaRelation.objects.get_or_create(idea_id=self.kwargs['idea'], user=self.request.user)
         # print("object created or updated in viewset idea-user-rel", obj)
         return obj
@@ -80,7 +80,7 @@ class IdeaViewSet(viewsets.ModelViewSet):
         queryset = Idea.objects.annotate(
             users_comments=Count('comments',distinct=True)
             ).select_related('author','categ').prefetch_related('tags')
-        print("viewset made qs:",queryset)    
+        # print("viewset made qs:",queryset)    
         return queryset 
 
     def update(self, request, *args, **kwargs):

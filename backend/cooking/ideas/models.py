@@ -156,25 +156,34 @@ class UserIdeaRelation(models.Model):
     # follow = models.BooleanField(blank=True,default=False)
 
     def __str__(self):
-        return f'User: {self.user} active in user-idea-relations {self.like}'
+        return f'User: {self.user} active in user-idea-relations {self.like}, {self.rating}'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.old_rating = self.rating
+        self.old_like = self.like
+        
+    
 
     def save(self,*args,**kwargs):
         """ import here to avoide circular import (idea-user-relation calls idea-user-relation)"""
         from .logic import calc_rating,calc_count_likes,calc_max_rating
         # if like or rating changed |=> re-calc total likes on idea
-        old_rating = self.rating
-        old_likes_total = self.like
-        start_creating = not self.idea.pk
+        start_creating = not self.pk
         super().save(*args,**kwargs) # here idea gets (if triggered by change rating event) 
         new_rating = self.rating
-        # print("new rating",new_rating)
-        new_likes_total = self.like
-        if start_creating and new_rating!=old_rating:            
+        new_like = self.like
+        # print("new rating",self.rating)
+        if self.old_rating!=new_rating or start_creating:
+            # print("obj is already exist,so working on condition old!=new")
             calc_rating(self.idea)
-            calc_max_rating(self.idea)
-        if start_creating and new_likes_total != old_likes_total:
-            calc_count_likes(self.idea)    
-        
+            calc_max_rating(self.idea)            
+            # print("########################################")   
+        if self.old_like != new_like or start_creating:
+            # print("user-idea-rel is just created< see calc")           
+            calc_count_likes(self.idea)
+            # print("########################################")   
+
         
 
 

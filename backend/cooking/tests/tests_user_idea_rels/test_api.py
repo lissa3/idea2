@@ -51,12 +51,14 @@ class IdeaTestCase(APITestCase):
         )
         self.useridearelation3 = UserIdeaRelation.objects.create(
             user=self.user2,
-            idea=self.idea1,           
+            idea=self.idea1,          
             
         )
 
         self.ideas = Idea.objects.order_by('-created_at')
         self.idea1 = self.ideas.get(id=self.idea1.id)
+
+    
 
     def test_calc_rating(self):
         calc_rating(self.idea1)

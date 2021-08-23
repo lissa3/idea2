@@ -60,9 +60,10 @@ class IdeaTestCase(APITestCase):
             rating=5
 
         )
-        self.ideas = Idea.objects.annotate(an_likes=Count(
-            Case(When(useridearelation__like=True, then=1))), avg_rate=Avg('useridearelation__rating'),
+        self.ideas = Idea.objects.annotate(
+            users_comments=Count('comments',distinct=True)
             ).order_by('-created_at')
+        
 
 
     def test_create_idea(self):
@@ -93,17 +94,19 @@ class IdeaTestCase(APITestCase):
         self.assertEqual(self.user1, author_new_idea)
 
     def test_get_all_ideas(self):
+        """ let op:postgresql with comments vs serMethodField(sqlite3) """
         # ideas = Idea.objects.all()
         # annotate(an_likes=Count(Case(When(useridearelation__like=True, then=1))))
         url = reverse('idea-list')
-        response = self.client.get(url)
-        # print("response data:", response.data)
+        response = self.client.get(url)        
         local_serialized_data = IdeaSerializer(self.ideas, many=True).data
         # local_serialized_data = IdeaSerializer([self.idea1, self.idea2], many=True).data
         # print("data ter plaatse")
         # print(local_serialized_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(local_serialized_data, response.data)
+
+
 
     def test_get_one_idea(self):
         # ideas = Idea.objects.all()
@@ -271,6 +274,7 @@ class IdeaTestCase(APITestCase):
 
 
 class IdeaApiSearchOrderingTestCase(APITestCase):
+    """ let op: postgresql vs sqlite3 users_comments"""
     def setUp(self) -> None:
         self.category = Category.objects.create(name="chat")
         self.user1 = User.objects.create(username="rio", email="zoo@mail.com")
@@ -300,41 +304,43 @@ class IdeaApiSearchOrderingTestCase(APITestCase):
             status=2
         )
 
+        
+
     def test_get_search(self):
         """search: test to catch word in title/lead_text/main_text
         """
-        ideas = Idea.objects.annotate(an_likes=Count(Case(When(useridearelation__like=True, then=1))),
-                                      avg_rate=Avg('useridearelation__rating'),
-                                      ).filter(
-            id__in=(self.idea1.id,self.idea2.id, self.idea3.id)).order_by('-created_at')
+        ideas = Idea.objects.annotate(
+            users_comments=Count('comments',distinct=True)).filter(id__in=(self.idea1.id,self.idea2.id, self.idea3.id)).order_by('-created_at')
         url = reverse('idea-list')
         serializer_data = IdeaSerializer(ideas, many=True).data
+        # print("ser data:",serializer_data)    
         resp = self.client.get(url, data={"search": "rio"})
+        # print(resp.data)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(serializer_data, resp.data)
         self.assertEqual(len(serializer_data),3)
 
-    # def test_get_filter(self):
-    #     ERROR: TypeError: 'int' object is not iterable
-    #     """search: test to get filter for status;
-    #     custom filter:''featured','view_count';
-    #     """
-    #     ideas = Idea.objects.annotate(an_likes=Count(Case(When(useridearelation__like=True, then=1))),
-    #                                   avg_rate=Avg('useridearelation__rating'), ).filter(
-    #         id__in=(self.idea1.id))
-    #     # url = reverse('idea-list')
-    #     url = 'http://127.0.0.1:8000/api/v1/ideas-collection/ideas/?featured=True&view_count='
-    #     serializer_data = IdeaSerializer(ideas, many=True).data
-    #     resp = self.client.get(url, data={"featured": True})
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        # self.assertEqual(serializer_data, resp.data)
-        # self.assertEqual(1, len(resp.data))
+#     # def test_get_filter(self):
+#     #     ERROR: TypeError: 'int' object is not iterable
+#     #     """search: test to get filter for status;
+#     #     custom filter:''featured','view_count';
+#     #     """
+#     #     ideas = Idea.objects.annotate(an_likes=Count(Case(When(useridearelation__like=True, then=1))),
+#     #                                   avg_rate=Avg('useridearelation__rating'), ).filter(
+#     #         id__in=(self.idea1.id))
+#     #     # url = reverse('idea-list')
+#     #     url = 'http://127.0.0.1:8000/api/v1/ideas-collection/ideas/?featured=True&view_count='
+#     #     serializer_data = IdeaSerializer(ideas, many=True).data
+#     #     resp = self.client.get(url, data={"featured": True})
+#     #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
+#         # self.assertEqual(serializer_data, resp.data)
+#         # self.assertEqual(1, len(resp.data))
 
     def test_get_order_oldest_on_top(self):
         """search: test to get filter for status;
         """
-        ideas = Idea.objects.annotate(an_likes=Count(Case(When(useridearelation__like=True, then=1))),
-                                      avg_rate=Avg('useridearelation__rating'), ).filter(
+        ideas = Idea.objects.annotate(
+            users_comments=Count('comments',distinct=True)).filter(
             id__in=(self.idea3.id, self.idea2.id, self.idea1.id)).order_by('-created_at')
         url = reverse('idea-list')
         serializer_data = IdeaSerializer(ideas, many=True).data
@@ -343,4 +349,5 @@ class IdeaApiSearchOrderingTestCase(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(serializer_data, resp.data)
         self.assertEqual(first_the_oldest,self.idea3.title)
+
         
