@@ -19,11 +19,9 @@ class IdeaTestSerializer(TaggitSerializer, ser.ModelSerializer):
     """ ONLY FOR TESTING:excl created_at: for testing """
     # print("inside IdeaTestSer-er")
     owner_idea = ser.CharField(source='author.username', default="", read_only=True)
-    an_likes = ser.IntegerField(read_only=True)
-    avg_rate = ser.DecimalField(read_only=True, max_digits=5, decimal_places=2, default='0.00')
+    # author_unid = ser.ReadOnlyField(source='author.unid',read_only=True)
     author = ser.PrimaryKeyRelatedField(queryset=User.objects.all(),
                                         default=ser.CurrentUserDefault())
-
     categ_name = ser.ReadOnlyField(source='categ.name')
 
     tags = TagListSerializerField(required=False)
@@ -34,7 +32,7 @@ class IdeaTestSerializer(TaggitSerializer, ser.ModelSerializer):
 
         fields = ('id', 'title', 'author', 'lead_text', 'main_text', 'slug',
                   'owner_idea', 'categ_name', 'categ', 'status', 'an_likes', 'avg_rate', 'featured', 'tags', )
-        print("ser-er class Meta?")
+        print("inside Meta class idea TEST serer")
 
         fields = (
             'id', 'slug', 'title', 'author', 'lead_text', 'main_text', 'owner_idea', 'categ_name', 'categ', 'status', 'an_likes', 'avg_rate', 'featured', 'tags', 

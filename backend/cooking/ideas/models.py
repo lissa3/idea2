@@ -156,26 +156,29 @@ class UserIdeaRelation(models.Model):
     # follow = models.BooleanField(blank=True,default=False)
 
     def __str__(self):
-        return f'User: {self.user} gives buzy with action'
+        return f'User: {self.user} active in user-idea-relations {self.like}'
 
     def save(self,*args,**kwargs):
         """ import here to avoide circular import (idea-user-relation calls idea-user-relation)"""
         from .logic import calc_rating,calc_count_likes,calc_max_rating
-        old_rating = self.idea.avg_rate
-        old_likes_total = self.idea.an_likes
-        old_max_rating = self.idea.max_rating
+        # if like or rating changed |=> re-calc total likes on idea
+        old_rating = self.rating
+        old_likes_total = self.like
         start_creating = not self.idea.pk
         super().save(*args,**kwargs) # here idea gets (if triggered by change rating event) 
-        new_rating = self.idea.avg_rate
-        new_likes_total = self.idea.an_likes
-        new_max_rating = self.idea.max_rating
-        print("new rating",new_rating)
-        if start_creating and new_rating!=old_rating:
+        new_rating = self.rating
+        # print("new rating",new_rating)
+        new_likes_total = self.like
+        if start_creating and new_rating!=old_rating:            
             calc_rating(self.idea)
+            calc_max_rating(self.idea)
         if start_creating and new_likes_total != old_likes_total:
             calc_count_likes(self.idea)    
-        if start_creating and new_max_rating != old_max_rating:
-            calc_max_rating(self.idea)
-              
+        
+        
+
+
+
+
     
 

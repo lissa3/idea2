@@ -59,22 +59,22 @@ class IdeaTestCase(APITestCase):
         self.idea1 = self.ideas.get(id=self.idea1.id)
 
     def test_calc_rating(self):
-        print (calc_rating(self.idea1))
         calc_rating(self.idea1)
         self.idea1.refresh_from_db()
         # print(type(self.idea1.rating)) <class 'decimal.Decimal'>
+        print("avg_rating line 65 avg-rate",self.idea1.avg_rate)
         self.assertEqual('3.50',str(self.idea1.avg_rate))
 
     def test_calc_count_likes(self):
-        print('line 71 starts',self.idea1)    
         calc_count_likes(self.idea1)
         self.idea1.refresh_from_db()
+        print("line 71 an_likes ",self.idea1.an_likes)
         self.assertEqual(2,self.idea1.an_likes)
 
     def test_calc_max_rating(self):
-        print('line 75 starts',self.idea1)    
         calc_max_rating(self.idea1)
         self.idea1.refresh_from_db()
+        print("line 76, max_rating",self.idea1.max_rating)
         self.assertEqual(5,self.idea1.max_rating)
 
 

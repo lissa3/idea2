@@ -7,11 +7,11 @@ from ideas.models import Category
 class FilterCategListSerializer(ser.ListSerializer):
     """filter categs: front should get a list with only root categs"""
     def to_representation(self,objects):
-        print(type(objects))
-        print("initial data",len(objects))
+        # print(type(objects))
+        # print("initial data",len(objects))
         data = objects.filter(parent=None)
         # print("line 11 filter categs")
-        print("after parent None",len(data))
+        # print("after parent None",len(data))
         return super().to_representation(data)
 
 class CustomChildrenSerializer(ser.Serializer):
@@ -50,8 +50,4 @@ initial data <QuerySet [<Category: Books>, <Category: Cinema>, <Category: Fictio
 [07/Aug/2021 22:04:47] "GET /api/v1/tags/ HTTP/1.1" 200 42
 line 11 filter categs
 after parent None <QuerySet [<Category: Books>, <Category: Cinema>, <Category: Fishing>, <Category: Garden>, <Category: Hobby>]>
-
-
-
-
 """        

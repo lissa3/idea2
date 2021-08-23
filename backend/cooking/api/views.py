@@ -53,11 +53,11 @@ class CategoryList(generics.ListAPIView):
     serializer_class = CategorySerializer
     permission_classes = (AllowAny,)
     pagination_class = None
-    print("inside view")
+    # print("inside view")
 
     def get_queryset(self, queryset=None):
         # print("view for cats works with qs:", Category.objects.all())
-        print("about categs line 60")
+        # print("categs view line 60")
         queryset = Category.objects.all()
         # print(type(Category.objects.all()))        
         return queryset
@@ -72,15 +72,23 @@ class IdeasPerCategListView(generics.ListAPIView):
     
     def get_queryset(self):
         slug = self.kwargs.get('slug')
+        print("got a categ with slug:",slug)
         categ = get_object_or_404(Category, slug=slug)
-        # qs = Idea.objects.filter(categ = categ)
-        # print("qs",qs)
-        if categ.children:
+        qs2 = Idea.objects.filter(categ = categ)
+        print("qs2",qs2)
+        if categ.get_children():
+            print("categ has children")
+            print(categ.children.exists())
             categ_descend = categ.get_descendants(include_self=True)
             qs = Idea.objects.filter(categ__in =categ_descend)
         else:
-            qs = Idea.objects.filter(categ=categ)    
-        return qs    
+            print("categ has no children")
+            qs = Idea.objects.filter(categ=categ) 
+            print("qs line 86 len",qs) 
+        print("returning qs with len to tests",qs.count())      
+        return qs 
+
+     
 
 # Tags (thir party taggit)
 

@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
-from django.db.models import When, Case, Count, Avg,Max
+from django.db.models import Count
 # from django.core.exceptions import ValidationError
 
 
@@ -37,7 +37,9 @@ User = get_user_model()
 
 class IdeaRelations(RetrieveModelMixin,UpdateModelMixin,viewsets.GenericViewSet):
     """"""
+    print("insde idea-user-relations")
     queryset = UserIdeaRelation.objects.all()
+    print("qs in i-u-rel",queryset)
     serializer_class = UserIdeaRelSerializer
     lookup_field = 'idea'
     permission_classes = (IsAuthenticated,)
@@ -46,9 +48,9 @@ class IdeaRelations(RetrieveModelMixin,UpdateModelMixin,viewsets.GenericViewSet)
     def get_object(self):
         # print("data from vue.js is", self.request.data)
         # print("user is", self.request.user)
-        # print("idea", self.kwargs.get('idea'))
+        print("idea", self.kwargs.get('idea'))
         obj, _ = UserIdeaRelation.objects.get_or_create(idea_id=self.kwargs['idea'], user=self.request.user)
-        # print("object created or updated", obj)
+        # print("object created or updated in viewset idea-user-rel", obj)
         return obj
          
 
@@ -78,6 +80,7 @@ class IdeaViewSet(viewsets.ModelViewSet):
         queryset = Idea.objects.annotate(
             users_comments=Count('comments',distinct=True)
             ).select_related('author','categ').prefetch_related('tags')
+        print("viewset made qs:",queryset)    
         return queryset 
 
     def update(self, request, *args, **kwargs):
