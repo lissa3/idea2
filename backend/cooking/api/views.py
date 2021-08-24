@@ -24,7 +24,7 @@ from taggit.models import Tag
 from api.serializers.categs.categ_ser import CategorySerializer,CategoryNameSerializer
 from api.serializers.tags.tags_ser import TagSerializer
 from api.serializers.ideas.idea_ser import IdeaSerializer
-from api.serializers.account.profile_serializer import ProfileSerializer,ProfilePublicSerializer
+from api.serializers.account.profile_serializer import ProfileSerializer #,ProfilePublicSerializer
 # from api.serializers.account.user_serializer import UserSerializer
 
 from ideas.models import Category, Idea
@@ -163,12 +163,13 @@ class RetrieveFollowers(APIView):
 
 class ProfileRetrView(generics.RetrieveAPIView):
     """return profile info for public view"""
-    serializer_class = ProfilePublicSerializer
+    serializer_class = ProfileSerializer
     permission_classes = (AllowAny,)
     
     def get_queryset(self):
         print("public profile info: qs")
-        return  Profile.objects.annotate(count_following=Count('following')).select_related('user').prefetch_related('following')
+        return  Profile.objects.select_related('user').prefetch_related('following')
+        # return  Profile.objects.annotate(count_following=Count('following')).select_related('user').prefetch_related('following')
     
     
 class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):

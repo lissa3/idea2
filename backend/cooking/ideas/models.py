@@ -170,6 +170,7 @@ class UserIdeaRelation(models.Model):
         from .logic import calc_rating,calc_count_likes,calc_max_rating
         # if like or rating changed |=> re-calc total likes on idea
         start_creating = not self.pk
+        print("obj is just created and has no pk")
         super().save(*args,**kwargs) # here idea gets (if triggered by change rating event) 
         new_rating = self.rating
         new_like = self.like

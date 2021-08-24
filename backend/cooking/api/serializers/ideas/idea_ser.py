@@ -20,7 +20,7 @@ class IdeaSerializer(TaggitSerializer, ser.ModelSerializer):
     owner_idea = ser.CharField(source='author.username', default="", read_only=True)
     # an_likes = ser.IntegerField(read_only=True)
     # avg_rate = ser.DecimalField(read_only=True, max_digits=5, decimal_places=2, default='0.00')
-    max_rating = ser.DecimalField(read_only=True, max_digits=5, decimal_places=2, default='0.00')
+    # max_rating = ser.DecimalField(read_only=True, max_digits=5, decimal_places=2, default='0.00')
     author = ser.PrimaryKeyRelatedField(queryset=User.objects.all(), default=ser.CurrentUserDefault())
     tags = TagListSerializerField(required=False) 
     users_comments = ser.IntegerField(read_only=True)
