@@ -10,6 +10,9 @@ export const mutationTypes = {
   SET_ACCESS_TOKEN:'[auth] SET_ACCESS_TOKEN',
   SET_CONFIRM:'[auth] SET_CONFIRM',
   SET_REFRESH_TOKEN:'[auth] SET_REFRESH_TOKEN',
+  // get a new access token with refresh
+  SET_NEW_ACCESS_TOKEN_SUCCESS:'[auth] SUCCESS GET NEW ACCESS TOKEN',
+  FETCH_NEW_ACCESS_FAILURE:'[auth] FETCH NEW ACCESS TOKEN FAILURE',
   //login
   SET_LOG_IN:'[auth] SET_LOG_IN',
   SET_LOGIN_SUCCESS:'[auth] SET_LOGIN_SUCCESS',
@@ -47,7 +50,8 @@ export const actionTypes = {
   confirmEmailForgottenPsw:'[auth] confirmEmailForgottenPsw',
   setNewPswAfterForget:'[auth] setNewPswAfterForget',
   setNewPswAChange:'[auth] setNewPswAChange',
-  deleteAccount:'[auth] delete user account'
+  deleteAccount:'[auth] delete user account',
+  fetchFreshAccessToken:'[auth] fetch new access with refresh token'
 
 }
 export const getterTypes = {
@@ -212,6 +216,8 @@ const mutations = {
     state.isLoading = false
     state.errEvent = err
   },
+  [mutationTypes.SET_NEW_ACCESS_TOKEN_SUCCESS](){},
+  [mutationTypes.FETCH_NEW_ACCESS_FAILURE](){}
   
 }
 const actions = {
@@ -509,6 +515,26 @@ const actions = {
     }
     
 },
+  async [actionTypes.fetchFreshAccessToken]({commit},refresh){
+    try{
+      // commit(mutationTypes.FETCH_NEW_ACCESS)
+      console.log('asking for a new access token',refresh)
+      console.log(authAPI.getNewAccessToken)
+      const resp= await authAPI.getNewAccessToken({refresh:refresh})
+      if(resp.status === 200){          
+        let newAccess = resp.data.access  
+        console.log("line 525 data",newAccess)           
+        commit(mutationTypes.SET_ACCESS_TOKEN,newAccess)        
+        commit(mutationTypes.SET_NEW_ACCESS_TOKEN_SUCCESS) 
+        return resp      
+        }
+
+    }catch(err){
+      commit(mutationTypes.FETCH_NEW_ACCESS_FAILURE) 
+      console.log('error during fetching new access token')
+    }
+
+  }
   
 } 
 

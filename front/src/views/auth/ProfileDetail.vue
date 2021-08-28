@@ -10,14 +10,13 @@
             <!-- style="max-width: 100%; width: 250px; object-fit: cover"          -->
             
             <div>        
-              <div v-if="!noImgShow" >
-                
+              <div v-if="!noImgShow" >                
                 <img  :src="profile.image" alt="profile image">    
-             </div>
-             <div v-if="noImgShow" >
-              <!-- style="max-width: 100%; width: 250px; object-fit: cover"   -->
-              <b-avatar size="144px"></b-avatar>
-            </div>
+                </div>
+                <div v-if="noImgShow" >
+                <!-- style="max-width: 100%; width: 250px; object-fit: cover"   -->
+                <b-avatar size="144px"></b-avatar>
+                </div>
             </div>                   
             <!-- <img  v-else alt="profile image" class="rounded-circle" src="/220px.jpg"> -->
             <h1 class="display-4">Profile: {{profile.name}}</h1>

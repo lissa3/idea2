@@ -29,10 +29,16 @@ class ProfileSerializer(ser.ModelSerializer):
         model = Profile
         fields = ('bio','website','unid','image','name','following','user','followers','count_following','count_followers')
         # fields = ('bio','website', 'image','name','count_following')
+
+    def save(self, *args, **kwargs):
+        if self.instance.image:
+            # print("in if block")
+            self.instance.image.delete()
+        return super().save(*args, **kwargs)        
        
     def get_following(self, obj):
         """qs of users """
-        print("obj class",obj.__class__)
+        # print("obj class",obj.__class__)
         try:
             qs = obj.following.all()    
             if qs.count()>0:

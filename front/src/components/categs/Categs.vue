@@ -2,8 +2,8 @@
     <div>
         <section >                   
             <div v-if="isLoading"><app-loader></app-loader></div>        
-            <div  class="categ-list">
-                <div class="section-categs">Categories:</div>
+            <div  class="d-flex flex-column">
+                <div class="section-categs mb-2">Categories:</div>
                 <app-categ-tree :treeData="categs"></app-categ-tree>                       
             </div>
             <div v-if="error">Smth went wrong</div>            
@@ -44,13 +44,13 @@ export default {
 }
 </script>
 <style scoped>
-.categ-list{
+/* .categ-list{
     display: flex;
     flex-direction: row;
     justify-content: right;
     flex-wrap: wrap;
     
-}
+} */
 .categ{
     color:rgb(56, 43, 10)
 
@@ -71,7 +71,7 @@ export default {
   text-decoration: none;
   list-style: none;
   padding-left: 1rem;
-  margin-left: 1rem;
+  /* margin-left: 1rem; */
 }
 .section-categs li {
   cursor: pointer;

@@ -176,6 +176,15 @@ export default {
       this.$store.dispatch(actionTypes.getUser)
       // console.log("action type from menu", actionTypes.getUser)
       // console.log("menu mounted, call for getUser from store")
+    },
+    created(){
+     setInterval(()=>{ 
+       // sending request for a new access token each 60 min
+       let refresh = localStorage.getItem('refreshToken')
+       let access = localStorage.getItem('accessToken')
+       console.log("access is is",access)
+       this.$store.dispatch(actionTypes.fetchFreshAccessToken,refresh) 
+       }, 3600000);
     }
 }
 </script>

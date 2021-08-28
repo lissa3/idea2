@@ -135,6 +135,15 @@ class Idea(TimeStamp):
     def get_absolute_url(self):
         return reverse('ideas:detail', kwargs={'slug': self.slug})
 
+    # def save(self,*args,**kwargs):
+    #     print("self dict thumbnail",self.__dict__.get('thumbnail'))
+    #     # 'thumbnail': <ImageFieldFile: ideapot/idea_1/tired1629925107.4117696.JPG>,
+    #     thumbnail = self.thumbnail
+    #     if thumbnail == "":
+    #         self.thumbnail = None
+    #     print(self.__dict__)    
+    #     super().save(*args,**kwargs)    
+
     
 
 

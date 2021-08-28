@@ -25,6 +25,7 @@ const readPhoto = async (photo) => {
   return canvas;
 };
 
+// create canvas
 const scaleCanvas = (canvas, scale) => {
   const scaledCanvas = document.createElement('canvas');
   scaledCanvas.width = canvas.width * scale;
@@ -37,6 +38,7 @@ const scaleCanvas = (canvas, scale) => {
   return scaledCanvas;
 };
 
+// final step : re-size
 const optimizePhoto = async (photo) => {
   let canvas = await readPhoto(photo);
 

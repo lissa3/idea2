@@ -1,0 +1,35 @@
+idea = viewset with crud and pagination
+
+url: 127.0.0.1:8000/api/v1/ideas-collection/.... (slug)
+
+=========
+Backend:
+=========
+1. mode Idea/ IdeaUserRelation
+instead of annotated attr (total likes,max rating,average rating) |=> created chached fields
+attr names are the same
+value gets re-calculated only if like or rating has been changed
+2. method .save() model IdeaUserRelation follows these changes and calls for 
+aggregation of like/rating if needed
+
+So: instead of idea qs.annotation => use model Idea cached fields that are updated
+via aggregation in IdeaUserRelation model
+
+2.viewset: 
+select_related (category FK)
+prefetch_related (tags m2m
+
+
+result: (incl  users_comments=Count('comments',distinct=True))
+initial qs 12 time 39ms
+final   qs 5  time 24ms 
+Осталось непонятным, почему с использованием Idea .save()/ser-er update у меня не получилось 
+реализовать функ-л юзер removes file on front |=> on aws 3 (via dj-storages) img gets deleted
+from bucket; same for replacing with a new one.
+Final solution: in .save() ser-er Idea: if thumbnal attr|=> delete it
+(front brings thumbnal == empty string if files is removed/not attached in form)
+========
+Front
+========
+TODO: 
+components/image/pagination

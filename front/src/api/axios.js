@@ -16,6 +16,35 @@ axios.interceptors.request.use(config=>{
     return config
 })
 
+// axios.interceptors.response.use((resp)=>{
+//         return resp
+//     },
+//     function(error){
+//         const originalRequest = error.config
+//         originalRequest._retry = false
+//         if(error.response.status ===401 &&originalRequest.url ==="/auth/jwt/refresh/"){
+//             // console.log("refresh is not fresh any more");
+//             window.location.href = '/login';
+//         }
+//         if(error.response.status ===401&&!originalRequest._retry){
+//             originalRequest._retry = true
+//             return axios.post('/auth/jwt/refresh/',{'refresh':localStorage.getItem('refreshToken')})
+//             .then(res=>{
+//                 if(resp.status ===200){
+//                     // put access token to LS
+//                     localStorage.setItem('accessToken',resp.data.access)
+//                     // change auth header
+//                     axios.defaults.headers.common['Authorization'] = `JWT ${resp.data.access}}` 
+//                     // return origina req with axios
+//                     return axios(originalRequest)
+//                 }
+//             })
+//         }else{
+//             window.location.href = '/login/';
+//         }
+//     }
+// )
+
 
 
 export default axios

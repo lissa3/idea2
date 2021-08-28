@@ -13,18 +13,20 @@
                   :categories ="categList" 
                   :initial-values="initialValues"
                   :errors="servResp"
+                  
                   :is-submitting="isSubmitting"
                   @ideaSubmit="submitEd"
                 ></app-idea-form>
                 <!-- :errors="validationErrors" -->
-            </div>  
+            </div>
+
 <!-- temp loader for downloading an image -->
             <!-- <div class="col-xs-12 col-md-10 py-3 text-center offset-md-1">
               <app-loader></app-loader>
             </div>-->
-           <div class="col-xs-12 col-md-10 py-3 text-center offset-md-1">
+          <div class="col-xs-12 col-md-10 py-3 text-center offset-md-1">
               <app-loader v-if="loadImg"></app-loader>
-            </div> 
+          </div> 
     </div>  
   </div>
 </template>
@@ -60,11 +62,15 @@ export default {
           titleErr:null,
           leadTextErr:null,
           mainTextErr:null,
+          // errors         
           tagsErr:null,
           thumbnailErr:null,
           netWorkErr:null,
           // err500:null,
-          nonFieldErr:null
+          nonFieldErr:null,
+          // err 401
+          notAuthorized:null
+          
         },
         // temp vars for uploading img(postpone re-direct to idea detail)
         loadImg:false      
@@ -93,6 +99,7 @@ export default {
          this.servResp.netWorkErr = 'A server/network error occured.Sorry about this - we will get it fixed shortly.'
        }else{
          console.log("err response in vue",resp)
+            // this.servResp.status = resp.status
             this.servResp.categErr = resp.categErr
             this.servResp.titleErr = resp.titleErr
             this.servResp.leadTextErr = resp.leadTextErr
@@ -101,6 +108,17 @@ export default {
             this.servResp.featuredErr = resp.featuredErr
             this.servResp.thumbnail = resp.thumbnailErr
             this.servResp.nonFieldErr = resp.nonFieldErr
+            if(resp.status===400){              
+              this.servResp.error400 = {
+                badRequest:
+                "Sorry.Error 400. Something went wrong during editing.Please try later"}
+
+            }if(resp.status===401){
+              this.servResp.notAuthorized = {
+                notAuthorized:"Sorry.Your session is expired.Please login again."
+              }
+            }
+
           } 
           
          
@@ -173,3 +191,4 @@ export default {
   
 }
 </script>
+

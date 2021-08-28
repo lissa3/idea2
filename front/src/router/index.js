@@ -31,6 +31,7 @@ import IdeasByTagName from '@/views/IdeasByTagName'
 import FollowList from '@/views/FollowList'
 import NotFound from '@/views/NotFound'
 
+
 Vue.use(VueRouter)
 // https://stackoverflow.com/questions/62462276 ow-to-solve-avoided-redundant-navigation-to-current-location-error-in-vue
 const routerPush = Router.prototype.push
@@ -104,7 +105,10 @@ const routes = [
   {
     path: '/personal-feed/',
     name: 'personalFeed',
-    component: PersonalFeed
+    component: PersonalFeed,
+    // meta:{
+    //   requiresAuth:true
+    // }
   },
   {
     path: '/idea-detail/:slug',
@@ -114,12 +118,18 @@ const routes = [
   {   
     path: '/idea-create',
     name: 'ideaCreate',
-    component: IdeaCreate
+    component: IdeaCreate,
+    // meta:{
+    //   requiresAuth:true
+    // }
   },
   {   
     path: '/idea-edit/:slug',
     name: 'editIdea', 
-    component: IdeaEdit
+    component: IdeaEdit,
+    // meta:{
+    //   requiresAuth:true
+    // }
   },
   
   {
@@ -163,18 +173,24 @@ const routes = [
     name: 'accountProfile',
     component: AccountProfile,
     // meta:{
-    //   requiresLogin:true
+    //   requiresAuth:true
     // }
   },
   {
     path: '/profile-edit/:unid',
     name: 'editProfile',
-    component: EditProfile
+    component: EditProfile,
+    // meta:{
+    //   requiresAuth:true
+    // }
   },
   {
     path: '/profile-delete',
     name: 'deleteAccount',
-    component: DeleteAccount
+    component: DeleteAccount,
+    // meta:{
+    //   requiresAuth:true
+    // }
   },
   {
     path: '/follow-view',
@@ -205,5 +221,30 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth) {
+    const authUser = JSON.parse(window.localStorage.getItem('user')) // your oauth key
+    if (authUser && authUser.accessToken) {
+      next()
+    } else {
+      next({
+        name: 'login'
+      })
+    }
+  }
+  next()
+})
+
+//for each router meta => public
+// router.beforeEach((to, from, next) => {
+//   console.log("greet from main.js?")
+//   // console.log(getterTypes.isLoggedIn)
+//   if (!to.meta?.public && !localStorage.getItem('user')) {
+//     return next("/login");
+//   }
+//   next();
+// });
 
 export default router

@@ -28,18 +28,19 @@
               
             </div>      
           </div>
-        </div>          
-<!-- show comment body  -->
+        </div>   
+<!-- if comment not deleted you may:             -->
+  <!-- show comment body  -->
         <div v-if="!comment.deleted">
-        <div v-if="!isEditing" class="col-sm-12 ">
-          <p class="">{{comment.body}} </p>  
-          <p>Temp comm iD <strong>{{comment.id}}</strong></p>
-          
-          <p v-if="!parentId===null">Temp parent id {{parentId}}</p>
-          <p v-if="parentId===null">Temp parent id is null</p>
-        </div>           
+          <div v-if="!isEditing" class="col-sm-12 ">
+            <p class="">{{comment.body}} </p>  
+            <p>Temp comm iD <strong>{{comment.id}}</strong></p>
             
-<!-- if editing -->
+            <p v-if="!parentId===null">Temp parent id {{parentId}}</p>
+            <p v-if="parentId===null">Temp parent id is null</p>
+          </div>           
+            
+  <!-- if editing -->
             <div v-if="isEditing" class="col-md-12">
               <app-comment-form
               submitLabel="Edit"
@@ -50,7 +51,7 @@
               >
               </app-comment-form>  
             </div>
-<!-- if reply(ing) -->
+  <!-- if reply(ing) -->
             <div v-if="isReplying">
                <app-comment-form
               submitLabel="Reply"
@@ -64,18 +65,18 @@
             <div class="d-flex justify-content-left col-md-12 mb-2">                
                 <button class="btn btn-outline-success mb-2" @click="commReply(comment.id)">
                     Reply
-                </button>                
-                
+                </button>               
             </div>
           </div> 
+<!--end if comm not deleted-->          
         </div>
       </div> 
      </div> 
 <!--end if comment not deleted-->
 
 <!-- start render section if comment deleted -->
-     <div v-if="comment.deleted" class="comment-wrap-deleted mt-1 mb-1">
-       <div>Comment deleted</div>
+      <div v-if="comment.deleted" class="comment-wrap-deleted mt-1 mb-1">
+      <div>Comment deleted</div>
       </div>
 <!-- end section render deleted comment     -->
 <!-- start render if comment has replies: Instagram stile == "onle one indentation defined by var indent
@@ -227,7 +228,7 @@ export default {
     replies(){
       // console.log(this.comments.filter(comm=>comm.parent===this.parentId))
           return this.comments.filter(comm=>comm.parent===this.parentId).sort(
-            (a,b)=>new Date(a.created_at).getTime() - new date(b.created_at).getTime()
+            (a,b)=>new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           )           
         },
     indent() {

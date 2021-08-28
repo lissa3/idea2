@@ -210,7 +210,7 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
         """let op: don't save twice to avoid err msg: file not img||corrupt"""
         partial = kwargs.pop('partial', False)
         profile = self.get_object()
-        # print("server got the following data:", request.data)
+        print("server got the following data:", request.data)
         serializer = self.get_serializer(profile, data=request.data, partial=partial)
         print("is ser-er valid?")
         if serializer.is_valid():

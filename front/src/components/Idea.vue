@@ -76,7 +76,10 @@
                     </div>
                 </div>                
                 <div class="idea-main-text mb-2">
-                    <p>{{idea.lead_text}}</p>
+                    <p><strong>Main text: </strong> {{idea.main_text}}</p>
+                </div>
+                <div class="idea-main-text mb-2">
+                    <p><strong>Lead text: </strong> {{idea.lead_text}}</p>
                 </div>
                 <div class="idea-read-more mb-2">
                     <router-link :to="{ name: 'ideaDetail',params:{slug:idea.slug} }"

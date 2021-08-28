@@ -129,7 +129,9 @@ const actions = {
         commit(mutationTypes.EDIT_IDEA_START);
         const servResp = {}
         try{
-           // let op: you can get resp.data already ( see api) if you want            
+           // let op: you can get resp.data already ( see api) if you want  
+           console.log("edited data",typeof ideaInput)   
+           console.log(Object.keys(ideaInput))       
            const resp = await ideaAPI.editIdea(slug,ideaInput)  
             console.log("response from edit:",resp)
             commit(mutationTypes.EDIT_IDEA_SUCCESS)  

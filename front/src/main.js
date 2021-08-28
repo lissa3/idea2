@@ -12,6 +12,20 @@ Vue.use(Vuelidate)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth) {
+    const authUser = JSON.parse(window.localStorage.getItem('user')) // your oauth key
+    if (authUser && authUser.accessToken) {
+      next()
+    } else {
+      next({
+        name: 'login'
+      })
+    }
+  }
+  next()
+})
+
 new Vue({
   router,
   store,

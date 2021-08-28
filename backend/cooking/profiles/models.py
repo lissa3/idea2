@@ -8,6 +8,7 @@ from timestamp.broadcast_utils.idea_utils import upload_img
 from timestamp.broadcast_utils.validators import validate_size
 from django.core.validators import FileExtensionValidator
 
+
 ALLOWED_EXTENTIONS = ('JPG', 'JPEG', 'PNG')
 
 

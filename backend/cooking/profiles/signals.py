@@ -19,7 +19,7 @@ def auto_delete_user(sender,instance,**kwargs):
 @receiver(post_save,sender=User)
 def create_profile(sender,instance,created,*args,**kwargs):
     """create_or_update profile"""
-    print("inside post save signal; creating profile on user with is",instance.id,instance.email)
+    # print("inside post save signal; creating profile on user with is",instance.id,instance.email)
     if created and instance.email:
         Profile.objects.create(user=instance)
     # instance.profile.save()  # think if this line(errr in api/idea/tests) err:User has no profile 
@@ -31,7 +31,7 @@ def add_unid(sender,instance,**kwargs):
     # print("pre-save profile calling, creating uid")
     if not instance.unid:
         instance.unid = make_unid(instance)
-        print("profile instance gets unid",instance.unid)
+        # print("profile instance gets unid",instance.unid)
     # if not instance.display_name:
     #     instance.display_name = make_display_name(instance)
     instance.badge_bg  = create_color()   

@@ -11,9 +11,15 @@ const login = (creds)=>{
     return axios.post('/auth/jwt/create/',creds)
 }
 
-// getAPI = with Authorization JWT header
+// req by Menu mounted
 const getUser = ()=>{
     return axios.get('/auth/users/me/')
+}
+
+
+// req to get a new access token each 15 min
+const getNewAccessToken = (refreshToken)=>{
+    return axios.post('/auth/jwt/refresh/',refreshToken)
 }
 // link for new psw instead og forgotten
 const confirmEmailPswForget = (creds)=>{
@@ -77,19 +83,20 @@ const deleteAccount = (psw)=>{
 
 
 export default {
-    register,
     activate,
-    login,
-    getUser,
-    registerGoogle,
-    googleAuth,
     confirmEmailPswForget,
-    requestNewPsw,
-    requestChangePsw,
+    deleteAccount,
+    getUser,
+    getNewAccessToken,
     getProfile,
+    googleAuth,
+    login,
     profileOwnerAction,
     profileOwnerEdit,
-    deleteAccount
+    requestNewPsw,
+    requestChangePsw,
+    register,
+    registerGoogle,
     
 
 }    

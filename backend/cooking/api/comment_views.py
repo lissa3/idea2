@@ -32,18 +32,19 @@ class CommentAPIView(CreateModelMixin,UpdateModelMixin,DestroyModelMixin,Retriev
     
 
     def perform_create(self, serializer):
-        print("self is",self)
-        print("self.data",self.request.data)
-        print("line 35 inside perform create",self.request.data)
-        user = self.request.user
-        print("line 35",user)
-        print("req:",self.request.data)
+        # print("self is",self)
+        # print("self.data",self.request.data)
+        # print("line 35 inside perform create",self.request.data)
+        # user = self.request.user
+        # print("line 35",user)
+        # print("req:",self.request.data)
         # {'body': 'Greet', 'idea': 7, 'parent': None}
         idea = get_object_or_404(Idea,id=self.request.data['idea'])
         # print("line 37",idea)
         serializer.save(user=self.request.user,idea=idea)
 
     def perform_destroy(self, instance):
+        #  TODO save body and just make it boolean deletd?
         instance.body="" 
         instance.deleted = True       
         instance.save()
@@ -58,7 +59,7 @@ class CommentListView(ListAPIView):
     filter_backends = [ OrderingFilter]
     ordering_fields = ('created_at')
     # This will be used as the default ordering
-    ordering = ('-created_at',) 
+    ordering = ('created_at',) 
     pagination_class = None  
     
 

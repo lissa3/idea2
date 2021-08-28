@@ -51,8 +51,9 @@
                   <div class="file-wrap">          
                   <label class="file-select mr-sm-2">
                     <div class="select-button">
-                      <span v-if="image">Current file File: {{imageLink}}</span>
-                      <span v-else>Select File</span>
+                      <span v-if="image&&image.name">Current file: {{image.name}}</span>
+                      <span v-if="image&&!image.name">Current file: {{getShortName}}</span>
+                      <span v-if="!image">Select File</span>
                     </div>   
                   <input
                     id="image"
@@ -77,7 +78,7 @@
                   </span>                        
                   </div>
                   <p class="text-mute">Allowed images with extentions: .png,.jpg/.jpeg</p> 
-<!-- front-side errors upload file-->
+<!-- front-side errors or success upload file  TODO: do I need it?-->
                    <div class="msg" v-if="browserFileUploadMsg" :class="`${localErr?'is-danger':'is-success'}`">
                       <div class="msg-body">{{browserFileUploadMsg}}</div>
                   </div>  
@@ -90,6 +91,11 @@
                     </ul>
                   </div> -->
                 </b-form-group>
+<!-- front-side errors upload file-->
+            <div class="msg mb-2 py-2" v-if="localErr" :class="`${localErr ? 'is-danger' : 'is-success'}`">
+                <div class="msg-body" v-if="alertHeavyFile">{{ alertHeavyFile }}</div>
+                <div class="msg-body" v-if="formatNotAllowed">{{ formatNotAllowed }}</div>            
+            </div>                
                 <b-button type="submit" class="btn btn-secondary"
                   >Edit It</b-button>                                
                 </b-form>
@@ -111,16 +117,26 @@
 import {mapGetters} from 'vuex'
 import {getterTypes} from '@/store/modules/auth'
 import {actionTypes} from '@/store/modules/profile'
-
 import {mapState} from 'vuex'
+import optimizePhoto from '@/assets/js/resizeIt.js'
+import getFileNameFromUrl from '@/assets/js/shortName.js'
+
 export default {
   name:'ProfileEdit',
   data(){
       return {     
         bio:'',
-        checked:false,
         image:'',
-        website:'',
+        checked:false,
+        // upload file vars
+        website:'',                         
+        checked: false, 
+        localErr:false,
+        formatNotAllowed:null,
+        resizedImage:null,                            
+        alertHeavyFile:null, 
+        // all UI msg(?) 
+        browserFileUploadMsg:null,
         servResp:{
           status:null,
           bioErrs:null,
@@ -139,7 +155,13 @@ export default {
         }),       
         ...mapGetters({
           currentUser:getterTypes.currentUser,
-        }),   
+        }), 
+      
+      getShortName(){
+        // return only file name from aws url link
+        return getFileNameFromUrl(this.image)
+      }
+         
     
   },
   methods:{
@@ -149,7 +171,13 @@ export default {
         const profileData = new FormData()
         // console.log(unid,this.website,this.bio)
         profileData.append('bio',this.bio)
-        profileData.append('website',this.website)        
+        profileData.append('website',this.website) 
+        if(this.image !==''){
+          profileData.append('image',this.image)
+        }else{
+          profileData.append('image','')
+        }
+               
         this.$store.dispatch(actionTypes.editPersonalInfo,{unid,profileData})
         .then((resp)=>{
           console.log("from store resp",resp)
@@ -170,16 +198,47 @@ export default {
         }).catch((err)=>{
           console.log("final error",err)
         })
-      },
-      detachFile(){
-        console.log('detaching file')
-      },
-      onFileChange(){
+      },     
+      async onFileChange(){
         console.log('file changing')
+        this.$refs.check.checked = false
+        this.browserFileUploadMsg = ''
+        console.log('inital path to uploaded img is:',this.$refs.file.value)
+        let img = this.$refs.file.files[0]
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']
+        const MAX_SIZE = 2000000
+        const tooBig = img.size > MAX_SIZE
+        if(allowedTypes.includes(img.type)&&!tooBig){
+          this.image = img
+          console.log("ready to send img",this.image.size)
+          console.log("path to file is:",this.$refs.file.value)
+          // resizing image with util (7-8 times)
+          const resizedImage = await optimizePhoto(this.image)
+          this.image = new File([resizedImage],this.image.name)
+        }else{
+          this.localErr = true
+          if(tooBig){
+            this.alertHeavyFile = `File too large.MAX sise is ${MAX_SIZE / 1000}kB`
+          }
+          if(!allowedTypes.includes(img.type)){
+            this.formatNotAllowed = 'Only images are allowed'
+          }
+        }
       },
       clearCheckboxUploadFile(){
         console.log('clear checkbox upload')
-      }
+        this.$refs.check.checked=false
+      },
+       detachFile(){
+         // user wants to remove img to replace it/or upload aother one if file too large/ext problem
+        console.log('checkbox clicked so detach file')
+        this.$refs.file.value= ''// path to file on
+        console.log('done,after detachment image path is:',this.$refs.file.value)
+        this.localErr = false
+        this.image = ''
+        this.resizedImage=null
+
+      },
     },
     created(){
       // console.log("create and got profile",this.profile)

@@ -2,8 +2,10 @@
   <div>
     <div>
       <div v-for="node in treeData" :key="node.id">
+ <!-- render categs children if present        -->
         <div v-if="node.children && node.children.length" class="left-shift">
-          <!-- <div v-if="tree.children.length > 0" class="left-shift"> -->           
+          <!-- <div v-if="tree.children.length > 0" class="left-shift"> -->
+            <div v-if="node.name">{{node.name}}</div>           
           <app-node-tree
             :name="node.name"
             :children="node.children"
@@ -12,15 +14,14 @@
           ></app-node-tree>
           <!-- :depth otherwise a string will be passed to a child component -->
         </div>
+<!-- render root categs (parent null) -->
         <div v-else class="left-shift">
           <!-- <div @click="getCatIdeas(node.slug)">{{ node.name }}</div> -->
            <router-link :to="{name:'categ',params:{slug:node.slug}}" class="categ">
                 <b-badge variant="secondary" class="categ px-2 mx-1">{{node.name}}</b-badge>          
             </router-link> 
         </div>
-        <!-- <router-link v-for="categ in categs" :key="categ.id" :to="{name:'categ',params:{slug:categ.slug}}" class="categ">
-                <b-badge variant="secondary" class="categ px-2 mx-1">{{categ.name}}</b-badge>          
-            </router-link>  -->
+        
       </div>
     </div>
   </div>

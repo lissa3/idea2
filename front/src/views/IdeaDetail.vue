@@ -85,10 +85,15 @@
                 </div>
                  <div class="d-flex justify-content-end mt-3 px-3 ">                  
                     <p v-if="thxRating" class="thanks">Thank you for giving a rating</p>                
-                </div>  
+                </div> 
+                <div class="card-text px-3 offset-md-2">
+                    <div class="mb-2 text-left">
+                      <strong>Main text:</strong>{{idea.main_text}}  
+                    </div>
+                </div>                   
                 <div class="card-text px-3 offset-md-2">
                     <div class="mb-2 text-left">                      
-                      <p>{{idea.lead_text}}Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur architecto eum atque odio deserunt! Eaque velit possimus, repellat quis adipisci at accusamus dolores ex sequi corrupti fugiat delectus asperiores non.</p>
+                      <p><strong>Lead text:</strong>{{idea.lead_text}} Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur architecto eum atque odio deserunt! Eaque velit possimus, repellat quis adipisci at accusamus dolores ex sequi corrupti fugiat delectus asperiores non.</p>
                       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint suscipit laboriosam unde, vel nemo blanditiis voluptates? Perferendis similique qui labore porro aliquid, nobis quidem odio, quos neque aperiam placeat consectetur.</p>
                     </div>
                     <div class="idea-read-more mb-2">
@@ -108,50 +113,33 @@
                         >
                       </app-like>
                       <div>  
-                        <!-- <div v-if="idea.users_comments>0">
+                        <div v-if="idea.users_comments>0">
                           <button type="button" class="btn btn-sm btn-outline-secondary" @click="fetchComments(idea.slug)">
                           Show Comments ({{idea.users_comments}})
                         </button>    
-                        </div>   -->
+                        </div>  
                         <p v-if="!idea.users_comments">                 
                           No comments yet
                         </p>                          
                       </div>                     
                     <small class="text-muted">9 mins</small>
                   </div>
-                  <div v-if="currentUser">
-                  <div class="d-flex justify-content-between align-items-center px-3 mb-3">
-                    <div class="">
-                      <button type="button" class="btn btn-sm btn-success" @click="showCommentForm">
-                        Leave a comment
-                      </button>                      
-                    </div>                  
-                  </div>
-                  </div>
+                  
               </div>
             </div> 
          </div>
      </div>      
-   </div>
-   <!-- start comment  form-->
-    <div class="mb-5"  :class="startComment?'show-comment-form':'comment-form-invisible'">
-          <form @submit.prevent="addComment">  
-            <div class="form-group">
-              <label for="body">Leave you comment here, please</label>
-                <textarea id="body" 
-                cols="30" rows="5"
-                v-model="commentBody"
-                placeholder="Remember, be nice"></textarea>
-            </div>           
-            <input type="submit" class="">
-          </form>
-    </div>
-<!-- end comment form -->
-        <div class="row">
-            <div v-if="idea">            
-            <app-comm-list  :idea-slug="idea.slug"></app-comm-list>
-            </div>
+   </div>   
+    <div class="row">
+        <div v-if="idea"> 
+                 
+            <app-comments  
+              :idea-slug="idea.slug" 
+              :idea-id="idea.id"
+              :current-user="currentUser">
+            </app-comments>
         </div>
+    </div>
 <!-- Modal component should be at the bottom: otherwise possible issues with z-index and position fixed of the parent component -->
     <app-delete-idea-confirmation @close="close" v-if="makeModalVisible">
       <template v-slot:header>
@@ -167,6 +155,7 @@
         <button class="btn btn-sm btn-success" @click="close">No</button>
       </template>
     </app-delete-idea-confirmation>
+    
   </div> 
 </template>
 
@@ -177,7 +166,7 @@ import AppDeleteIdeaConfirmation from '@/components/Modal.vue'
 import AppRatingShow from '@/components/RatingShow'
 import AppLike from '@/components/Like'
 import AppTagsList from '@/components/TagsList'
-import AppCommList from '@/components/comments/CommList'
+import AppComments from '@/components/comments/Comments'
 import {mapState,mapGetters} from 'vuex'
 import {getterTypes as authGetterTypes} from '@/store/modules/auth'
 import {actionTypes as commentActionType} from '@/store/modules/comments'
@@ -193,7 +182,7 @@ export default {
     AppTagsList,
     AppLike,
     AppRatingShow,
-    AppCommList
+    AppComments
   },
   data(){
     return{
@@ -202,10 +191,7 @@ export default {
       addToFollowMsg:false,
       errMsg:false,
       netWorkErr:false,      
-      // comment form (idea in mapState)
-      startComment:false,
-      commentBody:null,
-      //comment err
+      showComms:false
     }
   },
   computed:{            
@@ -240,7 +226,7 @@ export default {
   },
   methods:{
     getOneIdea(){
-      console.log("component created, slug:",this.$route.params.slug)      
+      // console.log("component created, slug:",this.$route.params.slug)      
       this.$store.dispatch(singleIdeaActionType.getIdea,{slug:this.$route.params.slug})
       .then((resp)=>{
         // console.log("component calling; resp",resp)
@@ -316,37 +302,38 @@ export default {
           },2000)
       })
     },
-    showCommentForm(){
-      console.log("sending comment to ... from ..")
-      this.startComment = !this.startComment
-    },
-    addComment(){
-      console.log("adding comment...")
-      let commentBody = this.commentBody
-      let ideaId = this.idea.id
-      console.log("line 364 id of idea is",this.idea.id)
-      let commentData = {
-        body: commentBody,
-        idea:ideaId,
-        parent:null,
-        }
-        console.log("data to store to dispatch",commentData)
-        this.$store.dispatch(commentActionType.sendRootComm,commentData)
-        .then((resp)=>{
-          console.log("resp",resp.status)
-          if(resp.servDown){
-            this.netWorkErr = true
-          }else if(resp.status===201){
-            // if comment successfully created: hide comment form and clear comment body
-            this.startComment = false
-            this.commentBody = null
-            // does not work this.$router.push({name:'ideaDetail',params:{slug:this.idea.slug}})
-          }else if(resp.status===500){
-            this.errMsg = true
-          }
-        })
-        .catch(err=>console.log('final error',err))
-    },
+    // showCommentForm(){
+    //   console.log("sending comment to ... from ..")
+    //   // this.startComment = !this.startComment
+    // },
+    // addComment(){
+    //   console.log("adding comment...")
+    //   let commentBody = this.commentBody
+    //   let ideaId = this.idea.id
+    //   console.log("line 364 id of idea is",this.idea.id)
+    //   let commentData = {
+    //     body: commentBody,
+    //     idea:ideaId,
+    //     parent:null,
+    //     }
+    //     console.log("data to store to dispatch",commentData)
+    //     this.$store.dispatch(commentActionType.sendRootComm,commentData)
+    //     .then((resp)=>{
+    //       console.log(" line 336 resp is",resp)
+    //       // console.log("resp",resp.status)
+    //       if(resp.servDown){
+    //         this.netWorkErr = true
+    //       }else if(resp.status===201){
+    //         // if comment successfully created: hide comment form and clear comment body
+    //         // this.startComment = false
+    //         this.commentBody = null
+    //         // does not work this.$router.push({name:'ideaDetail',params:{slug:this.idea.slug}})
+    //       }else if(resp.status===500){
+    //         this.errMsg = true
+    //       }
+    //     })
+    //     .catch(err=>console.log('final error',err))
+    // },
     fetchComments(ideaSlug){
       console.log("fetching comments",ideaSlug)
       this.$store.dispatch(commentActionType.fetchCommentList,ideaSlug)

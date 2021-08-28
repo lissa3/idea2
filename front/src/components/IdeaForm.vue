@@ -78,7 +78,7 @@
                     ></b-form-textarea>
            
                 </b-form-group>
-<!-- server side leadText errors                 -->
+<!-- server side mainText errors                 -->
                 <div class="warn mb-1" v-if="errors.mainTextErr">
                   <ul>
                     <li v-for="err in errors.mainTextErr" :key="err.id">
@@ -86,7 +86,9 @@
                     </li>
                   </ul>
                 </div>         
-<!-- front-side errors  mainText-->      
+<!-- front-side errors  mainText--> 
+            <!-- TODO -->
+<!-- end  -->
                 <b-form-group id="input-group-4" label="Tags:" label-for="input-4" class="text-left">
                     <b-form-input          
                     id="input-4"
@@ -98,13 +100,17 @@
                     <h5>Tags error: {{errors.tagsErr}}</h5>
                   
                 </div>                         
-<!-- front-side errors  tags-->             
+<!-- front-side errors  tags--> 
+                <!-- TODO -->
+<!-- end front side tag errors -->
           <b-form-group id="input-group-5" label="Upload File" inline>
             <div class="file-wrap">
               <label class="file-select mr-sm-2">
                 <div class="select-button">
-                  <span v-if="thumbnail">Selected File: {{ thumbnail.name }}</span>
-                  <span v-else>Select File</span>
+                  <span v-if="thumbnail&&thumbnail.name">Current file: {{thumbnail.name}}</span>
+                  <span v-if="thumbnail&&!thumbnail.name">Current file: {{getShortName}}</span>
+                  <span v-if="!thumbnail">Select File</span>
+                  
                 </div>
                 <input
                   id="thumbnail"
@@ -130,7 +136,8 @@
               </span>
             </div>
             <p class="text-mute">Allowed images with extentions: .png,.jpg/.jpeg</p>
-            <p>state thumbnail {{thumbnail}}</p>
+            <!-- <p>wwwstate thumbnail {{thumbnail}}</p>
+            <p>wwwedit: {{edit}}</p> -->
             <!-- front-side errors upload file-->         
           </b-form-group> 
 <!-- server side errors upload file(too big; ext not allowed) -->            
@@ -142,12 +149,25 @@
                     </li>
                   </ul>
                 </div>  
-            </div>                           
+            </div> 
+
  <!-- front-side errors upload file-->
             <div class="msg mb-2 py-2" v-if="localErr" :class="`${localErr ? 'is-danger' : 'is-success'}`">
                 <div class="msg-body" v-if="alertHeavyFile">{{ alertHeavyFile }}</div>
                 <div class="msg-body" v-if="formatNotAllowed">{{ formatNotAllowed }}</div>            
             </div>
+ <!-- server side Bad request not auth-ed -->
+          <div v-if="errors.error400">
+              <div class="warn mb-1">
+                 <p class="is_danger"><strong>{{errors.error400.badRequest}}</strong></p> 
+              </div>  
+            </div> 
+          <div v-if="errors.notAuthorized">
+              <div class="warn mb-1">
+                 <p class="is_danger"><strong>{{errors.notAuthorized.notAuthorized}}</strong></p> 
+              </div>  
+            </div>
+<!-- end server side bad request not auth-ed-->
             <b-button type="submit" variant="primary" class="pull-xs-right btn btn-large btn-success"
             :disabled="isSubmitting">
                 Publish Idea
@@ -164,6 +184,7 @@ import AppValidationErrors from '@/components/ValidationErrors'
 import AppLoader from '@/components/Loader'
 import tagsHelp from '@/helpers/tagsHelper'
 import optimizePhoto from '@/assets/js/resizeIt.js'
+import getFileNameFromUrl from '@/assets/js/shortName.js'
 
 export default {
     name:'AppIdeaForm',
@@ -190,7 +211,10 @@ export default {
         isSubmitting:{
             type:Boolean,
             required:true
-        }
+        },
+        // edit:{
+        //   type:Boolean
+        // }
     },
     data(){
         return {
@@ -230,7 +254,7 @@ export default {
             data.append('thumbnail', this.resizedThumbnail)
           } else {
             // user removes attached file so this.thumbnail = ""
-            data.append('thimbnail', '')
+            data.append('thumbnail', '')
           }
             this.$emit('ideaSubmit',data)
             // console.log("do you seen me in parent?")
@@ -295,6 +319,12 @@ export default {
           // this.alertHeavyFile = false;
           // this.formatNotAllowed = false;
         }
+    },
+    computed:{
+      // return only file name from aws 3 url link
+      getShortName(){
+        return getFileNameFromUrl(this.thumbnail)
+      }
     }    
 }
 </script>

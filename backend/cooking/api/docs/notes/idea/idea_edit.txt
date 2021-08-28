@@ -1,0 +1,47 @@
+parent: Idea Edit
+child: IdeaForm
+
+может использоваться как для создания нового объекта, та и для редактирования
+
+Notes:
+1. for edit need of pre-filled form with existed data
+2. parent -> :initialValues
+3. childcan't user initialValues in v-model; need to create obj in data()
+4. tags should be transformed to a string
+5. categs should be in form of list
+    created(){
+        go to server to fetch a list (id,name for each categ)
+        forEach to make an array:
+        const arrCategnames = [
+            {
+                text:'Choose',
+                value:null,
+                disabled:null,
+                selected:true
+
+
+            }
+
+        ]....push categs text:item.name, value:item.id
+    }
+6. в отношении картинки:
+её могут вообще не +, могут заменять, могут удалять
+button upload is customized:
+Button upload                                vs            Remove File checbox
+label
+@change=onFileChange                                       @change=detachFile
+@click=clearCheckBoxUploadFile   
+
+ref=file                                                    ref=check
+click button: clear prev errors
+this.$refs.check.checked = false
+this.localErr = false
+
+7.Upload button = место,гда отрисовывается название файла
+Однако: 
+ ==== это может быть строка (если редактир-ся объект, и картинка = строка)
+ ==== это может быть объект файл,который НЕ строка и функция по выпиливанию имени будет с ошибкой
+ Решение: сделать 3 conditions:
+ img&&img.name (file obj)
+ img&& !img.name (string = custom func + computed)
+ !img=> Select File
