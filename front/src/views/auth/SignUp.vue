@@ -4,13 +4,19 @@
           <div class="col col-md-12 col-sm-6 py-3">    
           <h3>Register, please.</h3>
           <b-form @submit.prevent="onSubmit" v-if="show">
+            <!-- test -->
+            
+              <!-- <b-form-group description="Enter your name." label="Enter your name" label-size="sm">
+                <b-form-input id="input-horizontal"></b-form-input>
+              </b-form-group> -->
+            
 <!-- username  -->
             <b-form-group
                 id="input-group-1"
                 description="Username should be at least 2 chars long"
-                class="required"                
-              >
-            <label id="input-group-1" class="control-label">Username</label>   
+                class="required">
+            <label id="input-group-1" class="control-label">Username</label>
+              
             <b-form-input
                 id="input-1"
                 type="text"
@@ -71,28 +77,33 @@
             </div>
 
 <!-- psw -->
+          <!-- <div class="input-group mb-3">
+            <input class="form-control" placeholder="Password">
+            <div class="input-group-append">
+              <span class="input-group-text"><b-icon-eye @click="toggleShowPws" /></span>
+            </div>
+        </div> -->
+<!-- test -->
+<p>test</p>
           <b-form-group
-                id="input-group-3" class="required"                
+                id="input-group-12" class="required"                
                 description="Password should contain at least one capital letter: (A-Z); at least one digit: 0-9; at least one special character (! @ $ % #) and be at least 6 chars long"                
               >
-              <label id="input-group-3" class="control-label">Password</label> 
-               <div class="row border">
-                <div class="col-md-10 sync">
+              <label id="input-group-12" class="control-label">Password</label>                
                   <b-form-input
-                    id="input-3"
+                    id="input-12"
                     v-model.trim="psw"
                     :type="showPassword ? 'text' : 'password'"
                     @blur="$v.psw.$touch()"
-                    :class="{ 'is-invalid warning': this.$v.psw.$error }"   
+                    :class="{ 'is-invalid warning': this.$v.psw.$error }" 
+                    placeholder="********"  
                     autocomplete="off"       
                   ></b-form-input>
+                
+                <div class="input-group-append">
+                <span class="input-group-text"><b-icon-eye @click="toggleShowPws" /></span>
                 </div>
-                <div class="col-md-2  pt-1 point-it">
-                <span ><b-icon-eye @click="toggleShowPws" /></span>
-              </div>
-              </div>
-<!--psw front side errors  -->
-              <div class="mistake" v-if="checkSimilar">
+                <div class="mistake" v-if="checkSimilar">
                 <div>{{ checkSimilar }}</div>
               </div>           
               <b-form-invalid-feedback v-if="inValidPswMinLen" class="invalid-feedback"
@@ -105,7 +116,46 @@
               <ul class="mistake" v-if="$v.psw.$dirty && inCorrectPsw">
                 <li class="" v-for="note in inCorrectPsw" :key="note.id">{{ note }}</li>
               </ul>
+              
+
           </b-form-group>  
+<!-- end test       -->
+          <!-- <b-form-group
+                id="input-group-3" class="required"                
+                description="Password should contain at least one capital letter: (A-Z); at least one digit: 0-9; at least one special character (! @ $ % #) and be at least 6 chars long"                
+              >
+              <label id="input-group-3" class="control-label">Password</label> 
+               <div class="row border">
+                <div class="col-md-10 sync">
+                  <b-form-input
+                    id="input-3"
+                    v-model.trim="psw"
+                    :type="showPassword ? 'text' : 'password'"
+                    @blur="$v.psw.$touch()"
+                    :class="{ 'is-invalid warning': this.$v.psw.$error }" 
+                    placeholder="********"  
+                    autocomplete="off"       
+                  ></b-form-input>
+                </div>
+                <div class="col-md-2  pt-1 point-it">
+                <span ><b-icon-eye @click="toggleShowPws" /></span>
+              </div>
+              </div> -->
+<!--psw front side errors  -->
+              <!-- <div class="mistake" v-if="checkSimilar">
+                <div>{{ checkSimilar }}</div>
+              </div>           
+              <b-form-invalid-feedback v-if="inValidPswMinLen" class="invalid-feedback"
+                >password should at least
+                {{ $v.psw.$params.minLength.min }} chars
+              </b-form-invalid-feedback>
+              <b-form-invalid-feedback v-if="inValidPswMaxLen" class="invalid-feedback"
+                >password should at most {{ $v.psw.$params.maxLength.max }} chars
+              </b-form-invalid-feedback>
+              <ul class="mistake" v-if="$v.psw.$dirty && inCorrectPsw">
+                <li class="" v-for="note in inCorrectPsw" :key="note.id">{{ note }}</li>
+              </ul>
+          </b-form-group>   -->
               
 <!-- psw server errors: password errors -->
             <div class="warn mb-1" v-if="servResp.pswErr">
@@ -165,7 +215,7 @@
 <!-- buttons group -->
             <b-row class="text-center mt-4">
               <b-col cols="6">
-                <b-button type="submit"  variant="success" :disabled="$v.$invalid && $v.$error||!this.checkSelected">Submit</b-button>
+                <b-button type="submit"  variant="success" :disabled="$v.$invalid && $v.$error||!this.checkSelected">Sign Up</b-button>
               </b-col >
               <b-col cols="6">
                 <b-button type="reset" variant="danger" @click="getRidErr">Reset</b-button>
