@@ -8,33 +8,39 @@
                     <span>{{idea.created_at| filterDateTime}}</span>
                 </div>             
             </div>
-            <div class="banner-collection">
-                <div class="author-info d-flex align-items-center justify-content-around">              
-                <b-avatar></b-avatar>
-                <router-link :to="{name:'profile',params:{id:idea.author}}" class="px-2">
-                    {{idea.owner_idea}}
-                </router-link>
+              <div class="banner-collection">
+<!-- general   -->
+                <!-- <div class="author-info d-flex align-items-center justify-content-around">  -->
+                <div class="author-info d-flex align-content-center justify-content-around"> 
+                  <b-avatar></b-avatar>
+                  <div class="align-self-center"><strong>Created by:</strong></div>                  
+                    <router-link :to="{name:'profile',params:{id:idea.author}}" class="px-2">
+                       <strong>{{idea.owner_idea}}</strong> 
+                    </router-link>
+                 
                 </div>
+<!-- user is not anonym -->
                 <template v-if="!isAnonym">
-              <div v-if="!authorIsCurrentUser">
-                <button type="button" class="btn btn-secondary" @click="addToFollow(idea.author)">
-                   Follow
-                </button>
-              </div>              
-            </template>      
-            <template v-if="authorIsCurrentUser">
-              <div class="edit-block">
-                <router-link class="btn btn-outline-secondary btn-sm" :to="{name:'editIdea',params:{slug:idea.slug}}">
-                  <b-icon-pencil></b-icon-pencil>Edit Idea 
-                </router-link>
-              </div>           
-              <div class="delete-block">
-                <div class="btn btn-danger btn-sm" @click="showModal">
-                  <b-icon-trash></b-icon-trash>Delete Idea 
-                </div>            
-              </div>     
-            </template>         
-            </div> 
+                  <div v-if="!authorIsCurrentUser">
+                    <button type="button" class="btn btn-secondary" @click="addToFollow(idea.author)">
+                      Follow
+                    </button>
+                  </div>              
+                </template>
+<!-- user is auth and author of ideas                     -->
+                <template v-if="authorIsCurrentUser">
+                  <div class="edit-block">
+                    <router-link class="btn btn-outline-secondary btn-sm" :to="{name:'editIdea',params:{slug:idea.slug}}">
+                      <b-icon-pencil></b-icon-pencil>Edit Idea 
+                    </router-link>
+                  </div>           
+                  <div class="delete-block">
+                    <div class="btn btn-danger btn-sm" @click="showModal">
+                      <b-icon-trash></b-icon-trash>Delete Idea 
+                    </div>            
+                  </div>     
+                </template>         
+              </div> 
             </div>            
         </section >
         <section >
@@ -49,13 +55,14 @@
         </section>
     <div v-if="idea" class="py-2 ">
         <div class="container">
+          <!-- <div class="row idea-container no-gutters bg-light position-relative"> -->
           <div class="row idea-container">
             <div class="col-xs-12">
               <div class="card mb-4 box-shadow">
-                <div   class="col-lg-4 col-md-12 col-sm-12">
-                    <div class="idea-img mb-2">
+                <div   class="col-lg-12 col-md-12 col-sm-12 px-0" >
+                    <div class="mb-2 d-flex w-100">
                          <div v-if="idea.thumbnail">
-                            <img  :src="idea.thumbnail" alt="img idea">                            
+                            <img  :src="idea.thumbnail" alt="img idea" class="idea-img">                            
                         </div>
                         <div v-else>
                           <img class="card-img-top"  style="height: 225px; width: 100%; display: block;" src="../assets/logo.png" data-holder-rendered="true">                        
@@ -63,13 +70,14 @@
                         
                     </div>
                 </div>
-                <div class="d-flex justify-content-between mt-3 px-3 ">                 
+                <div class="d-flex justify-content-around mt-3 px-2 make-vertical">   
+                  <!-- @media (max-width: 575.98px) { ... }               -->
                   <div class="d-flex justify-content-start">
-                      <div class="lead">Current rating:&nbsp; </div>
+                      <!-- <div class="">Current rating:&nbsp; </div> -->
                        <app-rating-show :rating="idea.avg_rate"></app-rating-show> 
                        <div><span class="px-1"><strong>&nbsp;&nbsp;{{idea.avg_rate}}</strong></span></div>                  
                   </div>
-<!-- add rating for auth-ed users                     -->
+<!-- add rating for auth-ed users -->
                 <template v-if="isLoggedIn">
                     <div class="d-flex justify-content-start">
                       <div class="lead">Add  rating&nbsp; &nbsp; </div>
@@ -302,38 +310,7 @@ export default {
           },2000)
       })
     },
-    // showCommentForm(){
-    //   console.log("sending comment to ... from ..")
-    //   // this.startComment = !this.startComment
-    // },
-    // addComment(){
-    //   console.log("adding comment...")
-    //   let commentBody = this.commentBody
-    //   let ideaId = this.idea.id
-    //   console.log("line 364 id of idea is",this.idea.id)
-    //   let commentData = {
-    //     body: commentBody,
-    //     idea:ideaId,
-    //     parent:null,
-    //     }
-    //     console.log("data to store to dispatch",commentData)
-    //     this.$store.dispatch(commentActionType.sendRootComm,commentData)
-    //     .then((resp)=>{
-    //       console.log(" line 336 resp is",resp)
-    //       // console.log("resp",resp.status)
-    //       if(resp.servDown){
-    //         this.netWorkErr = true
-    //       }else if(resp.status===201){
-    //         // if comment successfully created: hide comment form and clear comment body
-    //         // this.startComment = false
-    //         this.commentBody = null
-    //         // does not work this.$router.push({name:'ideaDetail',params:{slug:this.idea.slug}})
-    //       }else if(resp.status===500){
-    //         this.errMsg = true
-    //       }
-    //     })
-    //     .catch(err=>console.log('final error',err))
-    // },
+    
     fetchComments(ideaSlug){
       console.log("fetching comments",ideaSlug)
       this.$store.dispatch(commentActionType.fetchCommentList,ideaSlug)
@@ -349,11 +326,12 @@ export default {
     // 2020-07-23 20:41:43.833825
     filterDateTime(item) {
       let initialDate = new Date(item);
+      // initialDate.getMonth() + 1
+      const months = ['Jan','Feb','March','April','May','June','July','Aug','Sept','Oct','Nov','Dec']
+      const currentMonth = months[initialDate.getMonth()]
       return `
-          ${initialDate.getDate()}.${
-        initialDate.getMonth() + 1
-      }.${initialDate.getFullYear()} at ${initialDate.getHours()} h :${initialDate.getMinutes()} min
-      (Universal Time: ${initialDate.getUTCHours()} h ${initialDate.getMinutes()} min)`;
+          ${initialDate.getDate()} ${currentMonth} ${initialDate.getFullYear()} at ${initialDate.getHours()} H : ${initialDate.getMinutes()} min 
+      (UTC: ${initialDate.getUTCHours()} H ${initialDate.getMinutes()} min)`;
     },
     }    
 }
@@ -373,6 +351,15 @@ export default {
   justify-content: center;
   align-items: center;
 }
+.idea-img{
+  margin:auto;
+  max-width:100%;
+}
+/* @media all and (max-width: 700px){
+  .idea-img{
+    
+  }
+} */
 .banner-collection{
   display: flex;
   flex-wrap: wrap;
@@ -380,6 +367,38 @@ export default {
   align-content: center;
 
 }
+.idea-date{
+  font-weight: 700;
+}
+@media all and (max-width:700px){
+  .idea-date{
+    font-size:0.9rem;
+    
+  }
+}
+/* author info */
+.author-info {
+  width: 30%;
+}
+.author-info a{
+  text-decoration: none;
+  font-size: 30px;
+  color:black
+}
+@media all and (max-width:700px){
+  .author-info{
+    font-size: 1rem ;
+    width:100%;
+  }
+}
+/* rating */
+ @media (max-width: 575.98px){
+.make-vertical{
+  display: flex;
+  flex-direction: column;
+}
+
+ }
 /* likes */
 .click-like{
   cursor: pointer;

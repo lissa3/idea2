@@ -11,8 +11,8 @@
           <router-link :to="{ name: 'home' }" class="link-decor" exact active-class="active">Home</router-link> 
         </b-nav-item>
       <template v-if="isAnonymous">
-        <b-nav-item href="#">Link</b-nav-item>
-        <b-nav-item href="#">Anonymous</b-nav-item>
+        <!-- <b-nav-item href="#">Link</b-nav-item>
+        <b-nav-item href="#">Anonymous</b-nav-item> -->
         <b-nav-item href="#" >
             <router-link :to="{ name: 'login' }" class="link-decor" active-class="active">Login</router-link>
           </b-nav-item>
@@ -30,11 +30,14 @@
       </b-navbar-nav>
       
 
-      <!-- Right aligned nav items -->
+      <!-- Right aligned nav items d-flex justify-content-between-->
       <b-navbar-nav class="ml-auto">
-        <b-nav-form>
-          <b-form-input v-model="term" size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
-          <b-button @click="doSearch" size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
+        <b-nav-form class="">
+          <b-form-input v-model="term" size="sm" class="mr-2 pt-2 top-adjust" placeholder="Search"></b-form-input>
+          <b-button @click="doSearch" size="sm" class="" type="submit">Search</b-button>
+
+          <!-- <b-form-input v-model="term" size="sm" class="mr-sm-2" placeholder="Search"></b-form-input> -->
+          <!-- <b-button @click="doSearch" size="sm" class="my-2 my-sm-0" type="submit">Search</b-button> -->
         </b-nav-form>       
       <template v-if="isLoggedIn">
           <b-nav-item href="#" >
@@ -52,7 +55,7 @@
           <b-nav-item-dropdown right>
           <!-- Using 'button-content' slot -->
           <template #button-content>
-            <em>User</em>
+            User
           </template>
             <b-dropdown-item href="#" @click="showProfile">Profile</b-dropdown-item>
             <b-dropdown-item href="#" @click="changePsw">Change Password</b-dropdown-item>
@@ -215,5 +218,11 @@ export default {
 .dropdowm-item .danger{
   color:red;
   background-color: burlywood;
+}
+/* input search form */
+.top-adjust{
+  margin-top:20px;
+  padding-top:16px;
+  margin-bottom:20px;
 }
 </style>

@@ -237,10 +237,11 @@ export default {
     // 2020-07-23 20:41:43.833825
     filterDateTime(item) {
       let initialDate = new Date(item);
+    //   initialDate.getMonth() + 1
+      const months = ['Jan','Feb','March','April','May','June','July','Aug','Sept','Oct','Nov','Dec']
+      const currentMonth = months[initialDate.getMonth()]
       return `
-          ${initialDate.getDate()}.${
-        initialDate.getMonth() + 1
-      }.${initialDate.getFullYear()}-${initialDate.getHours()}:${initialDate.getMinutes()} UTC ${initialDate.getUTCHours()}:${initialDate.getMinutes()}`;
+          ${initialDate.getDate()} ${currentMonth} ${initialDate.getFullYear()}-${initialDate.getHours()}:${initialDate.getMinutes()} UTC ${initialDate.getUTCHours()}:${initialDate.getMinutes()}`;
     },
     }    
 }
@@ -259,10 +260,15 @@ export default {
     object-fit: cover;
     border-radius:0.5rem;
     box-shadow: 0 0 8px 3px rgba(0,0,0,.3);
-
 }
+/* @media all and (max-width:700px){
+  .idea-img > img{
+    
+  }
+} */
+
 .idea-date span{
-    color:#962c51;
+    font-weight: 700;
 }
 .ul-cls{
     justify-content: center;
