@@ -76,11 +76,11 @@
               </ul>
             </div>
   <!-- password           -->
-   <!-- <p>
-      <label for="password">Your password</label>
-      <input type="password" value="" placeholder="Enter Password" id="password" class="password">
-      <button class="unmask" type="button" title="Mask/Unmask password to check content">Unmask</button>
-    </p> -->
+          <div class="d-flex justify-content-between">
+                              <div class="control-label">Password</div>
+                              <div class="">Show Password</div>
+              </div>    
+          
           <b-form-group
                 id="input-group-12" class="required psw-show"                
                 description="Password should contain at least one capital letter: (A-Z); at least one digit: 0-9; at least one special character (! @ $ % #) and be at least 6 chars long" 
@@ -416,13 +416,11 @@ export default {
 .border .col-md-10 {
   padding-left:0px;
 }
-/* toggle eye unmask psw */
+/* toggle eye mask-unmask psw */
 .psw-show { 
   position: relative; 
   }
-/* form p { 
-  position: relative; 
-  } */
+
 .label-psw { 
   position: absolute;
   left:-9999px;

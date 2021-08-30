@@ -17,6 +17,7 @@
             </div>  
                                 
             <div class="col col-md-10 col-sm-6 py-3" > 
+              <h3>Welcome back</h3>
               <b-form @submit.prevent="onSubmit"> 
 <!-- email  -->
                 <b-form-group
@@ -33,7 +34,8 @@
                     placeholder="Enter email"
                     :class="{ 'is-invalid warning': this.$v.email.$error }"
                     @blur="$v.email.$touch()"           
-                  ></b-form-input>                                            
+                  ></b-form-input> 
+                                                             
 <!-- front-side errors email-->            
                 <b-form-invalid-feedback v-if="emailRequired" 
                   >{{ fieldRequired }}
@@ -50,25 +52,27 @@
                   </ul>
                 </div>
 <!-- password-->
-                <b-form-group id="input-group-2"  
-                label="Password" label-for="input-2" class="mb-2">
-                <div class="row border" >                
-                <div class="col-md-10">
-                  <b-form-input
+              <div class="d-flex justify-content-between">
+                              <div class="control-label">Password</div>
+                              <div class="">Show Password</div>
+              </div>                
+                <b-form-group id="input-group-2" class="psw-show" 
+                >
+                
+                <label id="input-group-2" class="control-label label-psw">Password</label>
+                
+                <b-form-input
                     id="input-2"
                     :type="showPassword ? 'text' : 'password'"
                     @blur="$v.psw.$touch()"
-                    :class="{ 'is-invalid warning': this.$v.psw.$error }"                      
+                    :class="{ 'is-invalid warning': this.$v.psw.$error }"
+                    class="password"                      
                     v-model.trim="psw"
                      autocomplete="off"
                     placeholder="Enter password"          
                   ></b-form-input>
-                </div>
-                <div class="col-md-2 border-0 pt-1 point-it">
-                  <span><b-icon-eye @click="toggleShowPws" /></span>
-                  
-                </div>  
-                </div>
+                <button class="unmask" type="button" title="Mask/Unmask password"
+              @click="toggleShowPws" >Unmask</button>
 <!-- front side password errors -->
                 <b-form-invalid-feedback v-if="pswRequired" class="invalid-feedback"
                   >{{ fieldRequired }}
@@ -274,6 +278,55 @@ export default {
 }
 .border .col-md-10 {
   padding-left:0px;
+}
+/* toggle eye mask-unmask psw */
+.psw-show { 
+  position: relative; 
+  }
+
+.label-psw { 
+  position: absolute;
+  left:-9999px;
+  text-indent: -9999px;
+} 
+
+.password + .unmask {
+  position: absolute;
+  right: 74px;
+  top: 12px;
+  text-indent: -9999px;
+  width: 25px;
+  height: 25px;
+  background: #aaa;
+  border-radius: 50%;
+  cursor:pointer;
+  border: none;
+  -webkit-appearance:none;
+}
+.password + .unmask:before {
+  content: "";
+  position:absolute;
+  top:4px; left:4px;
+  width: 17px;
+  height: 17px;
+  background: #e3e3e3;
+  z-index:1;
+  border-radius: 50%;
+}
+.password[type="text"] + .unmask:after {
+  content: "";
+  position:absolute;
+  top:6px; left:6px;
+  width: 13px;
+  height: 13px;
+  background: #aaa;
+  z-index:2;
+  border-radius: 50%;
+} 
+@media all and (max-width:700px){
+  .password+.unmask{
+    right:15px;
+  }
 }
 
 
