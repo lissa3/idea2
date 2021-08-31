@@ -22,38 +22,39 @@
                         <h1>Please, set your new password</h1>                        
                         <b-form @submit.prevent="requestNewPassword">
 <!-- psw -->
-                            <b-form-group
-                                    id="input-group-3" class="required"                
-                                    description="Password should contain at least one capital letter: (A-Z); at least one digit: 0-9; at least one special character (! @ $ % #) and be at least 6 chars long"                
-                                >
-                                <label id="input-group-3" class="control-label">Password</label> 
-                                <div class="row border">
-                                    <div class="col-md-10 sync">
-                                    <b-form-input
-                                        id="input-3"
-                                        v-model.trim="psw"
-                                        :type="showPassword ? 'text' : 'password'"
-                                        @blur="$v.psw.$touch()"
-                                        :class="{ 'is-invalid warning': this.$v.psw.$error }"          
-                                    ></b-form-input>
-                                    </div>
-                                    <div class="col-md-2  pt-1 point-it">
-                                    <span ><b-icon-eye @click="toggleShowPws" /></span>
-                                </div>
-                                </div>
+            <div class="d-flex justify-content-between">
+                              <div >Password</div>
+                              <div>Show Password</div>
+              </div> 
+                <b-form-group
+                        id="input-group-3" class="required psw-show"                
+                        description="Password should contain at least one capital letter: (A-Z); at least one digit: 0-9; at least one special character (! @ $ % #) and be at least 6 chars long"                
+                    >
+                    <label id="input-group-3" class="control-label label-psw">Password</label> 
+                        <b-form-input
+                            id="input-3"
+                            v-model.trim="psw"
+                            :type="showPassword ? 'text' : 'password'"
+                            @blur="$v.psw.$touch()"
+                            class="password"
+                            :class="{ 'is-invalid warning': this.$v.psw.$error }"          
+                        ></b-form-input>
+                        <button class="unmask" type="button" title="Mask/Unmask password"
+                                @click="toggleShowPws" >Unmask
+                        </button>
+             
 <!--psw front side errors  -->
-                                <b-form-invalid-feedback v-if="inValidPswMinLen" class="invalid-feedback"
-                                    >password should at least
-                                    {{ $v.psw.$params.minLength.min }} chars
-                                </b-form-invalid-feedback>
-                                <b-form-invalid-feedback v-if="inValidPswMaxLen" class="invalid-feedback"
-                                    >password should at most {{ $v.psw.$params.maxLength.max }} chars
-                                </b-form-invalid-feedback>
-                                <ul class="mistake" v-if="$v.psw.$dirty && inCorrectPsw">
-                                    <li class="" v-for="note in inCorrectPsw" :key="note.id">{{ note }}</li>
-                                </ul>
-                            </b-form-group>  
-              
+                    <b-form-invalid-feedback v-if="inValidPswMinLen" class="invalid-feedback"
+                        >password should at least
+                        {{ $v.psw.$params.minLength.min }} chars
+                    </b-form-invalid-feedback>
+                    <b-form-invalid-feedback v-if="inValidPswMaxLen" class="invalid-feedback"
+                        >password should at most {{ $v.psw.$params.maxLength.max }} chars
+                    </b-form-invalid-feedback>
+                    <ul class="mistake" v-if="$v.psw.$dirty && inCorrectPsw">
+                        <li class="" v-for="note in inCorrectPsw" :key="note.id">{{ note }}</li>
+                    </ul>
+                </b-form-group>                
 <!-- psw server errors: password errors -->
                             <div class="warn mb-1" v-if="servResp.pswErr">
                             <ul>
@@ -224,5 +225,54 @@ export default {
     background-color: rgb(236, 187, 195);
     height: 50px;
     
+}
+/* toggle eye mask-unmask psw */
+.psw-show { 
+  position: relative; 
+  }
+
+.label-psw { 
+  position: absolute;
+  left:-9999px;
+  text-indent: -9999px;
+} 
+
+.password + .unmask {
+  position: absolute;
+  right: 74px;
+  top: 9px;
+  text-indent: -9999px;
+  width: 25px;
+  height: 25px;
+  background: #aaa;
+  border-radius: 50%;
+  cursor:pointer;
+  border: none;
+  -webkit-appearance:none;
+}
+.password + .unmask:before {
+  content: "";
+  position:absolute;
+  top:4px; left:4px;
+  width: 17px;
+  height: 17px;
+  background: #e3e3e3;
+  z-index:1;
+  border-radius: 50%;
+}
+.password[type="text"] + .unmask:after {
+  content: "";
+  position:absolute;
+  top:6px; left:6px;
+  width: 13px;
+  height: 13px;
+  background: #aaa;
+  z-index:2;
+  border-radius: 50%;
+} 
+@media all and (max-width:700px){
+  .password+.unmask{
+    right:15px;
+  }
 }
 </style>

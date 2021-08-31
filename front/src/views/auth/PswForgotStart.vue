@@ -48,6 +48,10 @@
                 <div class="warn mb-3" v-if="unAuthorized">
                   <div>{{unAuthorized}}</div>
                 </div>
+                
+                <div class="warn mb-3" v-if="personDoesNotExist">
+                  <div>Something went wrong. Please check your email address</div>
+                </div>
                 <div class="warn mb-3" v-if="finalErr">
                   <div>Something went wrong during reset password.</div>
                 </div>
@@ -62,7 +66,7 @@
                 </b-row>        
             </b-form> 
             <p class="mt-3">
-            Home <router-link :to="{name:'home'}">back to home</router-link>
+            <router-link :to="{name:'home'}">Home</router-link>
           </p>         
       </div>
     </div>
@@ -86,6 +90,7 @@ export default {
         netWorkErr:null,
         unAuthorized:null,
         finalErr:false,
+        personDoesNotExist:false,
         successMsg:'',
         // front valid 
         fieldRequired: "This field is required",        
@@ -119,6 +124,12 @@ export default {
               console.log("Login comp and status",resp.status)
               // re-direct to page with msg: check your email
               this.$router.push({ name: "confirmEmail" });
+            }else if(resp&&resp.status===400){
+              console.log("status 400 ")
+              this.personDoesNotExist = true
+            }
+            else{
+              console.log("status rest != 204,!=400 but is",resp)
             }
           }).catch((err)=>{   
            //user banned?        
