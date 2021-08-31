@@ -1,27 +1,22 @@
 <template>  
-    <div class="bg"> 
-      
-          <h1>Sorry. Page not found</h1>        
-        
-       
+    <div class="container-fluid">
+       <div class="bg">
+          <h2>Page Not Found</h2>
+        </div>  
     </div>  
 </template>
-
 <script>
 export default {
   name: "notFound",
-  // mounted() {
-  //   setTimeout(this.goHome, 3500);
-  // },
+  mounted() {
+    setTimeout(this.goHome, 3500);
+  },
   methods: {
     goHome() {
-      this.$router.push("/");
+      this.$router.push("/")    
     },
-    // goTo(direction){
-    //   this.$router.push({name:direction});
-    //   },
-  },
-};
+  }
+}
 </script>
 <style  scoped>
 body, html {
@@ -29,9 +24,10 @@ body, html {
   margin: 0;
 }
 
+
 .bg {
   /* The image used */
-  /* background-image: url("../assets/kon.jpg"); */
+  background-image: url("../assets/photos/road.jpg");
 
   /* Full height */
   height: 100vh; 
@@ -46,11 +42,15 @@ body, html {
   align-items: center;
 }
 
-.bg > h1 {
+.bg > h2 {
   font-size: 100px;
   margin-bottom: 20px;
   color: #fff;
 }
-
+@media all and (max-width:700px){
+  .bg h2{
+    font-size:calc(2vh + 2vw + 1rem ) ;
+  }
+}
 
 </style>
