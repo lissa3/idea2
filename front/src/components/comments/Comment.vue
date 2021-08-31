@@ -24,7 +24,9 @@
           </div> 
           <div class="row mb-2">  
             <div class="col-md-12">    
-              Posted on: <strong>{{comment.created_at|filterDateTime}}</strong>
+              <div class="comment-date">
+                Posted on: <strong>{{comment.created_at|filterDateTime}}</strong>
+              </div>
               
             </div>      
           </div>
@@ -62,8 +64,10 @@
               >
               </app-comment-form> 
             </div>
-            <div class="d-flex justify-content-left col-md-12 mb-2">                
-                <button class="btn btn-outline-success mb-2" @click="commReply(comment.id)">
+            <div v-if="isLoggedIn" class="d-flex justify-content-left col-md-12 mb-2">                
+                <button class="btn btn-outline-success mb-2" 
+                        @click="commReply(comment.id)"
+                        :class='makeButtonInvisible?"hideButton":""'>
                     Reply
                 </button>               
             </div>
@@ -136,7 +140,8 @@ export default {
     },
     data(){
       return {
-        showConfirmDelete:false        
+        showConfirmDelete:false, 
+        makeButtonInvisible:false       
       }
     },
     props: {
@@ -160,14 +165,17 @@ export default {
       // methods to pass id to the parent about current(active) comment    
         commReply(commId){
             console.log("edit comment",commId)
+            this.makeButtonInvisible = true
             this.$emit('commReply',commId)
         },
         commEdit(commId){
             // console.log("edit comment",commId)
+            this.makeButtonInvisible = true
             this.$emit('commEdit',commId)
         },
         commDelete(commId){
             // console.log('deleting comment',commId)
+            this.makeButtonInvisible = true
             this.showConfirmDelete = false
             this.$emit('commDelete',commId)
         },
@@ -210,6 +218,7 @@ export default {
   computed:{
      ...mapGetters({
           currentUser:getterTypes.currentUser,
+          isLoggedIn:getterTypes.isLoggedIn,
           
         }),  
     isReplying(){
@@ -240,11 +249,13 @@ export default {
     // 2020-07-23 20:41:43.833825
     filterDateTime(item) {
       let initialDate = new Date(item);
+      const months = ['Jan','Feb','March','April','May','June','July','Aug','Sept','Oct','Nov','Dec']
+      const currentMonth = months[initialDate.getMonth()]
       return `
-          ${initialDate.getDate()}.${
-        initialDate.getMonth() + 1
-      }.${initialDate.getFullYear()} at ${initialDate.getHours()} h :${initialDate.getMinutes()} min
-      (Universal Time: ${initialDate.getUTCHours()} h ${initialDate.getMinutes()} min)`;
+          ${initialDate.getDate()} ${
+        currentMonth
+      } ${initialDate.getFullYear()} at ${initialDate.getHours()} H : ${initialDate.getMinutes()} min
+      (UTC: ${initialDate.getUTCHours()} h ${initialDate.getMinutes()} min)`;
     },
     }    
 };
@@ -258,6 +269,9 @@ export default {
   
 }
 .comment-form-invisible{
+  display: none;
+}
+.hideButton{
   display: none;
 }
 .show-comment-form{
@@ -305,6 +319,10 @@ input[type=text],  textarea {
   border-radius: 10px; 
   padding:1rem;
 }
+.comment-date{
+  font-size: 0.8rem;
+  font-weight: 400;
+}
 /* div user name */
 .author-space-creds{
   display: flex; 
@@ -326,12 +344,10 @@ input[type=text],  textarea {
 }
 
 /* edit and trash action */
-.edit {
+.edit,.trash {
   cursor: pointer;
 }
-.trash{
-  cursor: pointer;;
-}
+
 .replies {
   background-color: rgb(240, 228, 224);
 }

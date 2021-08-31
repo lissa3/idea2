@@ -4,7 +4,8 @@
             <div v-if="isLoading" class="col-md-12">
                 <app-loader></app-loader>
             </div>
-            <div class="col-md-12">
+
+            <div class="col-md-12" v-if="isLoggedIn">
                 <h5>Write your comment</h5>
                 <app-comment-form
                 submitLabel="Write"
@@ -44,6 +45,8 @@ import AppComment  from '@/components/comments/Comment'
 import AppLoader from '@/components/Loader'
 import {actionTypes} from '@/store/modules/comments'
 import {mapState} from 'vuex'
+import {mapGetters} from 'vuex'
+import {getterTypes} from '@/store/modules/auth'
 
 export default {
     name:'AppCommentList',
@@ -171,6 +174,10 @@ export default {
             fladToRednder:state=>state.comments.flagRerender
 
         }),
+         ...mapGetters({        
+            isLoggedIn:getterTypes.isLoggedIn,        
+        // foo: gT.fooProfile
+        }),
         getRootComms(){
             // console.log(this.comments.filter(comm=> comm.parent === null))
             // console.log("length root:",this.comments.length)
@@ -179,15 +186,10 @@ export default {
 
             }else{
                 return []
-            }
-        
-        },
-       
-        
-      
+            }        
+        },    
+    },
     
-        
-    }
 }
 
 </script>
