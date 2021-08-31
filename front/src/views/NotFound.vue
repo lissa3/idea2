@@ -41,7 +41,6 @@ body, html {
   justify-content: center;
   align-items: center;
 }
-
 .bg > h2 {
   font-size: 100px;
   margin-bottom: 20px;
