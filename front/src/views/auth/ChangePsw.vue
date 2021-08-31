@@ -19,23 +19,27 @@
                         <h1>Change you password:</h1>                        
                         <b-form @submit.prevent="requestNewPassword">
 <!-- current password -->
-                            <b-form-group id="input-group-2" class="required">          
-                                <label id="input-group-2" class="control-label">Current password</label> 
-                                <div class="row border">
-                                    <div class="col-md-10 sync">
+                <div class="d-flex justify-content-between">
+                                            <div class="control-label">Password</div>
+                                            <div>Show Password</div>
+                            </div> 
+                            <b-form-group id="input-group-2" class="required psw-show">          
+                                <label id="input-group-2" class="label-psw">Current password</label> 
+                               
                                     <b-form-input
                                         id="input-2"
-                                        class="search-text"
+                                        class="search-text password"
+                                        
                                         v-model.trim="currentPsw"
+                                        autocomplete="off"
                                         :type="showPassword ? 'text' : 'password'"
                                         @blur="$v.currentPsw.$touch()"
                                         :class="{ 'is-invalid warning': this.$v.currentPsw.$error }"          
                                     ></b-form-input>
-                                    </div>
-                                    <div class="col-md-2  pt-1 point-it">
-                                    <span ><b-icon-eye @click="toggleShowPws" /></span>
-                                </div>
-                                </div>
+                                    <button class="unmask" type="button" title="Mask/Unmask password"
+              @click="toggleShowPws" >Unmask</button>
+                                    
+                                   
 <!--psw front side errors  -->
                            <b-form-invalid-feedback v-if="currentPswRequired" 
                             >{{ fieldRequired }}
@@ -54,25 +58,27 @@
 
                         </b-form-group>
 <!-- new psw -->
+<div class="d-flex justify-content-between">
+                                            <div class="control-label">Password</div>
+                                            <div>Show Password</div>
+                            </div> 
                             <b-form-group
-                                    id="input-group-3" class="required"                
+                                    id="input-group-3" class="required psw-show"                
                                     description="Password should contain at least one capital letter: (A-Z); at least one digit: 0-9; at least one special character (! @ $ % #) and be at least 6 chars long"                
                                 >
-                                <label id="input-group-3" class="control-label">New Password</label> 
-                                <div class="row border">
-                                    <div class="col-md-10 sync">
+                                <label id="input-group-3" class="label-psw">New Password</label> 
+                                
                                     <b-form-input
                                         id="input-3"
                                         v-model.trim="newPsw"
+                                        autocomplete="off"
                                         :type="showPassword ? 'text' : 'password'"
                                         @blur="$v.newPsw.$touch()"
+                                        class="password"
                                         :class="{ 'is-invalid warning': this.$v.newPsw.$error }"          
                                     ></b-form-input>
-                                    </div>
-                                    <div class="col-md-2  pt-1 point-it">
-                                    <span ><b-icon-eye @click="toggleShowPws" /></span>
-                                </div>
-                                </div>
+                        <button class="unmask" type="button" title="Mask/Unmask password"
+              @click="toggleShowPws" >Unmask</button>            
 <!-- new psw front side errors  -->
                                 <b-form-invalid-feedback v-if="inValidPswMinLen" class="invalid-feedback"
                                     >password should at least
@@ -105,6 +111,7 @@
                                 type="password"
                                 placeholder="Repeat your password, please"
                                 v-model.trim="newPsw2"
+                                autocomplete="off"
                                 @blur="$v.newPsw2.$touch()"
                             :class="{ 'is-invalid warning': this.$v.newPsw2.$error }"         
                             ></b-form-input>
@@ -310,6 +317,55 @@ export default {
 .col-md-10 >input{
     border-color: transparent;
     border-radius: 5px;
+}
+/* toggle eye mask-unmask psw */
+.psw-show { 
+  position: relative; 
+  }
+
+.label-psw { 
+  position: absolute;
+  left:-9999px;
+  text-indent: -9999px;
+} 
+
+.password + .unmask {
+  position: absolute;
+  right: 74px;
+  top: 12px;
+  text-indent: -9999px;
+  width: 25px;
+  height: 25px;
+  background: #aaa;
+  border-radius: 50%;
+  cursor:pointer;
+  border: none;
+  -webkit-appearance:none;
+}
+.password + .unmask:before {
+  content: "";
+  position:absolute;
+  top:4px; left:4px;
+  width: 17px;
+  height: 17px;
+  background: #e3e3e3;
+  z-index:1;
+  border-radius: 50%;
+}
+.password[type="text"] + .unmask:after {
+  content: "";
+  position:absolute;
+  top:6px; left:6px;
+  width: 13px;
+  height: 13px;
+  background: #aaa;
+  z-index:2;
+  border-radius: 50%;
+} 
+@media all and (max-width:700px){
+  .password+.unmask{
+    right:15px;
+  }
 }
 /* input .search-txt */
 /* .search-txt {
