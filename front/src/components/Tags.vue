@@ -1,6 +1,7 @@
 <template>
     <div>
         <section >
+            <h3>Tags: </h3>
             <div v-if="isLoading"><app-loader></app-loader></div>        
             <div v-if="tags" class="tag-list">
                 <router-link v-for="tag in tags" :key="tag.id" :to="{name:'ideasBySlug',params:{slug:tag.slug}}" class="tag">
