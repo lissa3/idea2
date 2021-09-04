@@ -35,6 +35,7 @@ class Profile(TimeStamp):
     website = models.URLField(max_length=100, default="", blank=True)
     badge_bg = models.CharField(max_length=30, default="", blank=True)
     following = models.ManyToManyField(User,related_name="followed_by",blank=True)
+    remove_file = models.BooleanField(default=False)
 
    
 

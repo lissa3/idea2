@@ -206,11 +206,59 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
+# def update(self, request, *args, **kwargs):
+#         """let op: don't save twice to avoid err msg: file not img||corrupt
+#         thumbnail may come from front:
+#         1.as empty string = not img attached or removed
+#         2.as string = url of aws s3
+#         3. as InMemoryUploadedFile which needs validation by ser-er        
+#         """
+#         idea = self.get_object()
+#         setattr(request.data, '_mutable', True)
+#         print("editing an idea",request.data)
+#         # print("from vue data",request.data.get('thumbnail')) #'thumbnail': ['']}
+#         # from vue data https://boterland.s3.amazonaws.com/ideapot/idea_1/lemon1630705942.9574196.jpg
+#         # if user edits only text fields but does not want to remove img
+#         thumbnail = request.data.get('thumbnail')
+#         print("thumbnail is",thumbnail)        
+#         print("type thumb line 106 from front : ",type(thumbnail))
+#         if type(thumbnail) == str and len(thumbnail)!=0:
+#             print('line 107: looks like img is url str')             
+#             request.data.pop('thumbnail')
+#         # no img from front: thumbnail': ['']}|=> thumbnail = empty string     
+#         if type(thumbnail) == str and len(thumbnail)==0:
+#             print('line 111: looks like img is empty str')
+#             request.data['remove_file'] = True
+            
+#         if type(thumbnail) != str:
+#             # img from front: thumbnail: [<InMemoryUploadedFile: one.jpg (application/octet-stream)>]
+#             request.data['remove_file'] = True
+#             print('line 113: looks like img is real img upload')  
+            
+                  
+
     def update(self, request, *args, **kwargs):
         """let op: don't save twice to avoid err msg: file not img||corrupt"""
+        setattr(request.data, '_mutable', True)
+        img = request.data.get('image')
+        print("img is",img)        
+        print("type img line 244 from front : ",type(img))
+        if type(img) == str and len(img)!=0:
+            print('line 107: looks like img is url str')             
+            request.data.pop('image')
+        # no img from front: thumbnail': ['']}|=> thumbnail = empty string     
+        if type(img) == str and len(img)==0:
+            print('line 250: looks like img is empty str')
+            request.data['remove_file'] = True
+            
+        if type(img) != str:
+            # img from front: thumbnail: [<InMemoryUploadedFile: one.jpg (application/octet-stream)>]
+            request.data['remove_file'] = True
+            print('line 256: looks like img is real img upload')  
+            
         partial = kwargs.pop('partial', False)
         profile = self.get_object()
-        print("server got the following data:", request.data)
+        print("line 260 server got data:", request.data)
         serializer = self.get_serializer(profile, data=request.data, partial=partial)
         print("is ser-er valid?")
         if serializer.is_valid():

@@ -20,28 +20,28 @@
             </div>                   
             <!-- <img  v-else alt="profile image" class="rounded-circle" src="/220px.jpg"> -->
             <h1 class="display-4">Profile: {{profile.name}}</h1>
-<!-- people i'm following -->
             <div class="d-flex justify-content-between col-md-12 p-4">
-            <div v-if="profile.count_following"  class="d-flex">
-              <!-- <p> Follows:  ({{profile.count_following}}) </p> -->
-              <b-button v-b-toggle.collapse-1 class="m-1  btn-light">
-                Follows {{profile.count_following}}  <b-avatar size="sm"></b-avatar>
-              </b-button>
-              <!-- Element to collapse -->
-              <b-collapse id="collapse-1">
-                <b-card v-for="person in profile.following" :key="person.id">
-                  <router-link :to="{ name: 'profile',params:{id:person.id} }" class="link-decor">
-                    {{person.username}}
-                  </router-link>
-                  
-                </b-card>
-              </b-collapse>
-               <button class="btn-light m-1 rounded-corner"
-              data-toggle="tooltip" data-placement="right" title="See more">
-                  <b-icon-eyeglasses></b-icon-eyeglasses>
-              </button>  
-              
-            </div>
+<!-- people i'm following -->
+              <div v-if="profile.count_following"  class="d-flex">
+                <!-- <p> Follows:  ({{profile.count_following}}) </p> -->
+                <b-button v-b-toggle.collapse-1 class="m-1  btn-light">
+                  Follows {{profile.count_following}}  <b-avatar size="sm"></b-avatar>
+                </b-button>
+                <!-- Element to collapse -->
+                <b-collapse id="collapse-1">
+                  <b-card v-for="person in profile.following" :key="person.id">
+                    <router-link :to="{ name: 'profile',params:{id:person.id} }" class="link-decor">
+                      {{person.username}}
+                    </router-link>
+                    
+                  </b-card>
+                </b-collapse>
+                <button class="btn-light m-1 rounded-corner"
+                data-toggle="tooltip" data-placement="right" title="See more">
+                    <b-icon-eyeglasses></b-icon-eyeglasses>
+                </button>  
+                
+              </div>
 <!-- people following me -->
             <div v-if="profile.followers"  class="d-flex flex-column">               
               <b-button v-b-toggle.collapse-2 class="m-1  btn-light">

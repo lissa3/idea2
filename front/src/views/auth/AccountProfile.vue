@@ -1,6 +1,6 @@
 <template>
 <div>
-  <section class="row min-vh-100" v-if="profile">
+  <section class="row min-vh-100 px-2" v-if="profile">
 <!-- loader     -->
         <div class="col-xs-12 col-md-10 py-3 text-center offset-md-1">
               <app-loader v-if="isLoading"></app-loader>
@@ -29,27 +29,23 @@
                 <router-link :to="{name:'editProfile',params:{unid:profile.unid}}"
                 class="nav-link" active-class="active"
                 >Edit Profile
-                </router-link>
-               
-                
+                </router-link>               
             </li>
             <!-- <li class="nav-item disabled">
                 <a class="nav-link" href="#">Edit Profile</a>
             </li> -->            
-      </ul>
-      
-      <div class="col-md-8 min-vh-100 mx-auto p-0" v-if="profile">
+      </ul>      
+      <div class="col-md-8 min-vh-100 mx-auto" v-if="profile">
         <div class="d-flex align-items-center 
                     justify-content-center 
                     flex-column
                     text-center
                     min-vh-100
                     ">
-            <!-- style="max-width: 100%; width: 250px; object-fit: cover"          -->
-            
+            <!-- style="max-width: 100%; width: 250px; object-fit: cover"          -->            
             <div>        
               <div v-if="!noImgShow" >                
-                <img  :src="profile.image" alt="profile image">    
+                <img  :src="profile.image" class="img-thumbnail" alt="profile image">    
              </div>
              <div v-if="noImgShow" >
               <!-- style="max-width: 100%; width: 250px; object-fit: cover"   -->
@@ -59,7 +55,7 @@
             <!-- <img  v-else alt="profile image" class="rounded-circle" src="/220px.jpg"> -->
             <h1 class="display-4">Profile: {{profile.name}}</h1>
 
-<!-- buttons to modify followers -->
+<!-- section with 2 buttons: left "following" right "followers" -->
             <div class="d-flex justify-content-between col-md-12">
               <button class="btn-light m-1 rounded-corner"
                 data-toggle="tooltip" data-placement="right" title="Edit list"
@@ -74,49 +70,54 @@
 
             </div>
             <div class="d-flex justify-content-between col-md-12">
-<!-- block people i'm following -->
+<!-- section people i'm following -->
             <div v-if="profile.count_following"  class="d-flex flex-column">
-              <b-button v-b-toggle.collapse-1 class="m-1  btn-light">
-                You are following: {{profile.count_following}}  <b-avatar size="sm"></b-avatar>
+              <b-button v-b-toggle.collapse-1 class="mb-1 btn-light">
+                Following: {{profile.count_following}} {{presentCountFollowing}} <b-icon-person-plus-fill></b-icon-person-plus-fill>
+                
               </b-button>
               <!-- Element to collapse -->
               <b-collapse id="collapse-1">
-                <b-card v-for="person in profile.following" :key="person.id">
+                <b-card v-for="person in profile.following" :key="person.id" class="mb-1 mt-1">
                   <router-link :to="{ name: 'profile',params:{id:person.id} }" class="link-decor">
                     {{person.username}}
                   </router-link>                  
                 </b-card>
               </b-collapse>                          
             </div>
-            <div v-if="!profile.count_following">
+            <div v-else>
               <p>Your are not following any author</p>
             </div>
 <!--block  people following me -->
             <div v-if="profile.count_followers"  class="d-flex flex-column">               
               <b-button v-b-toggle.collapse-2 class="m-1  btn-light">
-                Followed {{profile.count_followers}}  <b-avatar size="sm"></b-avatar>
+                Followed by: {{profile.count_followers}} 
+                {{presentCountFollowers}} <b-icon-person-plus-fill></b-icon-person-plus-fill> 
               </b-button>
               <!-- Element to collapse -->
               <b-collapse id="collapse-2">
-                <b-card v-for="person in profile.followers" :key="person.id">
+                <b-card v-for="person in profile.followers" :key="person.id" class="mt-1">
                   <router-link :to="{ name: 'profile',params:{id:person.user_id} }" class="link-decor">
-                    {{person.username}} {{person.user_id}}
+                    {{person.username}} (temp var: {{person.user_id}})
                   </router-link>
                   
                 </b-card>
-              </b-collapse>        
-              
+              </b-collapse>              
             </div>
+            <div v-else>
+              <p>No followers yet.</p>
+            </div>  
            
 <!-- end following: next line-->
             </div>  
-            <div class="d-flex align-items-start  flex-column text-left">
+            <div class="d-flex align-items-start  flex-column text-left ">
             <p class="lead px-2"><strong>Bio: </strong> {{profile.bio}}Where am ILorem ipsum dolor sit amet consectetur adipisicing elit. Cum itaque nam ipsa, officia fugiat maxime molestiae voluptas explicabo error, expedita autem suscipit, accusamus eligendi obcaecati corrupti culpa veniam eos nesciunt.
             </p>
             <p class="lead px-2" v-if="profile.website"><strong>Website:</strong>{{profile.website}}</p>
             <p class="lead px-2" v-if="profile.image"><strong>Website:</strong>{{profile.website}}</p>
             </div>           
-            <router-link :to="{name:'editProfile',params:{unid:profile.unid}}"> <button type="button" class="btn btn-secondary btn-lg">Edit
+            <router-link :to="{name:'editProfile',params:{unid:profile.unid}}"> 
+              <button type="button" class="btn btn-secondary btn-lg">Edit
             </button>
             </router-link>
             <!-- <div class="errMsgs mt-3">
@@ -144,18 +145,19 @@ export default {
     return {      
       netWorkMsgErr:'A network error occured.Sorry about this - we will get it fixed shortly',      
       errMsg500:"A server network error occured.Sorry about this - we will get it fixed shortly",
-      errorMsg:"Something went wrong, probably you session has been expired and you need to login again"
+      errorMsg:"Something went wrong, probably you session has been expired and you need to login again",
+      strAmountFollowers:null
     }
   },
   components:{
     AppLoader
   },
   computed:{
-      ...mapGetters({
+    ...mapGetters({
             profile:getterTypes.currentProfile
             
       }),
-      ...mapState({            
+    ...mapState({            
             // profile:state=>state.profile.data,
             isLoading:state=>state.profile.isLoading,
             error:state=>state.profile.error,
@@ -165,7 +167,21 @@ export default {
         }),
     noImgShow(){      
       return this.profile.image===null         
-      }    
+      },
+    presentCountFollowers(){
+      if(this.profile.count_followers===1){
+        return "person"
+      }else{
+        return "persons"
+      }
+    },
+    presentCountFollowing(){
+      if(this.profile.count_following===1){
+        return "person"
+      }else{
+        return "persons"
+      }
+    }
   },
   methods:{
     showFollowing(){

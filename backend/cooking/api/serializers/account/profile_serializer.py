@@ -27,14 +27,38 @@ class ProfileSerializer(ser.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('bio','website','unid','image','name','following','user','followers','count_following','count_followers')
+        fields = ('bio','website','unid','image','name','following','user','followers','count_following','count_followers','remove_file')
         # fields = ('bio','website', 'image','name','count_following')
 
     def save(self, *args, **kwargs):
-        if self.instance.image:
-            # print("in if block")
-            self.instance.image.delete()
-        return super().save(*args, **kwargs)        
+        print("in ser-er")
+        print(self.validated_data)  
+        del_previous_file = self.validated_data.get('remove_file') 
+        img = self.validated_data.get('image',None)   
+        # print("img from validated data",img)
+        try:
+            print("in try block")
+            if self.instance.pk and del_previous_file:                
+            # if self.instance.pk and img is not None:                
+                print("test: prev image was:",self.instance.image)     
+                # если этого не будет,то из db thumbnail все равно выпилится, но в aws s3 будет продолжать болтаться
+                self.instance.image.delete()
+                print("deleted img")
+            if self.instance.pk and img is None and del_previous_file: 
+                self.instance.image.delete()
+                print("deleted image from db ang aws s3")     
+        except:
+            print('in block except')        
+        # print("") 
+
+        super().save(*args,**kwargs)
+
+        
+    # def save(self, *args, **kwargs):
+    #     if self.instance.image:
+    #         print("self instance has image",self.instance.image)
+    #         self.instance.image.delete()
+    #     return super().save(*args, **kwargs)        
        
     def get_following(self, obj):
         """qs of users """
