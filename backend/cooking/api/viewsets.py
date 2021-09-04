@@ -90,10 +90,35 @@ class IdeaViewSet(viewsets.ModelViewSet):
     #     return queryset 
 
     def update(self, request, *args, **kwargs):
-        """let op: don't save twice to avoid err msg: file not img||corrupt"""
+        """let op: don't save twice to avoid err msg: file not img||corrupt
+        thumbnail may come from front:
+        1.as empty string = not img attached or removed
+        2.as string = url of aws s3
+        3. as InMemoryUploadedFile which needs validation by ser-er        
+        """
         idea = self.get_object()
         setattr(request.data, '_mutable', True)
-        # print("from vue data",request.data) 'thumbnail': ['']}
+        print("editing an idea",request.data)
+        # print("from vue data",request.data.get('thumbnail')) #'thumbnail': ['']}
+        # from vue data https://boterland.s3.amazonaws.com/ideapot/idea_1/lemon1630705942.9574196.jpg
+        # if user edits only text fields but does not want to remove img
+        thumbnail = request.data.get('thumbnail')
+        print("thumbnail is",thumbnail)        
+        print("type thumb line 106 from front : ",type(thumbnail))
+        if type(thumbnail) == str and len(thumbnail)!=0:
+            print('line 107: looks like img is url str')             
+            request.data.pop('thumbnail')
+        # no img from front: thumbnail': ['']}|=> thumbnail = empty string     
+        if type(thumbnail) == str and len(thumbnail)==0:
+            print('line 111: looks like img is empty str')
+            request.data['remove_file'] = True
+            
+        if type(thumbnail) != str:
+            # img from front: thumbnail: [<InMemoryUploadedFile: one.jpg (application/octet-stream)>]
+            request.data['remove_file'] = True
+            print('line 113: looks like img is real img upload')  
+            
+          
         tags = request.data.get('tags')
         if tags is not None:
             # print("server got the following tags", tags)
@@ -117,7 +142,6 @@ class IdeaViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
 
         """ create object but before adding auth user to request.data and clean tags input before adding them to data"""
-        # print("check where i am.................")
         setattr(request.data, '_mutable', True)
         tags = request.data.get('tags')
         if tags is not None:
@@ -164,3 +188,16 @@ after super().save(...)
 { 'id': 5, 'title': 'Tea','thumbnail': <ImageFieldFile: ideapot/idea_1/tired1629925107.4117696.JPG>, 'max_rating': None, '_prefetched_objects_cache': {'tags': <QuerySet []>}}
 
 """   
+
+"""
+dir request
+['FILES', 
+  'data', 
+
+
+  Quit the server with CONTROL-C.
+['__class__', '__contains__', '__copy__', '__deepcopy__', '__delattr__', '__delitem__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__iter__', '__le__', '__len__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__setattr__', '__setitem__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_getlist', 'appendlist', 'clear', 'copy', 'dict', 'fromkeys', 'get', 'getlist', 'items', 'keys', 'lists', 'pop', 'popitem', 'setdefault', 'setlist', 'setlistdefault', 'update', 'values']
+viewset gets data from front line 120
+type of
+
+"""

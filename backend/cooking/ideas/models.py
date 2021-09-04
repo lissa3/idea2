@@ -1,8 +1,8 @@
 from django.db import models
-
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.core.files.storage import default_storage as storage
+from django.core.validators import FileExtensionValidator
 
 from mptt.models import MPTTModel, TreeForeignKey
 from autoslug import AutoSlugField
@@ -10,13 +10,11 @@ from taggit.managers import TaggableManager
 
 from timestamp.models import TimeStamp
 from timestamp.broadcast_utils.idea_utils import upload_img
-
-
 from timestamp.broadcast_utils.validators import validate_size
-from django.core.validators import FileExtensionValidator
 
 # from django.core.exceptions import ValidationError
 # from django.core.files.images import get_image_dimensions
+
 
 ALLOWED_EXTENTIONS = ('JPG', 'JPEG', 'PNG')
 
@@ -119,6 +117,7 @@ class Idea(TimeStamp):
     avg_rate = models.DecimalField(decimal_places=2,max_digits=5,default=None,null=True)
     an_likes = models.IntegerField(default=None,null=True)
     max_rating = models.DecimalField(decimal_places=2,max_digits=5,default=None,null=True)
+    remove_file = models.BooleanField(default=False)
 
     objects = IdeaManager()
 
@@ -135,7 +134,42 @@ class Idea(TimeStamp):
     def get_absolute_url(self):
         return reverse('ideas:detail', kwargs={'slug': self.slug})
 
+    def save(self,*args,**kwargs):
+        print("jjjjjjjjjjjjjjjjjjjjjj") 
+        super().save(*args,**kwargs) 
+        print("ghghghghg") 
+        #type(self.__dict__.get('thumbnail')) ) #<class 'django.db.models.fields.files.ImageFieldFile'
+
+
+    # def save(self,*args,**kwargs): 
+    #     # if edit: thumnail niet te vinden
+    #     # print("line 139 .save():",type(self.__dict__.get('thumbnail')) ) #str ,nontype       
+    #     super().save(*args,**kwargs)  
+    #     #type(self.__dict__.get('thumbnail')) ) #<class 'django.db.models.fields.files.ImageFieldFile'
+       
+        
+
+"""
+
+
+
+
+"""        
+        
+
+
+
+
+
+
+
+
+
+
+
+
     # def save(self,*args,**kwargs):
+        
     #     print("self dict thumbnail",self.__dict__.get('thumbnail'))
     #     # 'thumbnail': <ImageFieldFile: ideapot/idea_1/tired1629925107.4117696.JPG>,
     #     thumbnail = self.thumbnail
