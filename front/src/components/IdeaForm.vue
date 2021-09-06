@@ -2,27 +2,35 @@
     <div>
       <section >
           <h1>Form </h1>
+          <p>Categ: {{getCats}}</p>
 <!-- loader  submit         -->
             <div class="col-xs-12 col-md-10 py-3 text-center offset-md-1">
               <app-loader v-if="isSubmitting"></app-loader>
             </div>
- <!-- errors          -->
-        <!-- django server is down -->
+ <!-- errors  -->
+<!-- django server is down -->
             <div class="warn mb-3" v-if="errors.netWorkErr">
               <div class="px-1">{{errors.netWorkErr}}</div>
             </div>      
- <!-- form                   -->
+ <!-- form  -->
           <b-form
                 @submit.prevent="onSubmit"      
                 enctype="multipart/form-data"
                 novalidate > 
-<!-- imported component categories                          -->
+<!-- imported component categories -->
                 <app-categ-input
-                    :setCategNames="categories"
+                    :set-categ-names="categories"
                     :categ="categ"
                     @getCateg="readCategVal">
                    >
                 </app-categ-input>
+<!-- server errors category  --> 
+              <!-- <div v-if="categRequired">
+                  <p class="warn">categ are required</p>
+
+              </div> -->
+<!-- TODO    -->
+
 <!-- server errors category  -->                 
                 <div class="warn mb-1" v-if="errors.categErr">
                   <ul>
@@ -33,11 +41,24 @@
                     </li>
                   </ul>
                 </div>
-                <b-form-group id="input-group-1" label="Title:" label-for="input-1" class="text-left">
+<!-- title -->
+                <b-form-group id="input-group-1" class="text-left">
+                  <label for="input-1" class="control-label">Title</label>
                     <b-form-input           
                     id="input-1"
+                    class="control-label"
                     v-model.trim="title"
+                    :class="{ 'is-invalid warning': this.$v.title.$error }"
+                    @blur="$v.title.$touch()"
                     ></b-form-input>
+<!-- front-side errors title-->  
+                <b-form-invalid-feedback v-if="titleRequired" class="invalid-feedback"
+                  >{{ fieldRequired }}
+                </b-form-invalid-feedback>
+                <b-form-invalid-feedback v-if="inValidTitleMaxLen" class="invalid-feedback"
+              >Title should at most {{ $v.title.$params.maxLength.max }} chars
+              </b-form-invalid-feedback> 
+              
                 </b-form-group>
 <!-- server errors title         -->
                 <div class="warn mb-1" v-if="errors.titleErr">
@@ -47,12 +68,22 @@
                     </li>
                   </ul>
                 </div>
-<!-- front-side errors title-->      
-                <b-form-group id="input-group-2" label="Lead Text:" label-for="input-2" class="text-left">
+<!-- leadtext -->
+                <b-form-group id="input-group-2" class="text-left">
+                  <label for="input-2" class="control-label">Lead text</label>
                     <b-form-input
                     id="input-2"
+                    :class="{ 'is-invalid warning': this.$v.leadText.$error }"
+                    @blur="$v.leadText.$touch()"
                     v-model.trim="leadText"
                     ></b-form-input>
+<!-- front-side errors  leadText-->              
+                <b-form-invalid-feedback v-if="leadTextRequired" class="invalid-feedback"
+                  >{{ fieldRequired }}
+                </b-form-invalid-feedback>  
+                <b-form-invalid-feedback v-if="inValidLeadTextMaxLen" class="invalid-feedback"
+              >Lead text should at most {{ $v.leadText.$params.maxLength.max }} chars
+              </b-form-invalid-feedback>   
                 </b-form-group>
 <!-- server side leadText errors (incl: Ensure this field has no more than 240 characters)                -->
                 <div class="warn mb-1" v-if="errors.leadTextErrr">
@@ -62,23 +93,33 @@
                     </li>
                   </ul>
                 </div>
-<!-- front-side errors  leadText-->      
-                <b-form-group id="input-group-3" label="Main Text:" label-for="input-3" class="text-left">
+<!-- mainText -->
+                <b-form-group id="input-group-3" class="text-left">
+                  <label for="input-3" class="control-label">Main Text</label>
                     <!-- <b-form-input          
                     id="input-3"                    
                     v-model.trim="mainText"
                     ></b-form-input> -->
                     <b-form-textarea
                     id="input-3"
+                    :class="{ 'is-invalid warning': this.$v.mainText.$error }"
+                    @blur="$v.mainText.$touch()"
                     v-model="mainText"
                     placeholder="What is this idea about..."
                     
                     rows="3"
                     max-rows="6"
                     ></b-form-textarea>
+<!-- front-side errors  mainText-->                       
+                <b-form-invalid-feedback v-if="mainTextRequired" class="invalid-feedback"
+                  >{{ fieldRequired }}
+                </b-form-invalid-feedback> 
+                <b-form-invalid-feedback v-if="inValidMainTextMaxLen" class="invalid-feedback"
+              >Main text should at most {{ $v.mainText.$params.maxLength.max }} chars
+              </b-form-invalid-feedback>     
            
                 </b-form-group>
-<!-- server side mainText errors                 -->
+<!-- server side mainText errors  -->
                 <div class="warn mb-1" v-if="errors.mainTextErr">
                   <ul>
                     <li v-for="err in errors.mainTextErr" :key="err.id">
@@ -86,9 +127,8 @@
                     </li>
                   </ul>
                 </div>         
-<!-- front-side errors  mainText--> 
-            <!-- TODO -->
-<!-- end  -->
+<!-- tags -->
+           
                 <b-form-group id="input-group-4" label="Tags:" label-for="input-4" class="text-left">
                     <b-form-input          
                     id="input-4"
@@ -101,8 +141,10 @@
                   
                 </div>                         
 <!-- front-side errors  tags--> 
-                <!-- TODO -->
-<!-- end front side tag errors -->
+<!-- TODO -->
+
+
+<!-- thumnail -->
           <b-form-group id="input-group-5" label="Upload File" inline>
             <div class="file-wrap">
               <label class="file-select mr-sm-2">
@@ -138,7 +180,7 @@
             <p class="text-mute">Allowed images with extentions: .png,.jpg/.jpeg</p>
             <!-- <p>wwwstate thumbnail {{thumbnail}}</p>
             <p>wwwedit: {{edit}}</p> -->
-            <!-- front-side errors upload file-->         
+       
           </b-form-group> 
 <!-- server side errors upload file(too big; ext not allowed) -->            
             <div v-if="errors.thumbnailErr">
@@ -154,8 +196,12 @@
  <!-- front-side errors upload file-->
             <div class="msg mb-2 py-2" v-if="localErr" :class="`${localErr ? 'is-danger' : 'is-success'}`">
                 <div class="msg-body" v-if="alertHeavyFile">{{ alertHeavyFile }}</div>
-                <div class="msg-body" v-if="formatNotAllowed">{{ formatNotAllowed }}</div>            
+                <div class="msg-body" v-if="formatNotAllowed">
+                  Only images are allowed.Please, remove attached file.
+                  </div>            
             </div>
+
+
  <!-- server side Bad request not auth-ed -->
           <div v-if="errors.error400">
               <div class="warn mb-1">
@@ -168,8 +214,9 @@
               </div>  
             </div>
 <!-- end server side bad request not auth-ed-->
+<!-- :disabled="formInValid" variant="success">Submit</b-button> -->
             <b-button type="submit" variant="primary" class="pull-xs-right btn btn-large btn-success"
-            :disabled="isSubmitting">
+            :disabled="submitButDisable">
                 Publish Idea
             </b-button>     
           </b-form>
@@ -185,14 +232,14 @@ import AppLoader from '@/components/Loader'
 import tagsHelp from '@/helpers/tagsHelper'
 import optimizePhoto from '@/assets/js/resizeIt.js'
 import getFileNameFromUrl from '@/assets/js/shortName.js'
+import { required, maxLength} from  "vuelidate/lib/validators";
 
 export default {
     name:'AppIdeaForm',
     components:{
         AppCategInput,
         AppLoader,
-        AppValidationErrors,
-        
+        AppValidationErrors,        
     },
     props:{
         categories:{
@@ -206,7 +253,7 @@ export default {
         },
         errors:{
             type:Object,
-            required:false
+            
         },
         isSubmitting:{
             type:Boolean,
@@ -224,25 +271,38 @@ export default {
             leadText: this.initialValues.leadText,
             mainText: this.initialValues.mainText,                
             featured: this.initialValues.featured,
-            tags: this.initialValues.tags,
-            
+            tags: this.initialValues.tags,            
             // upload file vars
             thumbnail: this.initialValues.thumbnail,                 
             checked: false, 
             localErr:false,
-            formatNotAllowed:null,
+            formatNotAllowed:false,
             resizedThumbnail:null,                            
-            alertHeavyFile:null,           
+            alertHeavyFile:null,  
+            clickRemoveFile:false, 
+            //front-side errors
+            categInputPresent:false,
+            fieldRequired: "This field is required", 
+            customSubmitPort:this.isSubmitting,
+            customCategErr:false       
         }
     },
+    validations:{
+      categ:{required},
+      title:{required,maxLength:maxLength(5)},
+      leadText:{required,maxLength:maxLength(5)},
+      mainText:{required,maxLength:maxLength(5)},
+
+    },
     methods:{
-        onSubmit(){
+        onSubmit(){         
             const data = new FormData()
             data.append('categ ', this.categ)
             data.append('title', this.title)
             data.append('lead_text', this.leadText)
-            data.append('main_text', this.mainText)            
-            // console.log("form component calling ....with a form")
+            data.append('main_text', this.mainText) 
+            // data.append('remove_file',this.clickRemoveFile)           
+            console.log("user wanted to del img?",this.clickRemoveFile)
             // console.log(data)
             if(this.tags){
             // clean tag string from #$56 ect
@@ -250,18 +310,35 @@ export default {
             console.log("tags string is",cleanTags)
             data.append('tags', cleanTags)         
             }
+
             if (this.resizedThumbnail) {
+              console.log("form gets a resized image")
             data.append('thumbnail', this.resizedThumbnail)
-          } else {
+          } else if(this.clickRemoveFile){
+            console.log("user removed prev-initial thumbnail")
             // user removes attached file so this.thumbnail = ""
             data.append('thumbnail', '')
+          }else if(!this.clickRemoveFile
+                  &&typeof this.thumbnail==='string'
+                  &&this.thumbnail.includes('https://boterland.s3.amazonaws.com')){
+            // https://boterland.s3.amazonaws.com/ideapot/idea_1/lemon1630705942.9574196.jpg
+            console.log("form gets initial str",this.initialValues.thumbnail)
+            data.append('thumbnail',this.initialValues.thumbnail)
           }
+          else{
+            
+            console.log("form gets initial str",this.initialValues.thumbnail)
+            // data.append('thumbnail',this.initialValues.thumbnail)
+            data.append('thumbnail','')
+          }
+          console.log("idea form for edit data:",data)
             this.$emit('ideaSubmit',data)
             // console.log("do you seen me in parent?")
         },
         readCategVal(cat){
             console.log(cat)
             this.categ = cat
+            
         },
         async onFileChange() {
           // clear prev error msg and uncheck state
@@ -295,7 +372,7 @@ export default {
               // this.browserFileUploadMsg = `File too large.MAX sise is ${MAX_SIZE / 1000}kB`
             }
             if (!allowedTypes.includes(img.type)) {              
-              this.formatNotAllowed = `Only images are allowed`
+              this.formatNotAllowed = true //`Only images are allowed`
               // this.browserFileUploadMsg = `Only images are allowed`
             }
           }
@@ -307,13 +384,13 @@ export default {
           this.$refs.check.checked = false // boolean
         },
         detachFile(){
-          console.log("checkbox clicked")
-          
+          console.log("checkbox clicked")          
           console.log("detaching file started with intial path:",this.$refs.file.value)
           this.$refs.file.value = '' // path to file on local machine
           console.log("after detachement path is:",this.$refs.file.value)
           this.localErr = false
           // this.thumbnail = null
+          this.clickRemoveFile=true
           this.thumbnail = ''
           this.resizedThumbnail = null
           // this.alertHeavyFile = false;
@@ -321,10 +398,39 @@ export default {
         }
     },
     computed:{
+      formInValid() {
+      return this.$v.$invalid;
+      },
+      submitButDisable(){
+        return this.formInValid||this.customSubmitPort||this.alertHeavyFile||this.formatNotAllowed||this.categ===0
+      },
+      categRequired(){
+        return this.categ===0
+      },
       // return only file name from aws 3 url link
       getShortName(){
         return getFileNameFromUrl(this.thumbnail)
-      }
+      },
+      titleRequired() {
+        
+      return this.$v.title.$dirty && !this.$v.title.required;
+    },
+      leadTextRequired() {
+      return this.$v.leadText.$dirty && !this.$v.leadText.required;
+    },
+      mainTextRequired() {
+      return this.$v.mainText.$dirty && !this.$v.mainText.required;
+    },
+    inValidTitleMaxLen() {
+      return this.$v.title.$dirty && !this.$v.title.maxLength;
+    },
+    
+    inValidLeadTextMaxLen() {
+      return this.$v.leadText.$dirty && !this.$v.leadText.maxLength;
+    },
+    inValidMainTextMaxLen() {
+        return this.$v.mainText.$dirty && !this.$v.mainText.maxLength;
+      },
     }    
 }
 </script>
@@ -332,6 +438,8 @@ export default {
 .warn{
     background-color: cornsilk;
 }  
+
+
 /* style Digital Ocean */
 .file-select > .select-button {
   padding: 0.5rem;

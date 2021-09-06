@@ -6,6 +6,7 @@
                 <div   class="col-lg-4 col-md-12 col-sm-12">
                     <div class="idea-img mb-2">
                         <div v-if="idea.thumbnail">                            
+                            
                             <img  :src="idea.thumbnail" alt="img idea" class="img-fluid">
                         </div>
                         <div v-else>
