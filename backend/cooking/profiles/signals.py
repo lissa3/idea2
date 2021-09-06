@@ -3,7 +3,10 @@ from django.dispatch import receiver
 from timestamp.broadcast_utils.base_utils import make_unid,create_color
 from profiles.models import Profile
 from django.contrib.auth import get_user_model
+import logging
 
+
+logger = logging.getLogger('auth')
 User = get_user_model()
 
 @receiver(post_delete,sender=Profile)
@@ -22,6 +25,7 @@ def create_profile(sender,instance,created,*args,**kwargs):
     # print("inside post save signal; creating profile on user with is",instance.id,instance.email)
     if created and instance.email:
         Profile.objects.create(user=instance)
+        logger.info(f'profile creaed for {instance.email}')
     # instance.profile.save()  # think if this line(errr in api/idea/tests) err:User has no profile 
 
 

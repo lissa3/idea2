@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
-from django.db.models import Count
 # from django.core.exceptions import ValidationError
+import logging
 
 
 from rest_framework import viewsets  # , permissions
@@ -13,20 +13,18 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-
-
-
 from django_filters.rest_framework import DjangoFilterBackend # third party
 # from api.filters import IdeaFilter
 
-from ideas.models import Idea, UserIdeaRelation
 
 from api.serializers.ideas.idea_ser import IdeaSerializer
 from api.serializers.user_idea_rel.user_idea_relation_ser import UserIdeaRelSerializer
+from api.permissions import IsAuthorOrIsStaffOrReadOnly
 from timestamp.broadcast_utils.idea_utils import get_json_tags, checkTagStringLength
-from .permissions import IsAuthorOrIsStaffOrReadOnly
+from ideas.models import Idea, UserIdeaRelation
 
 User = get_user_model()
+logger = logging.getLogger('custom')
 
 
 # TODO: make separ view list idea?
@@ -37,7 +35,6 @@ User = get_user_model()
 
 class IdeaRelations(RetrieveModelMixin,UpdateModelMixin,viewsets.GenericViewSet):
     """"""
-    print("insde idea-user-relations")
     queryset = UserIdeaRelation.objects.all()
     serializer_class = UserIdeaRelSerializer
     lookup_field = 'idea'
@@ -77,7 +74,7 @@ class IdeaViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # let op: 2 times qs:? |=> distinct() in postgres        
         queryset = Idea.objects.select_related('author','categ').prefetch_related('tags')
-        # print("viewset made qs:",queryset)    
+        # print("viewset made qs:",queryset)  
         return queryset 
 
     # for postgresql   in prod  
@@ -98,25 +95,29 @@ class IdeaViewSet(viewsets.ModelViewSet):
         """
         idea = self.get_object()
         setattr(request.data, '_mutable', True)
-        print("editing an idea",request.data)
-        # print("from vue data",request.data.get('thumbnail')) #'thumbnail': ['']}
+        # print("editing an idea",request.data)
+        # request.data.get('thumbnail')) #'thumbnail': ['']}
         # from vue data https://boterland.s3.amazonaws.com/ideapot/idea_1/lemon1630705942.9574196.jpg
-        # if user edits only text fields but does not want to remove img
         thumbnail = request.data.get('thumbnail')
-        print("thumbnail is",thumbnail)        
-        print("type thumb line 106 from front : ",type(thumbnail))
+        if thumbnail == "":
+            print("thumbnail is empty str")
+        else:
+            print("thumbnail is not an empty str",thumbnail)           
+        print("type thumb line 107 from front : ",type(thumbnail))
         if type(thumbnail) == str and len(thumbnail)!=0:
             print('line 107: looks like img is url str')             
             request.data.pop('thumbnail')
+            logger.warning('thumbnail file is aws s3 url,cutting if from request; rest goes to ser-er')
         # no img from front: thumbnail': ['']}|=> thumbnail = empty string     
         if type(thumbnail) == str and len(thumbnail)==0:
-            print('line 111: looks like img is empty str')
+            # print('line 111: looks like img is empty str')
             request.data['remove_file'] = True
+            # logger.warning('front:no thumbnail, empty string in request')
             
         if type(thumbnail) != str:
             # img from front: thumbnail: [<InMemoryUploadedFile: one.jpg (application/octet-stream)>]
             request.data['remove_file'] = True
-            print('line 113: looks like img is real img upload')  
+            # logger.warning('thumbnail is a real img')
             
           
         tags = request.data.get('tags')
@@ -189,15 +190,3 @@ after super().save(...)
 
 """   
 
-"""
-dir request
-['FILES', 
-  'data', 
-
-
-  Quit the server with CONTROL-C.
-['__class__', '__contains__', '__copy__', '__deepcopy__', '__delattr__', '__delitem__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getstate__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__iter__', '__le__', '__len__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__setattr__', '__setitem__', '__setstate__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_getlist', 'appendlist', 'clear', 'copy', 'dict', 'fromkeys', 'get', 'getlist', 'items', 'keys', 'lists', 'pop', 'popitem', 'setdefault', 'setlist', 'setlistdefault', 'update', 'values']
-viewset gets data from front line 120
-type of
-
-"""

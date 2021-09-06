@@ -18,7 +18,7 @@ from rest_framework.filters import OrderingFilter
 from comments.models import Comment
 from ideas.models import Idea
 from api.serializers.comments.comment_ser import CommentSerializer #,ListCommentSerializer
-from .permissions import IsOwnerOrIsStaff
+from api.permissions import IsOwnerOrIsStaff
 
 
 User = get_user_model()

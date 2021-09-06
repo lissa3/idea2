@@ -1,11 +1,10 @@
 # from django.db.models import query
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from django.db.models import Count
+
 
 from rest_framework import generics
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView,RetrieveAPIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.exceptions import APIException, PermissionDenied
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -14,128 +13,16 @@ from rest_framework import status
 # from rest_framework_simplejwt.tokens import RefreshToken (GOOD TO HAVE delete profile)
 
 from api.serializers.account.user_serializer import UserSerializer
-
-
-User = get_user_model()
-
-
-from taggit.models import Tag
-
-from api.serializers.categs.categ_ser import CategorySerializer,CategoryNameSerializer
-from api.serializers.tags.tags_ser import TagSerializer
-from api.serializers.ideas.idea_ser import IdeaSerializer
-from api.serializers.account.profile_serializer import ProfileSerializer #,ProfilePublicSerializer
+from api.serializers.account.profile_serializer import ProfileSerializer 
+from api.permissions import IsOwnerOrIsStaff
 # from api.serializers.account.user_serializer import UserSerializer
 
-from ideas.models import Category, Idea
-from profiles.models import Profile
-from .permissions import IsOwnerOrIsStaff
 
+from profiles.models import Profile
 User  = get_user_model()
 
-# Categories
-
-class CatListIdeaForm(generics.ListAPIView):
-    """ get all categories for idea creation form without tree structure"""
-    serializer_class = CategoryNameSerializer
-    permission_classes = (AllowAny,)
-    pagination_class=None
-
-    def get_queryset(self, queryset=None):
-        queryset = Category.objects.all()
-        return queryset
-        # return queryset.get_cached_trees()
-
-
-class CategoryList(generics.ListAPIView):
-
-    """ get all categories with tree structure"""
-    serializer_class = CategorySerializer
-    permission_classes = (AllowAny,)
-    pagination_class = None
-    # print("inside view")
-
-    def get_queryset(self, queryset=None):
-        # print("view for cats works with qs:", Category.objects.all())
-        # print("categs view line 60")
-        queryset = Category.objects.all()
-        # print(type(Category.objects.all()))        
-        return queryset
-#       # return queryset.get_cached_trees()
-
-class IdeasPerCategListView(generics.ListAPIView):
-    """ retrieve all ideas linked to the category;
-    for tests pagination_class = None
-    """
-    serializer_class = IdeaSerializer
-    # pagination_class = None
-    
-    def get_queryset(self):
-        slug = self.kwargs.get('slug')
-        print("got a categ with slug:",slug)
-        categ = get_object_or_404(Category, slug=slug)
-        qs2 = Idea.objects.filter(categ = categ)
-        print("qs2",qs2)
-        if categ.get_children():
-            print("categ has children")
-            print(categ.children.exists())
-            categ_descend = categ.get_descendants(include_self=True)
-            qs = Idea.objects.filter(categ__in =categ_descend)
-        else:
-            print("categ has no children")
-            qs = Idea.objects.filter(categ=categ) 
-            print("qs line 86 len",qs) 
-        print("returning qs with len to tests",qs.count())      
-        return qs 
-
-     
-
-# Tags (thir party taggit)
-
-class TagList(generics.ListAPIView):
-    """ get list of tags"""
-    serializer_class = TagSerializer
-    permission_classes = (AllowAny,)
-    pagination_class=None
-
-    def get_queryset(self, queryset=None):
-        return Tag.objects.all()
-
-
-class TagIdeasListSlug(generics.ListAPIView):
-    """ get list of ideas based on a tag's slug"""
-    serializer_class = IdeaSerializer
-    permission_classes = (AllowAny,)
-    # pagination_class = CustomPaginationIdeas
-
-    def get_queryset(self):
-        # print("inside  tag view on idea slug")
-        slug = self.kwargs.get('slug')
-        if slug is not None:
-            # result = Idea.objects.filter(tags__slug__in=(slug,))
-            # print("result is", result)
-            return Idea.objects.filter(tags__slug__in=(slug,))
-        else:
-            return Response(status=400)
-            
-class TagIdeasListName(generics.ListAPIView):
-    """ get list of tags via names"""
-    serializer_class = IdeaSerializer
-    permission_classes = (AllowAny,)
-
-    def get_queryset(self):
-        name = self.kwargs.get('name')
-        if name is not None:
-            print("server got a tag:", name)
-            print("founs following ideas for this tag", Idea.objects.filter(tags__name__in=(name,)))
-
-            return Idea.objects.filter(tags__name__in=(name,))
-        else:
-            return Response(status=400)            
-
-
 class ShowFollowingRetrView(APIView):
-    """return a list whom a given person is following (for both public AND private view)"""
+    """return a list of people who are followed by a given person(for both public AND private view)"""
     permission_classes = (AllowAny,)
     
     def get(self,request,unid,format=None):
@@ -156,7 +43,7 @@ class RetrieveFollowers(APIView):
             user = get_object_or_404(User,id=id)
             followers = user.followed_by.all()
             print(followers)
-            profiles = ProfilePublicSerializer(followers,many=True)
+            profiles = ProfileSerializer(followers,many=True)
             return Response({'data':profiles.data},status=status.HTTP_200_OK)
         except:
             return Response({'error':'List followers not found'},status=status.HTTP_404_NOT_FOUND)
@@ -206,34 +93,7 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
-# def update(self, request, *args, **kwargs):
-#         """let op: don't save twice to avoid err msg: file not img||corrupt
-#         thumbnail may come from front:
-#         1.as empty string = not img attached or removed
-#         2.as string = url of aws s3
-#         3. as InMemoryUploadedFile which needs validation by ser-er        
-#         """
-#         idea = self.get_object()
-#         setattr(request.data, '_mutable', True)
-#         print("editing an idea",request.data)
-#         # print("from vue data",request.data.get('thumbnail')) #'thumbnail': ['']}
-#         # from vue data https://boterland.s3.amazonaws.com/ideapot/idea_1/lemon1630705942.9574196.jpg
-#         # if user edits only text fields but does not want to remove img
-#         thumbnail = request.data.get('thumbnail')
-#         print("thumbnail is",thumbnail)        
-#         print("type thumb line 106 from front : ",type(thumbnail))
-#         if type(thumbnail) == str and len(thumbnail)!=0:
-#             print('line 107: looks like img is url str')             
-#             request.data.pop('thumbnail')
-#         # no img from front: thumbnail': ['']}|=> thumbnail = empty string     
-#         if type(thumbnail) == str and len(thumbnail)==0:
-#             print('line 111: looks like img is empty str')
-#             request.data['remove_file'] = True
-            
-#         if type(thumbnail) != str:
-#             # img from front: thumbnail: [<InMemoryUploadedFile: one.jpg (application/octet-stream)>]
-#             request.data['remove_file'] = True
-#             print('line 113: looks like img is real img upload')  
+
             
                   
 
@@ -313,7 +173,6 @@ class FollowAuthorView(APIView):
 
     
 
-
 class UserDeleteAPIView(APIView):
     # print("inside user delete view")
     permission_classes = (IsAuthenticated,)
@@ -328,23 +187,6 @@ class UserDeleteAPIView(APIView):
             return Response({'error':'Failed to delete user account'},status = status.HTTP_500_INTERNAL_SERVER_ERROR)  
 
 
-class IdeasFollowing(ListAPIView):
-    """list of ideas (user is following): newest on top"""
-    serializer_class = IdeaSerializer
-    # authentication_class = (IsAuthenticated,)
-    ordering_fields = ('title', 'created_at','max_rating')
-    # default ordering
-    ordering = ('-created_at',)     
-    
-    def get_queryset(self):
-        unid = self.kwargs.get('unid')        
-        person = get_object_or_404(Profile,unid=unid)
-        person_following_list = person.following.values_list('id',flat=True)
-        qs = Idea.objects.filter(author_id__in=person_following_list)  
-       
-        return qs
-        
-   
 
 
 

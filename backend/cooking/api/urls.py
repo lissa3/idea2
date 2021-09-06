@@ -2,18 +2,21 @@ from django.urls import path, include
 from rest_framework import routers
 # from rest_framework.urlpatterns import format_suffix_patterns
 
-from api.views import (
-                    CatListIdeaForm,CategoryList,
-                    ProfileRetrUpdateDestrView,ProfileRetrView,
-                    IdeasPerCategListView,IdeasPerCategListView,IdeasFollowing,
-                    TagList, TagIdeasListSlug, TagIdeasListName, 
+from api.views_pack.views import (IdeasPerCategListView,IdeasPerCategListView,
+                                    IdeasFollowing,TagIdeasListSlug)
+                                        
+                   
+from api.views_pack.tags_views import TagList, TagIdeasListName
+from api.views_pack.categs_views import CatListIdeaForm,CategoryList
+
+from api.views_pack.profile_views import (                    
+                    ProfileRetrUpdateDestrView,ProfileRetrView,                   
                     UserDeleteAPIView, ShowFollowingRetrView,
-                    RetrieveFollowers,UnFollowUser,FollowAuthorView,
-                                           
-                    #FollowAuthorView
+                    RetrieveFollowers,UnFollowUser,FollowAuthorView,   
                     )
-from api.comment_views import CommentAPIView,CommentListView                    
-from api.viewsets import IdeaViewSet, IdeaRelations
+from api.views_pack.comment_views import CommentAPIView,CommentListView                    
+from api.views_pack.viewsets import IdeaViewSet, IdeaRelations
+
 
 router = routers.DefaultRouter()
 
