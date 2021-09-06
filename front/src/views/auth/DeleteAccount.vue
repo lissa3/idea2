@@ -28,16 +28,16 @@
                                         class="search-text"
                                         autocomplete="off"
                                         v-model.trim="currentPsw"
-                                        :type="showPassword ? 'text' : 'password'"
+                                        type="password"
                                                
                                     >
                                     <!-- @blur="$v.currentPsw.$touch()"
                                         :class="{ 'is-invalid warning': this.$v.currentPsw.$error }"    -->
                                     </b-form-input>
                                     </div>
-                                    <div class="col-md-2  pt-1 point-it">
+                                    <!-- <div class="col-md-2  pt-1 point-it">
                                     <span ><b-icon-eye @click="toggleShowPws" /></span>
-                                </div>
+                                </div> -->
                                 </div>
 <!--psw front side errors  -->
                            <!-- <b-form-invalid-feedback v-if="currentPswRequired" 
@@ -58,7 +58,7 @@
                         </b-form-group>
 
 <!-- django server is down -->
-{{servErr}}
+<!-- {{servErr}} -->
                         <div v-if="servErr.servDown" class="warn col-md-12 mb-3">
                             Error message: {{servDownMsg}}
                             <b-icon icon="exclamation-circle-fill" variant="danger"></b-icon>        
@@ -69,11 +69,11 @@
 <!-- buttons group -->
                     <b-row class="text-center mt-4">
                         <b-col cols="6">
-                            <b-button type="submit"  variant="success">Submit</b-button>
-                            <!-- <b-button type="submit"  variant="success" :disabled="formInValid">Submit</b-button> -->
-                        </b-col >
-                        <b-col cols="6">
-                            <b-button  @click="goTo('Home')" variant="primary">Home</b-button>
+                            <b-button type="submit"  variant="outline-danger">Delete</b-button>                            
+                        </b-col >                       
+                        <b-col cols=6>
+                            <router-link :to="{ name: 'home' }" class="btn btn-outline-success" 
+                            >Go home</router-link>
                         </b-col>
                     </b-row>    
                 </b-form>  
@@ -101,8 +101,8 @@ export default {
             currentPsw:'',            
             //front-side vars/errors
             //fieldRequired: "This field is required",
-            // toggle password visiabilty
-            showPassword: false,            
+            
+                       
             // server side err's
             servErr:{servDown:false},
             servDownMsg:'Sorry. Our server"s exper temp problems.Try again a little bit later',            
@@ -169,9 +169,7 @@ export default {
                 
             })            
         },
-        toggleShowPws() {
-        this.showPassword = !this.showPassword;
-        },       
+             
     }
 }
 </script>
@@ -203,6 +201,13 @@ export default {
 .col-md-10 >input{
     border-color: transparent;
     border-radius: 5px;
+}
+.link-decor{  
+  color:rgb(35, 35, 39);
+  text-decoration:none;
+}
+.link-decor:hover{
+  color:rgb(221, 216, 216);
 }
 /* input .search-txt */
 /* .search-txt {

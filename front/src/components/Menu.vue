@@ -53,13 +53,13 @@
             <a href="#" class="link-decor" >Welcome, &nbsp;{{currentUser.username}}</a>
           </b-nav-item>
           <b-nav-item-dropdown right>
-          <!-- Using 'button-content' slot -->
-          <template #button-content>
-            User
-          </template>
-            <b-dropdown-item href="#" @click="showProfile">Profile</b-dropdown-item>
-            <b-dropdown-item href="#" @click="changePsw">Change Password</b-dropdown-item>
-            <b-dropdown-item href="#" @click="deleteAccount" class="danger">Delete Account</b-dropdown-item>
+            <!-- Using 'button-content' slot -->
+              <template #button-content>
+                <b-icon-tools></b-icon-tools>
+              </template>
+              <b-dropdown-item href="#" @click="showProfile">Profile</b-dropdown-item>
+              <b-dropdown-item href="#" @click="changePsw">Change Password</b-dropdown-item>
+              <b-dropdown-item href="#" @click="deleteAccount" class="danger">Delete Account</b-dropdown-item>
             </b-nav-item-dropdown>  
       </template>
         
@@ -122,7 +122,8 @@ export default {
         // console.log("Sign out...")
         console.log(actionTypes.signOut)
         this.$store.dispatch( actionTypes.signOut)
-        location.reload();
+        window.location.reload()
+        
       },
       doSearch(){
         this.$router.push({name:'search',params:{term:this.term}})       
@@ -167,9 +168,10 @@ export default {
       //close modal
       close(){
         this.makeModalVisible = false
+        this.$router.push({name:'home'})
       },
       confirmDeleteAccount(){
-        console.log("confirm delte account")
+        console.log("confirm delete account")
          this.makeModalVisible=false
         // this.$store.dispatch(singleIdeaActionType.deleteIdea,{slug})
       }
@@ -183,11 +185,14 @@ export default {
     created(){
      setInterval(()=>{ 
        // sending request for a new access token each 60 min
+       console.log("setimeout calling, time is voorbij, asking for a new access token")
        let refresh = localStorage.getItem('refreshToken')
-       let access = localStorage.getItem('accessToken')
-       console.log("access is is",access)
+      //  let access = localStorage.getItem('accessToken')
+      //  console.log("access is is",access)
        this.$store.dispatch(actionTypes.fetchFreshAccessToken,refresh) 
-       }, 3600000);
+       }, 600000);
+      //  this.$store.dispatch(actionTypes.fetchFreshAccessToken,refresh) 
+      //  }, 3600000);
     }
 }
 </script>
