@@ -83,10 +83,8 @@
           
           <b-form-group
                 id="input-group-12" class="required psw-show"                
-                description="Password should contain at least one capital letter: (A-Z); at least one digit: 0-9; at least one special character (! @ $ % #) and be at least 6 chars long" 
-                              
-              >
-              
+                description="Password should contain at least one capital letter: (A-Z); at least one digit: 0-9; at least one special character (! @ $ % #) and be at least 6 chars long"                               
+              >              
               <label id="input-group-12" class="control-label label-psw">Password</label>                
               <b-form-input
                 id="input-12"
@@ -366,7 +364,6 @@ export default {
 </script>
 
 <style scoped>
-
 .warn {
   background-color: rgb(240, 194, 194);
   border-radius: 3px;
@@ -374,25 +371,16 @@ export default {
 .warn ul li{
   list-style-type:none;
 }
-
  .main-signup {
   padding:2rem;
   background-color: blanchedalmond;
   box-shadow: 0 0 10px 10px rgba(0,0,0,.05);
   border-radius: 0.5rem;
 } 
-
-/* .form-group.required .control-label::after {
-  content: " *";
-  color: red;
-} */
-
 .control-label::after {
   content: " *";
   color: red;
 }
-
-
 .red {
   color: red;
 }

@@ -79,7 +79,8 @@ export default {
   methods:{   
     submitEd(ideaInput){      
       const slug = this.$route.params.slug 
-     console.log("slug in rout is",ideaInput)    
+     console.log("idea input is:",ideaInput)    
+     console.log("idea input is:",Object.keys(ideaInput))
     // this.$store.dispatch(singleIdeaActionType.getIdea,{slug:this.$route.params.slug}) 
      this.$store.dispatch(ideaActionType.editIdea,{slug,ideaInput})
      .then((resp)=>{
@@ -180,7 +181,7 @@ export default {
                 featured : this.idea.featured,
                 tags:tagToString,
                 thumbnail:this.idea.thumbnail,
-                slug:this.idea.slug
+                slug:this.idea.slug,
 
               }
             }

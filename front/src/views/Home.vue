@@ -72,7 +72,7 @@ header::before {
   width:100vw;
   height: 100vh;
   z-index: -1;
-  background-image: url(../assets/photos/road.jpg);
+  background-image: url(../assets/photos/bridge.jpg);
   background-position: center;
   background-size: cover;
   transform: scale(1.4);

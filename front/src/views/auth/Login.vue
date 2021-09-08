@@ -1,6 +1,9 @@
 <template>
     <div class="container">
-      <div class="flash-msg"></div>
+      <div class="flesh-msg mt-3 mb-3" v-if="successMsg">
+                  <div>{{successMsg}}</div>
+                </div>
+      
         <div class="row mx-auto  my-5 main-login"> 
 
 <!-- loader     -->
@@ -52,15 +55,14 @@
                   </ul>
                 </div>
 <!-- password-->
-              <div class="d-flex justify-content-between">
-                              <div class="control-label">Password</div>
-                              <div class="">Show Password</div>
+
+              <div class="d-flex justify-content-between mb-2">
+                              <div >Password</div>
+                              <div>Show Password</div>
               </div>                
                 <b-form-group id="input-group-2" class="psw-show" 
-                >
-                
-                <label id="input-group-2" class="control-label label-psw">Password</label>
-                
+                >                
+                <label id="input-group-2" class="label-psw">Password</label>                
                 <b-form-input
                     id="input-2"
                     :type="showPassword ? 'text' : 'password'"
@@ -105,9 +107,7 @@
                 <div class="warn mb-3" v-if="finalErr">
                   <div>Something went wrong during login session.</div>
                 </div>
-                <div class="flesh-msg mb-3" v-if="successMsg">
-                  <div>{{successMsg}}</div>
-                </div>
+                
                 <b-row >
                   <b-col cols="6">
                     <b-button type="submit" 
@@ -208,7 +208,7 @@ export default {
                 console.log("do smth with this resp",resp)
                 if(resp){
                     console.log("status",resp.status)
-                    this.successMsg = "Success in login"
+                    this.successMsg = "You have logged in"
                     setTimeout(()=>{
                     this.$router.push({name:"home"})
                   },2000)
@@ -255,9 +255,7 @@ export default {
 .warn ul li{
   list-style-type:none;
 }
-.flesh-msg{
-  background-color: darkgoldenrod;
-}
+
 .main-login {
 
   padding:2rem;
@@ -293,7 +291,7 @@ export default {
 .password + .unmask {
   position: absolute;
   right: 74px;
-  top: 12px;
+  top: 9px;
   text-indent: -9999px;
   width: 25px;
   height: 25px;

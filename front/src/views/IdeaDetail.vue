@@ -1,26 +1,31 @@
 <template>
-    <div class="container-fluid mt-3">
+    <div class="container-fluid pt-3">
         <section  v-if="idea" class="jumbotron text-center px-2 py-2">
-            <div class="container banner">
+            <div class="container banner mt-2">
             <h1 class="jumbotron-heading">Title: {{idea.title}} </h1>
             <div >
                 <div class="idea-date  text-center">
                     <span>{{idea.created_at| filterDateTime}}</span>
                 </div>             
             </div>
-              <div class="banner-collection">
+              <div class="banner-collection align-content-center">
 <!-- general   -->
-                <!-- <div class="author-info d-flex align-items-center justify-content-around">  -->
-                <div class="author-info d-flex align-content-center justify-content-around"> 
+                <div class="author-info d-flex justify-content-around "> 
+               
                   <b-avatar></b-avatar>
-                  <div class="align-self-center"><strong>Created by:</strong></div>                  
-                    <router-link :to="{name:'profile',params:{id:idea.author}}" class="px-2">
-                       <strong>{{idea.owner_idea}}</strong> 
-                    </router-link>
+                
+                  <!-- <div class="align-self-center"><strong>Created by:</strong></div>                   -->
+                  <div class="">Created by:</div>    
+                              
+                  <router-link :to="{name:'profile',params:{id:idea.author}}" class="px-2">
+                      <p class="">{{idea.owner_idea}}</p>
+                  </router-link>
+                  
                  
                 </div>
 <!-- user is not anonym -->
                 <template v-if="!isAnonym">
+                  <!-- <div v-if="!authorIsCurrentUser" class="d-flex justify-content-center align-content-center"> -->
                   <div v-if="!authorIsCurrentUser">
                     <button type="button" class="btn btn-secondary" @click="addToFollow(idea.author)">
                       Follow
@@ -60,15 +65,18 @@
             <div class="col-xs-12">
               <div class="card mb-4 box-shadow">
                 <div   class="col-lg-12 col-md-12 col-sm-12 px-0" >
-                    <div class="mb-2 d-flex w-100">
-                         <div v-if="idea.thumbnail">
-                            <img  :src="idea.thumbnail" alt="img idea" class="idea-img">                            
+                  <div class="mb-2">
+                         <div v-if="idea.thumbnail" class="">
+                                                       
+                            <img  :src="idea.thumbnail" alt="img idea" class="rounded d-block  idea-img">                            
+                            <!-- <img  :src="idea.thumbnail" alt="img idea" class="idea-img">                             -->
+                            <!-- <img  :src="idea.thumbnail" alt="img idea" class="rounded mx-auto d-block"> -->
                         </div>
                         <div v-else>
                           <img class="card-img-top"  style="height: 225px; width: 100%; display: block;" src="../assets/logo.png" data-holder-rendered="true">                        
                         </div>
                         
-                    </div>
+                  </div>
                 </div>
                 <div class="d-flex justify-content-around mt-3 px-2 make-vertical">   
                   <!-- @media (max-width: 575.98px) { ... }               -->
@@ -91,7 +99,7 @@
                   </div>  
                 </template>           
                 </div>
-                 <div class="d-flex justify-content-end mt-3 px-3 ">                  
+                <div class="d-flex justify-content-end mt-3 px-3 ">                  
                     <p v-if="thxRating" class="thanks">Thank you for giving a rating</p>                
                 </div> 
                 <div class="card-text px-3 offset-md-2">
@@ -112,8 +120,8 @@
                         </div> 
                       </div>                    
                     </div>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center px-3 mb-3">
+                </div>
+                <div class="d-flex justify-content-between align-items-center px-3 mb-3">
                       <app-like 
                         :idea-id="idea.id" 
                         :idea-likes="idea.an_likes"
@@ -122,16 +130,18 @@
                       </app-like>
                       <div>  
                         <div v-if="idea.users_comments>0">
-                          <button type="button" class="btn btn-sm btn-outline-secondary" @click="fetchComments(idea.slug)">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" >
                           Show Comments ({{idea.users_comments}})
                         </button>    
+                          <!-- <button type="button" class="btn btn-sm btn-outline-secondary" @click="fetchComments(idea.slug)">
+                          Show Comments ({{idea.users_comments}})
+                        </button>     -->
                         </div>  
                         <p v-if="!idea.users_comments">                 
                           No comments yet
                         </p>                          
-                      </div>                     
-                    <small class="text-muted">9 mins</small>
-                  </div>
+                      </div>                    
+                </div>
                   
               </div>
             </div> 
@@ -139,8 +149,7 @@
      </div>      
    </div>   
     <div class="row">
-        <div v-if="idea"> 
-                 
+        <div v-if="idea">                  
             <app-comments  
               :idea-slug="idea.slug" 
               :idea-id="idea.id"
@@ -340,10 +349,11 @@ export default {
 .banner{
   height: 200px;
   max-height: 250px;
-  background-color: #e2ede8;
+  /* background-color: #e2ede8; */
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  align-self: center;
 }
 .idea-container{
   display: flex;
@@ -355,10 +365,16 @@ export default {
   margin:auto;
   max-width:100%;
 }
-/* @media all and (max-width: 700px){
+@media all and (max-width: 700px){
   .idea-img{
-    
+    margin:auto;
+    max-width:100%;
+   
+
   }
+}
+/* @media all and (max-width: 700px){
+  
 } */
 .banner-collection{
   display: flex;
@@ -389,6 +405,8 @@ export default {
   .author-info{
     font-size: 1rem ;
     width:100%;
+    font-weight: 300;
+    
   }
 }
 /* rating */
@@ -407,7 +425,7 @@ export default {
 /* flash msg at the top when req OK */
 .flash-msg{
   height: 40px;
-  background-color:#caefde;
+  background-color:#b6ccc1;
   text-align: center;
   font-size: 20px;
 }

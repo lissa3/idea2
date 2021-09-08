@@ -81,7 +81,7 @@ export default {
   },
   methods:{   
     submitEd(ideaInput){      
-    //  console.log("idea create vue gets input from form",ideaInput)     
+    console.log("idea create vue gets input from form",ideaInput)     
       
      this.$store.dispatch(ideaActionType.createIdea,ideaInput)
      .then((resp)=>{
@@ -99,7 +99,7 @@ export default {
        }else if(resp.status === 500){
          this.servResp.netWorkErr = 'A server/network error occured.Sorry about this - we will get it fixed shortly.'
        }else{
-         console.log("err response in vue",resp)
+         console.log("err response in vue component from store",resp)
             this.servResp.categErr = resp.categErr
             this.servResp.featuredErr = resp.featuredErr 
             this.servResp.titleErr = resp.titleErr
