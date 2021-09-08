@@ -250,3 +250,86 @@ MEDIA_URL = "/media/"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+ADMINS = [('zoo','zoo@mail.com'),]
+
+LOGGING = {
+    'version': 1,
+    # let op: when too set it to True
+    # let the dafault loggers(ORM,db ect) be
+    'disable_existing_loggers': False,
+    'formatters':{
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },        
+    },
+    'handlers': {        
+       'dj': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter':'verbose',
+            # 'maxBytes':64*64*2, # 1024*1024*15B = 15MB            
+            'maxBytes':1024*1024*1,
+            'backupCount':5,
+            'filename':'logs/trash.log',
+        },
+    #    'dj_req_admin': {
+    #         'level': 'WARNING',
+    #         'class': 'logging.handlers.SMTPHandler',
+    #         'mailhost':'smtp.sendgrid.net',
+    #         'fromaddr':'........@gmail.com',
+    #         'toaddrs': ['...........@gmail.com'],
+    #         'subject':'error at your site: unath user',
+    #         'credentials':(EMAIL_HOST_USER,EMAIL_HOST_PASSWORD),
+    #         'secure':None
+            
+    #         # 'maxBytes':1024*1024*5,
+    #         # 'backupCount':2,
+    #         # 'filename':'logs/req_warning.log',
+    #     },
+        'upload_problems': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes':1024*1024*1,
+            'backupCount':5,
+            'formatter':'verbose',
+            'filename':'logs/upload.log',
+        },
+        'profile_creation': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes':1024*1024*1,
+            'backupCount':5,
+            'formatter':'verbose',
+            'filename':'logs/created_profiles.log',
+        },
+        'mail_admin':{
+            'level':'CRITICAL',            
+            'class':'django.utils.log.AdminEmailHandler',
+            # if != default see above 'email_backend': 'django.core.mail.backends.filebased.EmailBackend',            
+        }       
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['dj'],
+            # 'handlers': ['mail_admin','dj'],
+            'level': 'WARNING',
+            'propagate': False,
+        },        
+        'custom':{
+            'handlers':['upload_problems','profile_creation'],
+            'level':'WARNING',      
+        },     
+        'auth':{
+            'handlers':['profile_creation'],
+            'level':'INFO',      
+        }     
+    }
+}
+

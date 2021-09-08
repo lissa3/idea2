@@ -1,8 +1,7 @@
 <template>
-  <div id="app">  
-    
+  <div id="app">    
     <Menu></Menu>  
-    <router-view/>
+    <router-view/>    
   </div>
 </template>
 
@@ -31,10 +30,44 @@ html, body {
   height: 100%;
   min-height: 100%;
 } 
+/* user UI msg */
 .warn {
   background-color: rgb(240, 194, 194);
   border-radius: 3px;
   padding:5px 10px;
+}
+/* success flash message */
+.flesh-msg{  
+    background-color: rgb(192, 219, 164);
+    height: 50px;
+    padding: 2rem;
+    border-radius: 10px;
+
+
+}
+.is-danger {
+  background-color: #c72534c9;
+  padding-left:1rem;
+  border-radius: 5px;
+  color:white;
+}
+.is-success {
+  background-color: cadetblue;
+  padding-left:1rem;
+  border-radius: 5px;
+  color:white;
+}
+.not-welcome{
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}   
+/* field form is required */
+.control-label::after {
+  content: " *";
+  color: red;
 }
 /* .container {
     width: 600px;
@@ -90,6 +123,13 @@ input[type=text],  textarea {
 .comment-body{
   border:1px solid black;
   border-radius: 3px; 
+}
+/* @media (min-width: 30em) and (max-width: 80em) { */
+
+@media (max-width: 500px) {
+  .container-fluid {
+    background-color: rgb(246, 241, 223);
+  }
 }
 
 </style>
