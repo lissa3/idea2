@@ -1,7 +1,7 @@
 # from django.db.models import query
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-
+import logging
 
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -15,8 +15,11 @@ from rest_framework import status
 from api.serializers.account.user_serializer import UserSerializer
 from api.serializers.account.profile_serializer import ProfileSerializer 
 from api.permissions import IsOwnerOrIsStaff
+from timestamp.broadcast_utils.user_utils import get_ip
 # from api.serializers.account.user_serializer import UserSerializer
 
+User = get_user_model()
+logger = logging.getLogger('user_issues')
 
 from profiles.models import Profile
 User  = get_user_model()
@@ -69,26 +72,34 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrIsStaff,)
     queryset = Profile.objects.all()
     parser_classes = (FormParser, MultiPartParser)
-
+    
     def __init__(self, *args, **kwargs):
         kwargs['partial'] = True
         super().__init__(*args, **kwargs)
 
     def get_object(self):
+        print("inside get obj")
         try:
-            """ checking of the user is banned = here """
-            # print("req data", self.request.data)
+            """ can check user is banned here """
             # print("in kwargs unid:", self.kwargs.get('unid'))
             obj = get_object_or_404(
                 Profile,
                 unid=self.kwargs.get('unid'),
             )
-            # print("profile object is ", obj)
+            remote_address = get_ip(self.request)
             self.check_object_permissions(self.request, obj)
-        except APIException:
-            # TODO log attempt to get to this point
+            logger.info(f'accessed by id: {remote_address}')
+            print("try bloock")
+        # except APIException:
+        except:
+            print("except block")
+            unid = self.kwargs.get('unid')
+            remote_address = get_ip(self.request)
             print("fighting with perms")
+            logger.error(f'Permission denied for profile {unid} by {remote_address}')
             raise PermissionDenied
+        finally:
+            print("finally")    
             
 
         return obj
@@ -184,6 +195,7 @@ class UserDeleteAPIView(APIView):
             user.save()
             return Response({'success':'Successfully deleted user acoount'},status=status.HTTP_204_NO_CONTENT)
         except:
+            logger.error(f'500 ERROR: Failed to delete user {user}')
             return Response({'error':'Failed to delete user account'},status = status.HTTP_500_INTERNAL_SERVER_ERROR)  
 
 

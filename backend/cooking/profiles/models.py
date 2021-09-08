@@ -62,13 +62,13 @@ class Profile(TimeStamp):
         else:
             return self.user.username
 
-    @property
-    def get_avatar_url(self, *args, **kwargs):
-        """ return path to profile image """
-        # if self.image:
-        #     return f'/media/{self.image}'
-        # else:
-        return '/assets/img/avatar.png'
+    # @property
+    # def get_avatar_url(self, *args, **kwargs):
+    #     """ return path to profile image """
+    #     # if self.image:
+    #     #     return f'/media/{self.image}'
+    #     # else:
+    #     return '/assets/img/avatar.png'
 
   
     

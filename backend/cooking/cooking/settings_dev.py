@@ -277,7 +277,7 @@ LOGGING = {
             # 'maxBytes':64*64*2, # 1024*1024*15B = 15MB            
             'maxBytes':1024*1024*1,
             'backupCount':5,
-            'filename':'logs/trash.log',
+            'filename':'logs/dj_native.log',
         },
     #    'dj_req_admin': {
     #         'level': 'WARNING',
@@ -289,10 +289,7 @@ LOGGING = {
     #         'credentials':(EMAIL_HOST_USER,EMAIL_HOST_PASSWORD),
     #         'secure':None
             
-    #         # 'maxBytes':1024*1024*5,
-    #         # 'backupCount':2,
-    #         # 'filename':'logs/req_warning.log',
-    #     },
+    # },
         'upload_problems': {
             'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -323,7 +320,7 @@ LOGGING = {
             'propagate': False,
         },        
         'custom':{
-            'handlers':['upload_problems','profile_creation'],
+            'handlers':['upload_problems'],
             'level':'WARNING',      
         },     
         'auth':{

@@ -27,3 +27,8 @@ __pycache__
 .idea/**/gradle.xml 
 .idea/**/libraries 
 *.iws /out/ 
+photos
+SignUpOrig.vue
+*.log
+views_original.py
+logs

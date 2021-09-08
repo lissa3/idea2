@@ -1,9 +1,2 @@
 
 
-WARNING 2021-09-06 13:43:47,330 viewsets 635 front:no humbnail, empty string in request
-WARNING 2021-09-06 13:44:12,873 viewsets 635 thumbnail is a real img
-WARNING 2021-09-06 13:44:12,989 models 635 saving idea with attr muss.jpg
-WARNING 2021-09-06 13:45:29,673 viewsets 642 thumbnail file is aws s3 url,cutting if from request; rest goes to ser-er
-WARNING 2021-09-06 13:45:29,678 models 642 saving idea with attr ideapot/idea_1/muss1630935852.9898946.jpg
-WARNING 2021-09-06 13:46:42,924 viewsets 647 thumbnail file is aws s3 url,cutting if from request; rest goes to ser-er
-WARNING 2021-09-06 13:46:42,933 models 647 saving idea with attr ideapot/idea_1/muss1630935852.9898946.jpg
