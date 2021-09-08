@@ -129,7 +129,8 @@
       </div>       
     </div>    
   </section> 
-  <div v-if=!profile>You are not allowed to see this page</div>
+  <!-- not authorized request -->
+  <div v-if=!profile class="is-danger not-welcome">You are not allowed to see this page</div>
 </div>
 </template>
             
@@ -214,6 +215,7 @@ body {
   height: 100vh;
   margin: 0; padding: 0;
 }
+
   /* display: flex;
   align-items: center;
   justify-content: center;
