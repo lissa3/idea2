@@ -195,10 +195,11 @@
 
  <!-- front-side errors upload file-->
             <div class="msg mb-2 py-2" v-if="localErr" :class="`${localErr ? 'is-danger' : 'is-success'}`">
-                <div class="msg-body" v-if="alertHeavyFile">{{ alertHeavyFile }}</div>
+                <div class="msg-body mb-1" v-if="alertHeavyFile">{{ alertHeavyFile }}</div>
                 <div class="msg-body" v-if="formatNotAllowed">
-                  Only images are allowed.Please, remove attached file.
-                  </div>            
+                  Only images are allowed
+                </div>
+             <b-button @click="userSawErrors" class="mt-2">initial state</b-button>                
             </div>
 
 
@@ -272,14 +273,14 @@ export default {
             mainText: this.initialValues.mainText,                
             featured: this.initialValues.featured,
             tags: this.initialValues.tags,            
-            // upload file vars
+            // upload file 
             thumbnail: this.initialValues.thumbnail,                 
             checked: false, 
             localErr:false,
             formatNotAllowed:false,
             resizedThumbnail:null,                            
             alertHeavyFile:null,  
-            clickRemoveFile:false, 
+            // clickRemoveFile:false, 
             //front-side errors
             categInputPresent:false,
             fieldRequired: "This field is required", 
@@ -289,9 +290,9 @@ export default {
     },
     validations:{
       categ:{required},
-      title:{required,maxLength:maxLength(5)},
-      leadText:{required,maxLength:maxLength(5)},
-      mainText:{required,maxLength:maxLength(5)},
+      title:{required,maxLength:maxLength(120)},
+      leadText:{required,maxLength:maxLength(120)},
+      mainText:{required,maxLength:maxLength(2048)},
 
     },
     methods:{
@@ -395,7 +396,12 @@ export default {
           this.resizedThumbnail = null
           // this.alertHeavyFile = false;
           // this.formatNotAllowed = false;
-        }
+        },
+        userSawErrors(){
+        this.alertHeavyFile=false
+        this.formatNotAllowed=false
+        this.localErr=false
+      }
     },
     computed:{
       formInValid() {
@@ -466,12 +472,7 @@ export default {
   border-radius: 6px;
   color: white;
 }
-.is-danger {
-  background-color: #c72534c9;
-}
-.is-success {
-  background-color: cadetblue;
-}                      
+                   
  /* .input-area {
   outline: none;
   border: 1px solid #d8d8d8 !important;

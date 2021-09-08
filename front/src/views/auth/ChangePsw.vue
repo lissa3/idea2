@@ -20,7 +20,7 @@
                         <b-form @submit.prevent="requestNewPassword">
 <!-- current password -->
                 <div class="d-flex justify-content-between">
-                                            <div class="control-label">Password</div>
+                                            <div class="control-label">Current Password</div>
                                             <div>Show Password</div>
                             </div> 
                             <b-form-group id="input-group-2" class="required psw-show">          
@@ -59,7 +59,7 @@
                         </b-form-group>
 <!-- new psw -->
 <div class="d-flex justify-content-between">
-                                            <div class="control-label">Password</div>
+                                            <div class="control-label">New Password</div>
                                             <div>Show Password</div>
                             </div> 
                             <b-form-group
@@ -105,7 +105,7 @@
                             </div>            
 <!-- new re-psw -->
                             <b-form-group id="input-group-4" class="required"> 
-                            <label id="input-group-4" class="control-label">Confirm password</label>             
+                            <label id="input-group-4" class="control-label">Confirm new password</label>             
                             <b-form-input
                                 id="input-4"
                                 type="password"
@@ -156,7 +156,9 @@
                         <b-button type="submit"  variant="success" :disabled="formInValid">Submit</b-button>
                     </b-col >
                     <b-col cols="6">
-                        <b-button  @click="goTo('Home')" variant="primary">Home</b-button>
+                        <router-link :to="{name:'home'}">
+                        <b-button  variant="primary">Home</b-button>
+                        </router-link>
                     </b-col>
                     </b-row>    
                 </b-form>  

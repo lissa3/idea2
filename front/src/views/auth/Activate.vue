@@ -5,7 +5,7 @@
             Errors: {{errorMsg}}
             <b-icon icon="exclamation-circle-fill" variant="danger"></b-icon>        
         </div>
-        <div v-if="successMsg" class="successMsg col-md-12">
+        <div v-if="successMsg" class="flesh-msg col-md-12">
             <b-icon icon="three-dots" animation="cylon" font-scale="4"></b-icon>  {{successMsg}} 
             <b-icon icon="exclamation-circle-fill" variant="info"></b-icon>
         </div>
@@ -64,10 +64,8 @@ export default {
 </script>
 
 <style scoped>
-.successMsg{
-    background-color: rgb(192, 219, 164);
-    height: 50px;
-}
+
+
 .errorMsg{
     background-color: rgb(236, 187, 195);
     height: 50px;

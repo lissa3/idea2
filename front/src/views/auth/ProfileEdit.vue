@@ -16,12 +16,22 @@
                 <b-form-input
                   id="input-1"
                   v-model="website"
-                  placeholder="Enter website address"                  
+                  placeholder="Enter website address" 
+                  :class="{ 'is-invalid warning': this.$v.website.$error }"
+                  @blur="$v.website.$touch()"                 
                 ></b-form-input>
-          </b-form-group>    
 <!-- front  website errors -->
+                <b-form-invalid-feedback v-if="inValidWebsiteNotUrl" class="invalid-feedback"
+                  >Enter a valid url,please
+                </b-form-invalid-feedback>  
+                <b-form-invalid-feedback v-if="inValidWebsiteMaxLen" class="invalid-feedback"
+                >Lead text should at most {{ $v.website.$params.maxLength.max }} chars
+                </b-form-invalid-feedback> 
+
+
+          </b-form-group>    
 <!-- <p >Errs:{{servResp}}</p> -->
-<!-- backend website errors   -->              
+<!-- backend website errors: model has URLField   -->              
           <div v-if="servResp.websiteErrs">
                 <ul>
                   <li class="warning" v-for="err in servResp.websiteErrs" :key="err.id">
@@ -34,10 +44,17 @@
             <b-form-input
               id="input-2"
               placeholder="Bio"
-              v-model.trim="bio"                                      
+              v-model.trim="bio"
+              :class="{ 'is-invalid warning': this.$v.bio.$error }"
+            @blur="$v.bio.$touch()"                                      
             ></b-form-input>
-          </b-form-group>
 <!-- front side bio errors -->
+          <b-form-invalid-feedback v-if="inValidBioMaxLen" class="invalid-feedback"
+              >Lead text should at most {{ $v.bio.$params.maxLength.max }} chars
+          </b-form-invalid-feedback>
+
+
+          </b-form-group>
 <!-- server bio errors -->
           <div v-if="servResp.bioErrs">
               <ul>
@@ -78,10 +95,18 @@
                   </span>                        
                   </div>
                   <p class="text-mute">Allowed images with extentions: .png,.jpg/.jpeg</p> 
-<!-- front-side errors or success upload file  TODO: do I need it?-->
-                   <div class="msg" v-if="browserFileUploadMsg" :class="`${localErr?'is-danger':'is-success'}`">
-                      <div class="msg-body">{{browserFileUploadMsg}}</div>
-                  </div>  
+<!-- front-side success upload file  TODO: do I need it?-->
+                   
+                   <div class="msg mb-2 py-2" v-if="localErr" :class="`${localErr ? 'is-danger' : 'is-success'}`">
+                    <div class="msg-body" v-if="alertHeavyFile">{{heavyFileMsg }}</div>
+                    
+                    <div class="msg-body mb-1" v-if="formatNotAllowed">
+                      Only images are allowed
+                    </div> 
+                   <b-button @click="userSawErrors" class="mt-2">initial state</b-button>
+                    
+                              
+                </div>  
 <!-- server side errors upload file(too big; ext not allowed) -->
                   <!-- <div v-if="servImgErrs">
                     <ul>
@@ -91,13 +116,9 @@
                     </ul>
                   </div> -->
                 </b-form-group>
-<!-- front-side errors upload file-->
-            <div class="msg mb-2 py-2" v-if="localErr" :class="`${localErr ? 'is-danger' : 'is-success'}`">
-                <div class="msg-body" v-if="alertHeavyFile">{{ alertHeavyFile }}</div>
-                <div class="msg-body" v-if="formatNotAllowed">{{ formatNotAllowed }}</div>            
-            </div>                
+               
                 <b-button type="submit" class="btn btn-secondary"
-                  >Edit It</b-button>                                
+                  :disabled="submitButDisable">Edit It</b-button>                                
                 </b-form>
 <!-- general errors          -->                 
 <!-- django server is down or err-500 -->
@@ -105,10 +126,12 @@
             <div class="px-1">{{servResp.netWorkErr}}</div>
           </div>                 
         </div>
-      </div>
-      </div>
-    <!-- </div> -->
-    </div>  
+        </div>
+        <div v-if=!profile class="is-danger not-welcome">You are not allowed to see this page</div>
+
+        </div>
+      </div>   
+      
   </div>
 </template>
               
@@ -120,6 +143,7 @@ import {actionTypes} from '@/store/modules/profile'
 import {mapState} from 'vuex'
 import optimizePhoto from '@/assets/js/resizeIt.js'
 import getFileNameFromUrl from '@/assets/js/shortName.js'
+import { maxLength, url } from "vuelidate/lib/validators";
 
 export default {
   name:'ProfileEdit',
@@ -128,13 +152,17 @@ export default {
         bio:'',
         image:'',
         checked:false,
-        // upload file vars
+        // website
         website:'',                         
+        // upload file 
         checked: false, 
         localErr:false,
-        formatNotAllowed:null,
+        formatNotAllowed:false,
         resizedImage:null,                            
         alertHeavyFile:null, 
+        heavyFileMsg:null,
+
+        
         // all UI msg(?) 
         browserFileUploadMsg:null,
         servResp:{
@@ -146,6 +174,10 @@ export default {
         },
       }
     },
+   validations:{
+      bio:{maxLength:maxLength(2048)},
+      website:{url, maxLength:maxLength(120) },     
+    },  
   computed:{
       ...mapState({            
             profile:state=>state.profile.data,
@@ -160,7 +192,23 @@ export default {
       getShortName(){
         // return only file name from aws url link
         return getFileNameFromUrl(this.image)
-      }
+      },
+     
+    formInValid() {
+      return this.$v.$invalid;
+      },
+      submitButDisable(){
+        return this.formInValid||this.alertHeavyFile||this.formatNotAllowed
+      },
+    inValidBioMaxLen() {
+      return this.$v.bio.$dirty && !this.$v.bio.maxLength;
+    },  
+    inValidWebsiteMaxLen() {
+      return this.$v.website.$dirty && !this.$v.website.maxLength;
+    },  
+    inValidWebsiteNotUrl() {
+      return this.$v.website.$dirty && !this.$v.website.url;
+    },  
          
     
   },
@@ -206,7 +254,7 @@ export default {
         console.log('inital path to uploaded img is:',this.$refs.file.value)
         let img = this.$refs.file.files[0]
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']
-        const MAX_SIZE = 2000000
+        const MAX_SIZE = 50   //2000000
         const tooBig = img.size > MAX_SIZE
         if(allowedTypes.includes(img.type)&&!tooBig){
           this.image = img
@@ -218,10 +266,11 @@ export default {
         }else{
           this.localErr = true
           if(tooBig){
-            this.alertHeavyFile = `File too large.MAX sise is ${MAX_SIZE / 1000}kB`
+            this.alertHeavyFile = true
+            this.heavyFileMsg = `File too large.MAX sise is ${MAX_SIZE / 1000}kB`
           }
           if(!allowedTypes.includes(img.type)){
-            this.formatNotAllowed = 'Only images are allowed'
+            this.formatNotAllowed = true
           }
         }
       },
@@ -239,6 +288,11 @@ export default {
         this.resizedImage=null
 
       },
+      userSawErrors(){
+        this.alertHeavyFile=false
+        this.formatNotAllowed=false
+        this.localErr=false
+      }
     },
     created(){
       // console.log("create and got profile",this.profile)
@@ -269,6 +323,9 @@ body {
   background-color: #e4b1b6;
   border-radius: 5px;
   padding:5px 10px;
+}
+.flashErrs{
+  cursor: pointer;
 }
 /* style Digital Ocean */
 .file-select > .select-button {
