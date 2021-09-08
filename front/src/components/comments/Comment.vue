@@ -3,7 +3,7 @@
 <!-- auth user&&author comment can edit comment /cancel editing-->
 <!-- auth user&&author comment can delete comment -->
 <!-- auth user can reply on a comment-->
-  <div class="mr-2 pr-1">
+  <div class="mr-1 pr-1 no-right">
  <!-- start render if comment not deleted     -->
      <div v-if="!comment.deleted" class="label-wrapper ">
         <div class="row">                    
@@ -36,10 +36,10 @@
         <div v-if="!comment.deleted">
           <div v-if="!isEditing" class="col-sm-12 ">
             <p class="">{{comment.body}} </p>  
-            <p>Temp comm iD <strong>{{comment.id}}</strong></p>
+            <!-- <p>Temp comm iD <strong>{{comment.id}}</strong></p>
             
             <p v-if="!parentId===null">Temp parent id {{parentId}}</p>
-            <p v-if="parentId===null">Temp parent id is null</p>
+            <p v-if="parentId===null">Temp parent id is null</p> -->
           </div>           
             
   <!-- if editing -->
@@ -58,7 +58,8 @@
                <app-comment-form
               submitLabel="Reply"
               :hasCancelButton=false
-              :parent-id="comment.id"              
+              :parent-id="comment.id"
+              :reply-to-id="comment.reply_to_id"              
               @reply="replyComment"
               @handleCancel="handleCancel"              
               >
@@ -79,18 +80,19 @@
 <!--end if comment not deleted-->
 
 <!-- start render section if comment deleted -->
-      <div v-if="comment.deleted" class="comment-wrap-deleted mt-1 mb-1">
+      <div v-if="comment.deleted" class="comment-wrap-deleted mt-1 mb-1 mr-4">
       <div>Comment deleted</div>
       </div>
 <!-- end section render deleted comment     -->
 <!-- start render if comment has replies: Instagram stile == "onle one indentation defined by var indent
 see computed -->
-    <div v-if="replies&&replies.length>0" class="zoo mt-2" :style="indent">
+    <div v-if="replies&&replies.length>0" class="mt-2" :style="indent">
         <app-comment 
           v-for="comment in replies"
           :key="comment.id"
           :comment="comment"
           :parent-id="comment.id"
+          :reply-to-id="comment.reply_to_id"
           :active-comment="activeComment" 
           :comments="comments"
           :depth=0               
@@ -153,6 +155,9 @@ export default {
         },
         parentId:{
           type:Number
+        },
+        replyToId:{
+          type:Number||null
         },
         comments:{
           type:Array
@@ -341,6 +346,16 @@ input[type=text],  textarea {
   .edit{
     margin-left: 0.5rem;
   }
+  .row{
+    margin-right: 1rem;
+  }
+  .no-right{
+    margin-right: 0;
+    padding-right: 5px;
+    width:100%;
+  }
+  
+  
 }
 
 /* edit and trash action */

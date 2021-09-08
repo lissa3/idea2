@@ -1,6 +1,6 @@
 <template>
     <div>
-        <section class="row">                   
+        <section class="row top">                   
             <div v-if="isLoading" class="col-md-12">
                 <app-loader></app-loader>
             </div>
@@ -23,6 +23,7 @@
                 :key="comment.id"
                 :comment="comment"
                 :parent-id="comment.id"
+                :reply-to-id="comment.reply_to_id"
                 :active-comment="activeComment"                
                 :comments="comments"
                 :depth=1
@@ -158,10 +159,11 @@ export default {
                 .catch(err=>console.log(err))        
         }, 
         deleteComment(commId){
-            console.log("sending request to th edj server to delete com",commId)
+            console.log("sending request to the dj server to delete com",commId)
             this.$store.dispatch(actionTypes.deleteComm,commId)
             .then((resp)=>{
-                console.log(resp.status)
+                console.log(resp.status)                
+
             })
             .catch(err=>console.log(err))
         }       
@@ -207,6 +209,16 @@ export default {
     max-width: 100%;
     border-bottom-color: red;  
 
+}
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */  
+  .row{
+    margin-right: 0rem;
+  }
+  .top{
+      width: 100%;
+  }
+  
 }
 
 </style>

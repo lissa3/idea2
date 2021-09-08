@@ -105,8 +105,10 @@ const mutations = {
         console.log("mutation is dealing with del comm",commId)    
         state.data.map((comm)=>{
             if(comm.id===commId){
-                comm.author_comment=''
-                comm.body = ''
+                comm.author_comment='comment deleted'
+                comm.body = 'comment deleted'
+                // comm.created_at should be null otherwise wierd effect of filter on string in Comment.vue
+                comm.created_at = null
             }
         })
         // state.data.forEach((comm)=>{

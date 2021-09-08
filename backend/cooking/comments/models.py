@@ -14,7 +14,7 @@ class CommentManager(models.Manager):
 class Comment(TimeStamp, MPTTModel):
     idea = models.ForeignKey(Idea, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
-    body = models.TextField()
+    body = models.TextField(max_length=1024)
     # tree structure
     parent = TreeForeignKey("self",
                             on_delete=models.SET_NULL,
@@ -32,6 +32,7 @@ class Comment(TimeStamp, MPTTModel):
 
     banned = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
+    deleted_content =models.TextField(default="",blank=True)
     objects = CommentManager() # even if it's empty <class 'mptt.querysets.TreeQuerySet'>|=> queryset
 
     class MPTTMeta:

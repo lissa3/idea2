@@ -45,6 +45,9 @@ export default {
         parentId:{
             type:Number||null
         },
+        replyToId:{
+            type:Number||null
+        },
         submitLabel:{
             type:String,
             required:true

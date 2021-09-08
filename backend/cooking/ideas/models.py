@@ -20,6 +20,8 @@ ALLOWED_EXTENTIONS = ('JPG', 'JPEG', 'PNG')
 
 User = get_user_model()
 
+import logging
+logger = logging.getLogger('custom')
 
 class CategoryManager(models.Manager):
     pass
@@ -124,59 +126,11 @@ class Idea(TimeStamp):
     def __str__(self):
         return self.title 
 
-    # only for dev test ( for prod aws s3 url)
-    # @property
-    # def get_idea_image(self, *args, **kwargs):
-    #     """ return path to idea image """
-    #     if self.thumbnail:
-    #         return f'/media/{self.thumbnail}/'
-
     def get_absolute_url(self):
         return reverse('ideas:detail', kwargs={'slug': self.slug})
 
-    def save(self,*args,**kwargs):
-        print("jjjjjjjjjjjjjjjjjjjjjj") 
-        super().save(*args,**kwargs) 
-        print("ghghghghg") 
-        #type(self.__dict__.get('thumbnail')) ) #<class 'django.db.models.fields.files.ImageFieldFile'
-
-
-    # def save(self,*args,**kwargs): 
-    #     # if edit: thumnail niet te vinden
-    #     # print("line 139 .save():",type(self.__dict__.get('thumbnail')) ) #str ,nontype       
-    #     super().save(*args,**kwargs)  
-    #     #type(self.__dict__.get('thumbnail')) ) #<class 'django.db.models.fields.files.ImageFieldFile'
-       
-        
-
-"""
-
-
-
-
-"""        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-    # def save(self,*args,**kwargs):
-        
-    #     print("self dict thumbnail",self.__dict__.get('thumbnail'))
-    #     # 'thumbnail': <ImageFieldFile: ideapot/idea_1/tired1629925107.4117696.JPG>,
-    #     thumbnail = self.thumbnail
-    #     if thumbnail == "":
-    #         self.thumbnail = None
-    #     print(self.__dict__)    
-    #     super().save(*args,**kwargs)    
+    
+         
 
     
 

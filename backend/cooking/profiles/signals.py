@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 import logging
 
 
-logger = logging.getLogger('auth')
+logger = logging.getLogger('user_issues')
 User = get_user_model()
 
 @receiver(post_delete,sender=Profile)
@@ -23,10 +23,16 @@ def auto_delete_user(sender,instance,**kwargs):
 def create_profile(sender,instance,created,*args,**kwargs):
     """create_or_update profile"""
     # print("inside post save signal; creating profile on user with is",instance.id,instance.email)
-    if created and instance.email:
-        Profile.objects.create(user=instance)
-        logger.info(f'profile creaed for {instance.email}')
-    # instance.profile.save()  # think if this line(errr in api/idea/tests) err:User has no profile 
+    try:
+        if created and instance.email:
+            Profile.objects.create(user=instance)
+            logger.info(f'profile created for {instance.email}')
+    except:
+        logger.error('profile creation failed')
+    finally:
+        pass    
+
+    
 
 
 # before profile get saved in db |==> create unid,displayname,random bg color for avatar

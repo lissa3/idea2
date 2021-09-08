@@ -33,18 +33,31 @@ class CommentAPIView(CreateModelMixin,UpdateModelMixin,DestroyModelMixin,Retriev
 
     def perform_create(self, serializer):
         # print("self is",self)
-        # print("self.data",self.request.data)
+        print("self.data",self.request.data)
         # print("line 35 inside perform create",self.request.data)
         # user = self.request.user
         # print("line 35",user)
         # print("req:",self.request.data)
         # {'body': 'Greet', 'idea': 7, 'parent': None}
         idea = get_object_or_404(Idea,id=self.request.data['idea'])
-        # print("line 37",idea)
-        serializer.save(user=self.request.user,idea=idea)
+        parent = self.request.data.get('parent')
+        if parent is not None:
+            print("parent not None")
+            print("parent is",parent)
+            print("idea is",idea)
+            comment_parent = get_object_or_404(Comment,id = parent,idea=idea)            
+            recep_id = comment_parent.user_id 
+        else:
+            recep_id = None            
+        serializer.save(user=self.request.user,idea=idea,reply_to_id=recep_id)
+
+        
+        # serializer.save(user=self.request.user,idea=idea)
 
     def perform_destroy(self, instance):
-        #  TODO save body and just make it boolean deletd?
+        #   body of the comment deleted; boolean deleted => True
+        # but prev content gets saved in attr deleted content
+        instance.deleted_content = instance.body
         instance.body="" 
         instance.deleted = True       
         instance.save()
