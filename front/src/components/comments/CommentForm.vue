@@ -2,41 +2,61 @@
     <div>
         <div class="mb-5 mx-auto" >
             <!-- <p>submit label</p>{{submitLabel}}-->
-            <p>creaning the form: {{cleanForm}}</p>
-          <form @submit.prevent="onSubmit" >  
+            <!-- <p>creaning the form: {{cleanForm}}</p> -->
+          <form @submit.prevent="onSubmit" ref="zoo" >  
             <div class="form-group">
-              <label for="body">Comment</label>
+              <label for="body">Comment (max {{ $v.body.$params.maxLength.max }} chars)</label>
                 <textarea id="body" 
-                cols="30" rows="5"
-                class="border  w-100 h-20 my-2"
-                v-model="body"   
-                placeholder="Remember, be nice">
+                cols="30" rows="12"
+                class="body-bg  w-100 h-50 my-2"
+                :class="{ 'is-invalid warning body-warning': this.$v.body.$error }"
+                v-model="body" 
+                @blur="$v.body.$touch()"  
+                placeholder="Remember be nice">
                 </textarea>
+<!-- front-side errors body-->
+              
+                <b-form-invalid-feedback v-if="bodyRequired" class="invalid-feedback"
+                  >{{ fieldRequired }}
+                </b-form-invalid-feedback>
+                <b-form-invalid-feedback v-if="inValidBodyMaxLen" class="invalid-feedback"
+                    >Comment should at most {{ $v.body.$params.maxLength.max }} chars
+                </b-form-invalid-feedback> 
+             
             </div> 
             <div class="d-flex justify-content-around">
             <button class="btn btn-success" type="submit"
-            :disabled="isTextareaDisabled">{{submitLabel}}</button>           
+            :disabled="formInValid">{{submitLabel}}</button>           
             
-            <button class="btn btn-primary" @click="handleCancel">Cancel</button>
-            </div>   
-                    
-            
-            <!-- <div v-if="hasCancelButton">
-                <button>Cancel</button>
-            </div> -->
+
+            <button v-if="hasCancelButton" class="btn btn-primary" @click="handleCancel">Cancel</button>
+
+            <button v-if="hasCancelButtonRoot" class="btn btn-primary" @click="handleCancelRootComment">Root Cancel</button>
+            </div>                 
+             
+                  
           </form>
+            <!-- <button  class="btn btn-primary" @click="ha">Ha Ha</button> -->
+         
            
     </div>
     </div>
 </template>
 <script>
+import {required, maxLength}  from "vuelidate/lib/validators";
 export default {
     name:'CommentForm',
     props:{
         cleanForm:{
             type:Boolean
+        },
+        activeComment:{
+          type:Object||null
         },        
         hasCancelButton:{
+            type:Boolean
+        },
+        hasCancelButtonRoot:{
             type:Boolean
         },
         initialBody:{
@@ -52,17 +72,29 @@ export default {
             type:String,
             required:true
         },
+        
         success:{
             type:Boolean
-        }
+        },
+        
         
     },
     data(){
         return{
-            body:this.initialBody
+            body:this.initialBody,
+            fieldRequired: "This field is required",
+            // bug winthin during Cancel(root comment) reset serves as port to display front error
+            
         }
     },
+    validations: {
+    body: { required, maxLength:maxLength(6500) },
+    
+    },
     methods:{
+        ha(){
+            console.log("haaaaaaaaaaaaa")
+        },
         onSubmit(){
             // this.handleSubmit(this.text)
             console.log("form says:start submit ")            
@@ -79,7 +111,9 @@ export default {
                 parent:this.parentId
                 }
                 this.$emit('reply',commentData)
-            }else{
+            }else if(this.submitLabel==='Write'&&!this.formInValid){
+                console.log("title",this.submitLabel==='Write')
+                console.log("is form invalid",this.formInValid)
                 let commentData = {
                 body:this.body,
                 parent:null
@@ -90,25 +124,40 @@ export default {
                     this.body = ""
                     console.log("body clean")
                 }
+            }else{
+                console.log("condit did not work")
             }
             
         },
         handleCancel(){
-            console.log('edit is canceled')
+            console.log('edit-reply is canceled')                      
             this.$emit('handleCancel')
+        },
+        handleCancelRootComment(){
+            console.log('root is canceled')  
+            //  this.$refs.zoo.reset(); 
+            //  console.log("reset Done")      
+            this.$emit('handleCancelRootComment')
         }
+
     },
     computed:{
         getBodyText(){
             return this.initialBody
         },
-        isTextareaDisabled(){
-            return false
-            // return this.body.length===0
-        },
         cleaning(){
             return this.cleanForm
-        }
+        },
+        formInValid() {
+        return this.$v.$invalid;
+        },
+        bodyRequired() {
+            return this.$v.body.$dirty && !this.$v.body.required;
+        },
+        inValidBodyMaxLen() {
+            return this.$v.body.$dirty && !this.$v.body.maxLength;
+        },
+      
     },
     watch: {
         cleaning() {
@@ -119,13 +168,14 @@ export default {
 }
 </script>
 <style scoped>
-.zoo{
-    height: 30px;
-    width: 30px;
-    background-color: burlywood;
-
+.body-bg{
+    background-color: rgb(252, 249, 249);
+    color:black;
 }
-.mio{
-    opacity: 0.7;
+/* if chars amount > maxLength this class will be added to textarea */
+.body-warning { 
+  box-shadow: 1px 3px #f3c9c9;
+  opacity: 0.6;
+   
 }
 </style>

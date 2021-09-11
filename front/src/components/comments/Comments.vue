@@ -4,19 +4,28 @@
             <div v-if="isLoading" class="col-md-12">
                 <app-loader></app-loader>
             </div>
+                <!-- <div v-if="activeComment">To delete... active component now is: {{activeComment}}</div>
+                <div v-if="!activeComment">To delete... active component now is null</div> -->
 
             <div class="col-md-12" v-if="isLoggedIn">
-                <h5>Write your comment</h5>
-                <app-comment-form
-                submitLabel="Write"
-                :clean-form = "cleanForm"
-                @addRootComment="addRootComment">
-                </app-comment-form>
+                <h5 @click="openForm">Write your comment</h5>
+                <!-- <div v-if="isWriting" class="col-md-12"> -->
+                <div v-if="goWrite" class="col-md-12">
+                    <app-comment-form
+                    submitLabel="Write"
+                    :active-comment="activeComment" 
+                    :hasCancelButtonRoot=true
+                    :clean-form = "cleanForm"
+                    @handleCancelRootComment="handleCancelRoot"
+                    @addRootComment="addRootComment">
+                    </app-comment-form>
+                 </div>
+                
             </div>        
             <div  class="comment-list ml-2 col-md-12">
                 <div class="section-comments">
                     <h4>Comments</h4>                
-                    <div v-if="warning" class="warning px-1 py-1">{{warning}}</div>                         
+                    <div v-if="warning" class="flesh-msg-error">{{warning}}</div>                         
                 </div>                              
                 <app-comment 
                 v-for="comment in getRootComms"
@@ -35,7 +44,7 @@
                 @handleCancel="handleCancel"                
                 ></app-comment>                               
             </div>
-            <div v-if="error">Smth went wrong</div>                 
+            <div v-if="error" >Msg from store: smth went wrong</div>                 
         </section>
     </div>    
 </template>
@@ -61,7 +70,10 @@ export default {
         return {
             activeComment:null,
             cleanForm:false,
-            warning:'',            
+            warning:'',
+            // hasCancelButton:false 
+            goWrite:false,
+            hasCancelButtonRoot:false           
         }
     },
     props:{        
@@ -97,11 +109,24 @@ export default {
             //console.log("parent delete comm ",commId)
             this.deleteComment(commId)
         },
-        handleCancel(){
-            console.log("parent caught cancel signal")
-            this.activeComment = null
-        }, 
+        openForm(){
+            console.log("open form")
+            this.goWrite = true
+            this.activeComment={id:null,type:'writing'}
+             
+        },        
         
+        handleCancel(){
+            console.log("cancel signal from NOT root components")
+            this.activeComment = null
+            
+        }, 
+        handleCancelRoot(){
+            console.log("root cancel")
+            this.activeComment = null
+            this.cleanForm=true
+            this.goWrite=false
+        }, 
         replyComment(replyComment){
             console.log("adding reply com")        
             console.log("line 99 data",replyComment)
@@ -138,12 +163,25 @@ export default {
                         console.log("successfully created a new comment")
                         this.activeComment=null
                         this.cleanForm = true
+                        this.goWrite = false
                         console.log("add root comment done, active comment null")
+                    }
+                    if(resp.status===400&&resp.body===undefined){
+                        // from store custom msg(status:400,body:undefined)
+                        console.log("resp status",resp.status)                        
+                        console.log("resp status",resp.body)  
+                        this.warning = 'comment can not be empty'                        
+                        setTimeout(()=>{
+                            this.warning = ''                    
+                        },2000) 
                     }
                     
                     })
-                .catch(err=>console.log(err))        
-        },
+                .catch((err) =>{
+                    console.log('line 152 comment vue error:',err)
+                    
+                })        
+        },        
         updateComment(data){
             console.log("edit comm line 118 comments.vue",data) 
             this.$store.dispatch(actionTypes.editComm,data)
@@ -166,7 +204,11 @@ export default {
 
             })
             .catch(err=>console.log(err))
-        }       
+        },
+        isWriting(){
+            console.log('writing')
+            // return this.activeComment&&this.activeComment.id===null&&this.activeComment.type==='writing'
+    },           
     },    
     computed:{
         ...mapState({
@@ -189,7 +231,8 @@ export default {
             }else{
                 return []
             }        
-        },    
+        },
+        
     },
     
 }
@@ -200,8 +243,9 @@ export default {
   text-align: left;
   text-decoration: none;
   list-style: none;
-  padding-left: 1rem;
-  margin-left: 1rem;
+  /* to display error msg better */
+  /* padding-left: 1rem;
+  margin-left: 1rem; */
 }
 .warning{
     background-color: rgb(240, 228, 230);

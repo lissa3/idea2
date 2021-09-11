@@ -7,13 +7,15 @@
  <!-- start render if comment not deleted     -->
      <div v-if="!comment.deleted" class="label-wrapper ">
         <div class="row">                    
-         <div class="comment-wrap ">
+         <div class="comment-wrap mw-100">
 <!-- comment-menu(top)            -->
         <div div class="">
           <div class="row pt-2">
             <div class=" col-md-6 author-space-creds col-sm-12">   
                 <div class="px-2"><b-icon-person></b-icon-person></div>             
                 <p class="pl-1 mr-2 px-2">Written by: <strong>{{comment.author_comment}}</strong></p>
+                <p v-if="comment.name_recepient" class="pl-1 mr-2 px-2">Reply to: <strong>{{comment.name_recepient}}</strong></p>
+
             </div>
             <div class="col-md-6 col-sm-12 author-space-action">   
                 <template v-if="currentUser&&currentUser.id==comment.user_id">
@@ -32,7 +34,7 @@
           </div>
         </div>   
 <!-- if comment not deleted you may:             -->
-  <!-- show comment body  -->
+  <!-- if just show comment body  -->
         <div v-if="!comment.deleted">
           <div v-if="!isEditing" class="col-sm-12 ">
             <p class="">{{comment.body}} </p>  
@@ -45,8 +47,8 @@
   <!-- if editing -->
             <div v-if="isEditing" class="col-md-12">
               <app-comment-form
-              submitLabel="Edit"
-              :hasCancelButton=false
+              submitLabel="Edit"          
+              :hasCancelButton=true
               :initial-body="comment.body"
               @updateComment="updateComment"
               @handleCancel="handleCancel"              
@@ -57,7 +59,7 @@
             <div v-if="isReplying">
                <app-comment-form
               submitLabel="Reply"
-              :hasCancelButton=false
+              :hasCancelButton=true
               :parent-id="comment.id"
               :reply-to-id="comment.reply_to_id"              
               @reply="replyComment"
@@ -108,10 +110,10 @@ see computed -->
       
 <!-- The Modal -->
     <div class="modal-bg" v-if="showConfirmDelete">
-        <div class="confirm-modal">
+        <div class="confirm-modal">         
           <button type="button" class="btn-close" @click="close"></button>
           <header class="modal-header">
-            <h5>Warning</h5>
+            <!-- <h5>Warning</h5> -->
           </header>
           <section class="modal-body">
             <h6>Do you really want to delete this comment?</h6>          
@@ -120,7 +122,7 @@ see computed -->
             <button class="btn btn-sm btn-danger" @click="commDelete(comment.id)">
               Yes,I want to delete this comment
             </button>        
-            <button type="button" class="btn-green" @click="close">Cancel</button>
+            <button type="button" class="btn-green rounded" @click="close">Cancel</button>
           </section>
       </div>
     </div>
@@ -420,7 +422,7 @@ input[type=text],  textarea {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: lightcoral;
+  /* background-color: burlywood; */
   /* border: none;
   font-size: 20px;
   padding: 10px;

@@ -17,13 +17,17 @@ export default {
 
 <style>
 html, body { 
-  height: 100%;}
+  height: 100%;
+  /* background: #fcead7; */
+}
 .full-page{ 
   height: 100vh;
   width: 100vw;
+  
 }
 .container-fluid{
     height:100vh;
+    /* background: #fcead7; */
   }
 
 .container, .row.justify-content-center.align-items-center {
@@ -38,10 +42,23 @@ html, body {
 }
 /* success flash message */
 .flesh-msg{  
+    display: flex;
+    justify-content: center;
     background-color: rgb(192, 219, 164);
-    height: 50px;
+    /* height: 50px; */
     padding: 2rem;
     border-radius: 10px;
+
+
+}
+.flesh-msg-error{  
+    background-color: rgb(240, 194, 194);;
+    /* height: 50px; */
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-left: -0.5rem;
 
 
 }
@@ -125,11 +142,11 @@ input[type=text],  textarea {
   border-radius: 3px; 
 }
 /* @media (min-width: 30em) and (max-width: 80em) { */
-
+/* 
 @media (max-width: 500px) {
   .container-fluid {
     background-color: rgb(246, 241, 223);
   }
-}
+} */
 
 </style>

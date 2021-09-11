@@ -10,7 +10,7 @@
                             <img  :src="idea.thumbnail" alt="img idea" class="img-fluid">
                         </div>
                         <div v-else>
-                            <img src="@/assets/logo.png" alt="img" class="img-fluid">
+                            <img src="@/assets/photos/ava_cat.png" alt="img" class="img-fluid">
                         </div>
                     </div>
                     <div class="row">
@@ -37,7 +37,7 @@
                 <div class="idea-title mb-1 mt-1">
                     <h3>
                        <router-link :to="{ name: 'ideaDetail',params:{slug:idea.slug} }"
-                       class="link">{{idea.title}}-id={{idea.id}}</router-link>
+                       class="link">{{idea.title}}</router-link>
                     </h3>
                 </div>                
                 <div class="idea-title mb-2">
@@ -45,15 +45,15 @@
                         <p>By <b-icon icon="person-fill"></b-icon> <strong>{{idea.owner_idea}}</strong></p>
                     </router-link>
                 </div> 
-                <div>Featured: {{idea.featured}}</div>
+                <!-- <div>Featured: {{idea.featured}}</div> -->
                 <div class="idea-title mb-2 ">
                     <div>
                         <p v-if="idea.avg_rate">
                         <strong>Rating: {{idea.avg_rate}}</strong>
                         </p>
-                        <p v-else>
+                        <!-- <p v-else>
                             <strong>No rating yet</strong>
-                        </p>
+                        </p> -->
                     </div>
                 </div> 
                 <div class="idea-title mb-2">
@@ -336,4 +336,11 @@ export default {
   color:rgb(33, 98, 84);
   text-decoration: none;
 }
+@media all and (max-width:700px){
+  .pagination{
+    display: flex;
+    flex-flow: wrap;
+  }
+}
+
 </style>
