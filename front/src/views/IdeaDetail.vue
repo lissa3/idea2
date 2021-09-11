@@ -121,25 +121,28 @@
                       </div>                    
                     </div>
                 </div>
-                <div class="d-flex justify-content-between align-items-center px-3 mb-3">
-                      <app-like 
-                        :idea-id="idea.id" 
-                        :idea-likes="idea.an_likes"
-                        :is-anonym="isAnonym"                                            
-                        >
-                      </app-like>
-                      <div>  
-                        <div v-if="idea.users_comments>0">
-                          <button type="button" class="btn btn-sm btn-outline-secondary" >
-                          Show Comments ({{idea.users_comments}})
-                        </button>    
-                          <!-- <button type="button" class="btn btn-sm btn-outline-secondary" @click="fetchComments(idea.slug)">
-                          Show Comments ({{idea.users_comments}})
-                        </button>     -->
-                        </div>  
-                        <p v-if="!idea.users_comments">                 
-                          No comments yet
-                        </p>                          
+                <div class="d-flex justify-content-between align-content-center px-3 mb-3">
+                      <div class="d-flex justify-content-between align-content-center">
+                          <app-like 
+                            :idea-id="idea.id" 
+                            :idea-likes="idea.an_likes"
+                            :is-anonym="isAnonym"                                            
+                            >
+                          </app-like>
+                      </div>
+                      
+                      <div class="d-flex align-content-center">  
+                        <div class="d-flex justify-content-center align-self-center">
+                          <div v-if="idea.users_comments>0">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" >
+                            Comments ({{idea.users_comments}})
+                          </button>    
+                            
+                          </div>  
+                          <div v-if="!idea.users_comments">                 
+                            <span class="ml-2">No comments</span>
+                          </div>
+                        </div>                          
                       </div>                    
                 </div>
                   
@@ -386,12 +389,7 @@ export default {
 .idea-date{
   font-weight: 700;
 }
-@media all and (max-width:700px){
-  .idea-date{
-    font-size:0.9rem;
-    
-  }
-}
+
 /* author info */
 .author-info {
   width: 30%;
@@ -408,6 +406,11 @@ export default {
     font-weight: 300;
     
   }
+  .idea-date{
+    font-size:0.9rem;
+    
+  }
+  
 }
 /* rating */
  @media (max-width: 575.98px){

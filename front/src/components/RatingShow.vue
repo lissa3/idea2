@@ -2,12 +2,12 @@
     <div>               
         <div class="stars-container"> 
             <div v-if="!rating" class="stars-container">
-                <p>(no rating)</p>
                 <p class="px-1"><b-icon-star></b-icon-star></p>
                 <p class="px-1"><b-icon-star></b-icon-star></p>
                 <p class="px-1"><b-icon-star></b-icon-star></p>
                 <p class="px-1 "><b-icon-star></b-icon-star></p>
                 <p class="px-1"><b-icon-star></b-icon-star></p>
+                <p>(no rating yet)</p>
             </div> 
             <div v-if="rating>0"   class="stars-container">
                 <div class="px-1" v-for="star in roundedRating" :key="star.id">

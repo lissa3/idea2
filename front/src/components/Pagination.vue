@@ -2,8 +2,7 @@
   <div >
     <nav>
       <div> 
-        <ul class="pagination">
-          
+        <ul class="pagination">          
           <li class="page-list" :class="{active: currentPage === 1}">
             <router-link :to="{path: url, query: {page: 1}}" class="page-link">
                   First

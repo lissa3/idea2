@@ -1,13 +1,13 @@
 <template>
     <div class="row py-2">         
          <div class="col col-md-8 py-3 mx-auto d-flex justify-content-around">
-          <div class="col col-md-4 line-right">
+          <div class="col col-md-4 line-right sm-mod">
               <router-link :to="{ name: 'ideaGeneral' }" 
               class="link-decor px-3 py-2" :class="{'active-item px-3 py-2':routeName==='ideaGeneral'}">
                 General Feed
               </router-link>
            </div>
-          <div class="col col-md-4" v-if="isLoggedIn">
+          <div class="col col-md-4 sm-mod" v-if="isLoggedIn">
               <router-link :to="{ name: 'personalFeed' }" 
               class="link-decor px-3 py-2" :class="{'active-item px-3 py-2':routeName==='personalFeed'}">
               Personal Feed
@@ -65,14 +65,22 @@ export default {
   text-decoration:none;
 }
 .link-decor:hover{
-  color:rgb(142, 80, 10);
+  color:rgb(133, 75, 16);
 }
 .active-item{
   color:black;
-  background-color: #ffebcd;
+  background-color: #4c3e3e59;
   border-radius: 5px;
   text-decoration: none;
 
+}
+
+@media all and (max-width:700px){
+  .sm-mod{
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: center;
+  }
 }
 
 </style>

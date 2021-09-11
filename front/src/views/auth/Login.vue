@@ -160,7 +160,7 @@ export default {
         errMsg500:"A server network error occured.Sorry about this - we will get it fixed shortly" 
       } 
     },
-     validations: {
+    validations: {
     email: { required, email },
     psw: { required },
     },

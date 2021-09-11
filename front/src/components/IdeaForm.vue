@@ -1,8 +1,9 @@
 <template>
     <div>
       <section >
-          <h1>Form </h1>
-          <p>Categ: {{getCats}}</p>
+          <h1>Create New Idea</h1>
+          <p class="text-muted"><span class="control-label">Fields marked with </span> are required</p>
+          
 <!-- loader  submit         -->
             <div class="col-xs-12 col-md-10 py-3 text-center offset-md-1">
               <app-loader v-if="isSubmitting"></app-loader>
@@ -24,13 +25,6 @@
                     @getCateg="readCategVal">
                    >
                 </app-categ-input>
-<!-- server errors category  --> 
-              <!-- <div v-if="categRequired">
-                  <p class="warn">categ are required</p>
-
-              </div> -->
-<!-- TODO    -->
-
 <!-- server errors category  -->                 
                 <div class="warn mb-1" v-if="errors.categErr">
                   <ul>
@@ -86,28 +80,26 @@
               </b-form-invalid-feedback>   
                 </b-form-group>
 <!-- server side leadText errors (incl: Ensure this field has no more than 240 characters)                -->
-                <div class="warn mb-1" v-if="errors.leadTextErrr">
+                <div class="warn mb-1" v-if="errors.leadTextErr">
                   <ul>
-                    <li v-for="err in errors.titleErr" :key="err.id">
+                    <li v-for="err in errors.leadTextErr" :key="err.id">
                       {{err}}
                     </li>
                   </ul>
                 </div>
+  <!-- front side leadText errors  -->
+  <!-- TODO -->
+
 <!-- mainText -->
                 <b-form-group id="input-group-3" class="text-left">
                   <label for="input-3" class="control-label">Main Text</label>
-                    <!-- <b-form-input          
-                    id="input-3"                    
-                    v-model.trim="mainText"
-                    ></b-form-input> -->
                     <b-form-textarea
                     id="input-3"
                     :class="{ 'is-invalid warning': this.$v.mainText.$error }"
                     @blur="$v.mainText.$touch()"
                     v-model="mainText"
-                    placeholder="What is this idea about..."
-                    
-                    rows="3"
+                    placeholder="What is this idea about..."                    
+                    rows="20"
                     max-rows="6"
                     ></b-form-textarea>
 <!-- front-side errors  mainText-->                       
@@ -115,10 +107,10 @@
                   >{{ fieldRequired }}
                 </b-form-invalid-feedback> 
                 <b-form-invalid-feedback v-if="inValidMainTextMaxLen" class="invalid-feedback"
-              >Main text should at most {{ $v.mainText.$params.maxLength.max }} chars
-              </b-form-invalid-feedback>     
-           
-                </b-form-group>
+                >Main text should at most {{ $v.mainText.$params.maxLength.max }} chars
+                </b-form-invalid-feedback>    
+            
+              </b-form-group>
 <!-- server side mainText errors  -->
                 <div class="warn mb-1" v-if="errors.mainTextErr">
                   <ul>
@@ -128,22 +120,32 @@
                   </ul>
                 </div>         
 <!-- tags -->
-           
-                <b-form-group id="input-group-4" label="Tags:" label-for="input-4" class="text-left">
+                
+                <b-form-group id="input-group-4" class="text-left"
+                description="Tags are not required; length should be less than 50 chars and not contain % { $ }"   
+                >
+                  <label id="input-group-4">Tags </label> 
+                  
                     <b-form-input          
                     id="input-4"
                     v-model.trim = "tags"
+                    :class="{ 'is-invalid warning': this.$v.tags.$error }"
+                    @blur="$v.tags.$touch()"
                     ></b-form-input>
+<!-- front side tags erros -->
+                <b-form-invalid-feedback v-if="inValidTagsMaxLen" class="invalid-feedback"
+                >Tags text should be at most {{ $v.tags.$params.maxLength.max }} chars
+                </b-form-invalid-feedback>  
+                <ul class="mistake" v-if="$v.tags.$dirty && inCorrectTags">
+                  <li class="" v-for="note in inCorrectTags" :key="note.id">{{ note }}</li>
+                </ul> 
                 </b-form-group>
-<!-- server side leadText errors                 -->
+                
+<!-- server side tags errors -->
                 <div class="warn mb-1" v-if="errors.tagsErr">
                     <h5>Tags error: {{errors.tagsErr}}</h5>
                   
-                </div>                         
-<!-- front-side errors  tags--> 
-<!-- TODO -->
-
-
+                </div>                  
 <!-- thumnail -->
           <b-form-group id="input-group-5" label="Upload File" inline>
             <div class="file-wrap">
@@ -192,7 +194,6 @@
                   </ul>
                 </div>  
             </div> 
-
  <!-- front-side errors upload file-->
             <div class="msg mb-2 py-2" v-if="localErr" :class="`${localErr ? 'is-danger' : 'is-success'}`">
                 <div class="msg-body mb-1" v-if="alertHeavyFile">{{ alertHeavyFile }}</div>
@@ -201,8 +202,6 @@
                 </div>
              <b-button @click="userSawErrors" class="mt-2">initial state</b-button>                
             </div>
-
-
  <!-- server side Bad request not auth-ed -->
           <div v-if="errors.error400">
               <div class="warn mb-1">
@@ -215,7 +214,6 @@
               </div>  
             </div>
 <!-- end server side bad request not auth-ed-->
-<!-- :disabled="formInValid" variant="success">Submit</b-button> -->
             <b-button type="submit" variant="primary" class="pull-xs-right btn btn-large btn-success"
             :disabled="submitButDisable">
                 Publish Idea
@@ -293,6 +291,7 @@ export default {
       title:{required,maxLength:maxLength(120)},
       leadText:{required,maxLength:maxLength(120)},
       mainText:{required,maxLength:maxLength(2048)},
+      tags:{maxLength:maxLength(50)}
 
     },
     methods:{
@@ -415,7 +414,12 @@ export default {
       },
       // return only file name from aws 3 url link
       getShortName(){
-        return getFileNameFromUrl(this.thumbnail)
+        if(this.thumbnail){
+          return getFileNameFromUrl(this.thumbnail)
+
+        }else{
+          return ""
+        }
       },
       titleRequired() {
         
@@ -436,15 +440,31 @@ export default {
     },
     inValidMainTextMaxLen() {
         return this.$v.mainText.$dirty && !this.$v.mainText.maxLength;
-      },
-    }    
+    },
+    inValidTagsMaxLen() {
+        return this.$v.tags.$dirty && !this.$v.tags.maxLength;
+    },
+    inCorrectTags() {
+      const tagsErrors = [];
+      if (!this.$v.tags.$dirty) return tagsErrors;     
+      
+      /([{%$}])/.test(this.tags)&&      
+        tagsErrors.push("Tags should not contain digits chars like @$%#");
+        return tagsErrors
+      
+    },
+  }   
 }
 </script>
 <style scoped>
 .warn{
     background-color: cornsilk;
 }  
-
+.mistake {
+  color: red;
+  text-align: left;
+  font-size: 0.8rem;
+}
 
 /* style Digital Ocean */
 .file-select > .select-button {

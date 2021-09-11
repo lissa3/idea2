@@ -1,10 +1,9 @@
 <template>
     <div>        
         <b-form-group
-            id="input-group-11"
-            label="Category:"
-            label-for="input-11" class="text-left">
-                    
+            id="input-group-11"            
+             class="text-left">
+            <label for="input-11" class="control-label">Category</label>                    
             <b-form-select
             id="input-11"
             v-model="category"
@@ -37,7 +36,8 @@
             categ:{
                 type:Number,
                 required:true
-            }
+            },
+            
         },
         data(){
             return {

@@ -1,14 +1,10 @@
 <template>
     <div>
-        <section >                  
-            <div v-if="tags" class="tag-list">
-                <!-- <div v-for="tag in tags" :key="tag.id">
-                        <h6 class="px-1 tag" @click="showIdeasForTag(tag)"><b-badge variant="success">{{tag}}</b-badge></h6>
-                </div>  -->
+        <section >             
+            <div v-if="tags" class="tag-list">                
                 <router-link v-for="tag in tags" :key="tag.id" :to="{name:'ideasByName',params:{name:tag}}" class="tag">
                     <b-badge variant="secondary" class="tag px-2 mx-1">{{tag}}</b-badge>          
-                </router-link>                 
-                                        
+                </router-link>                                         
             </div>            
         </section>       
     </div>    

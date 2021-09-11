@@ -1,17 +1,15 @@
 <template> 
-  <section class="row min-vh-100">
+  <section class="row min-vh-100 mt-1">
       <div class="col-md-10 min-vh-100 mx-auto p-0">
         <div class="d-flex align-items-center 
                     justify-content-center 
                     flex-column
                     text-center
                     min-vh-100
-                    custom-wrap">
-            <!-- style="max-width: 100%; width: 250px; object-fit: cover"          -->
-            
+                    custom-wrap">          
             <div>        
               <div v-if="!noImgShow" >                
-                <img  :src="profile.image" alt="profile image">    
+                <img  :src="profile.image"  class="rounded-circle img-w" alt="profile image">    
                 </div>
                 <div v-if="noImgShow" >
                 <!-- style="max-width: 100%; width: 250px; object-fit: cover"   -->
@@ -22,50 +20,38 @@
             <h1 class="display-4">Profile: {{profile.name}}</h1>
             <div class="d-flex justify-content-between col-md-12 p-4">
 <!-- people i'm following -->
-              <div v-if="profile.count_following"  class="d-flex">
-                <!-- <p> Follows:  ({{profile.count_following}}) </p> -->
+              <div v-if="profile.count_following"  class="d-flex flex-column">
                 <b-button v-b-toggle.collapse-1 class="m-1  btn-light">
-                  Follows {{profile.count_following}}  <b-avatar size="sm"></b-avatar>
-                </b-button>
+                  Follows {{profile.count_following}}  <b-icon-diagram2-fill></b-icon-diagram2-fill>
+                </b-button>                
                 <!-- Element to collapse -->
                 <b-collapse id="collapse-1">
                   <b-card v-for="person in profile.following" :key="person.id">
                     <router-link :to="{ name: 'profile',params:{id:person.id} }" class="link-decor">
-                      {{person.username}}
-                    </router-link>
-                    
+                      {{person.username}}&nbsp;&nbsp;&nbsp; <b-avatar size="sm"></b-avatar>
+                    </router-link>                    
                   </b-card>
                 </b-collapse>
-                <button class="btn-light m-1 rounded-corner"
+                <!-- <button class="btn-light m-1 rounded-corner"
                 data-toggle="tooltip" data-placement="right" title="See more">
                     <b-icon-eyeglasses></b-icon-eyeglasses>
-                </button>  
-                
+                </button>   -->                
               </div>
 <!-- people following me -->
             <div v-if="profile.followers"  class="d-flex flex-column">               
               <b-button v-b-toggle.collapse-2 class="m-1  btn-light">
-                Followed {{profile.count_followers}}  <b-avatar size="sm"></b-avatar>
+                Followed {{profile.count_followers}} <b-icon-diagram2></b-icon-diagram2> 
               </b-button>
               <!-- Element to collapse -->
               <b-collapse id="collapse-2">
                 <b-card v-for="person in profile.followers" :key="person.id">
                   <router-link :to="{ name: 'profile',params:{id:person.user_id} }" class="link-decor">
-                    {{person.username}} {{person.user_id}}
-                  </router-link>
-                  
+                    {{person.username}} &nbsp;&nbsp;&nbsp;<b-avatar size="sm"></b-avatar>
+                  </router-link>                  
                 </b-card>
-              </b-collapse>        
-              
-            </div>
-            <!-- <ul>
-                <div v-for="person in profile.followers" :key="person.id">
-                  <router-link :to="{ name: 'profile',params:{id:person.user_id} }" class="link-decor">
-                   {{person.username}} {{person.user_id}}
-                  </router-link>
-                </div>
-              </ul> -->
-            </div>
+              </b-collapse>     
+            </div>           
+          </div>
 <!-- end followers             -->
             <!-- <div class="d-flex  mx-auto"> -->
             <p class="mb-3 lead"><strong>Bio: </strong> {{profile.bio}}Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum itaque nam ipsa, officia fugiat maxime molestiae voluptas explicabo error, expedita autem suscipit, accusamus eligendi obcaecati corrupti culpa veniam eos nesciunt.
@@ -156,6 +142,14 @@ export default {
 /* button to see list of "following" */
 .rounded-corner {
   border-radius: 5px;
+  cursor: pointer;
+}
+.img-w{
+  max-width: 60%;
+}
+.link-decor{
+  text-decoration: none;
+  color:black;
   cursor: pointer;
 }
 </style>

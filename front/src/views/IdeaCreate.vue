@@ -1,6 +1,6 @@
 <template>
 <div class="container-fluid mt-3">
-      <h3 class="mb-4 text-center">Create a new Idea</h3>
+      <!-- <h3 class="mb-4 text-center">Create a new Idea</h3> -->
       <!-- <p>create errs:{{validationErrors}}</p> -->
 
       <div class="row py-3">
