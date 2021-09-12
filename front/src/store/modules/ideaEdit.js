@@ -161,6 +161,7 @@ const actions = {
                 servResp.tagsErr = err.response.data.detail||err.response.tags
                 servResp.thumbnailErr = err.response.data.thumbnail
                 servResp.nonFieldErrs = err.response.data.non_field_errors
+                // servResp.removeFile = err.data.remove_file
                 console.log("error by edit Idea request",err)
                 console.dir(err)
                 // example: incorrect url in request ot dj server            

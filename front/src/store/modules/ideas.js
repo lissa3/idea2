@@ -33,8 +33,8 @@ export const actionTypes = {
 
 const actions = {
     async [actionTypes.getIdeas]({commit},{apiUrl}){
-        console.log("store dispatching getIdeas")
-        console.log("api url in store is",apiUrl)
+        // console.log("store dispatching getIdeas")
+        // console.log("api url in store is",apiUrl)
         commit(mutationTypes.SET_IDEAS_LOADING);
         try{
             // instead of apiUrl(str)=> {object, к можно деструктурировать}

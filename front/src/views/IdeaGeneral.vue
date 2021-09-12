@@ -11,8 +11,8 @@
           <div class="col col-md-8 py-3">
             <app-idea :api-url="apiUrl"></app-idea>
           </div>
-          <div class="col col-md-2 py-3">
-            <section class="tags-space">
+          <div class="col col-md-2 py-3 push-down">
+            <section class="tags-space p-1">
              
             <app-tags></app-tags>
             </section>
@@ -46,6 +46,9 @@ export default {
 <style scoped>
 .row > div{
   border:1px solid black;
+}
+.push-down{
+  margin-bottom: 0.5em;
 }
 
 </style>

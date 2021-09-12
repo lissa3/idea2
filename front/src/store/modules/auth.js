@@ -1,6 +1,12 @@
 import authAPI from '@/api/auth'
+import jwt_decode from "jwt-decode";
 
 
+function isRefreshValid(token){
+  const {exp} = jwt_decode(token);
+  // console.log("isrefreshValid",exp > Math.ceil(Date.now() / 1000))
+  return exp > Math.ceil(Date.now() / 1000);
+}
 export const mutationTypes = {
   CLEAR_CREDS:'[auth] CLEAR_CREDS',
   PASS_EMAIL_POTENTIAL_USER:'[auth] PASS_EMAIL_POTENTIAL_USER',
@@ -369,11 +375,12 @@ const actions = {
   },
   async [actionTypes.confirmEmailForgottenPsw]({commit},creds){   
     // Sally2020#
+    console.log("inside 372 store")
     commit(mutationTypes.START_CONFIRM_PSW_RESET) 
     const servResp = {}    
     try{
       let email = {"email":creds.email}
-      // console.log("to server email",creds)         
+      console.log("to server email",creds)         
       const resp = await authAPI.confirmEmailPswForget(email)
       console.log("resp in auth.js",resp) 
       commit(mutationTypes.EMAIL_EXIST_PSW_RESET,email)
@@ -381,7 +388,8 @@ const actions = {
       return resp 
 
     }catch(err){
-      console.log("where are my mutations?")
+      console.log("where are my mutations?",err)
+      console.dir(err)
       // commit(mutationTypes.PASS_EMAIL_POTENTIAL_USER,null)
       commit(mutationTypes.SET_EMAIL_CONFIRM_PSW_RESET_FAILURE,creds.email)
       if(err.response === undefined){
@@ -517,9 +525,11 @@ const actions = {
 },
   async [actionTypes.fetchFreshAccessToken]({commit},refresh){
     try{
-      // commit(mutationTypes.FETCH_NEW_ACCESS)
-      console.log('asking for a new access token',refresh)
-      console.log(authAPI.getNewAccessToken)
+      if(isRefreshValid(refreshToken)){
+        console.log('refresh token is valid')
+        // commit(mutationTypes.FETCH_NEW_ACCESS)
+      console.log('asking for a new access token with refresh')
+      // console.log(authAPI.getNewAccessToken)
       const resp= await authAPI.getNewAccessToken({refresh:refresh})
       if(resp.status === 200){          
         let newAccess = resp.data.access  
@@ -528,6 +538,10 @@ const actions = {
         commit(mutationTypes.SET_NEW_ACCESS_TOKEN_SUCCESS) 
         return resp      
         }
+      }else{
+        console.log("refresh token is expired; need to log in")
+      }
+      
 
     }catch(err){
       commit(mutationTypes.FETCH_NEW_ACCESS_FAILURE) 

@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// https://stackoverflow.com/questions/62462276 ow-to-solve-avoided-redundant-navigation-to-current-location-error-in-vue
 import Router from 'vue-router'
+// https://stackoverflow.com/questions/62462276 ow-to-solve-avoided-redundant-navigation-to-current-location-error-in-vue
+import {getterTypes} from '@/store/modules/auth'
+import store from "@/store";
 
 import Activate from '@/views/auth/Activate'
 import ConfirmEmail from '@/views/auth/ConfirmEmail'
@@ -43,163 +45,230 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home
+    component: Home,
+    meta:{
+      public:true
+    }
   },
   {
     path: "/signup",
     name: "signup",
     component: SignUp,
+    meta:{
+      public:true
+    }
   },
   {
     path: "/login",
     name: "login",
     component: Login,
+    meta:{
+      public:true
+    }
   },
   {
     path: "/google-login",
     name: "google",
     component: Google,
+    meta:{
+      public:true
+    }
   },
   {
     path: "/google",
     name: "google-form",
     component: GoogleForm,
+    meta:{
+      public:true
+    }
   },
   {
     path: "/confirm-email-link/",
     name: "confirmEmail",
     component: ConfirmEmail,
+    meta:{
+      public:true
+    }
   },
   {
     path: "/activate/:uid/:token",
     name: "activate",
     component: Activate,
-    props:true
+    props:true,
+    meta:{
+      public:true
+    }
+
   },
   {
     path: "/reset-password/",
     name: "resetForgotPsw",
     component: PswForgotStart,
+    meta:{
+      public:true
+    }
   },
   {
     path: "/password/reset/confirm/:uid/:token",
     name: "setPswReset",
     component: SetPswReset,
-    props:true
+    props:true,
+    meta:{
+      public:true
+    }
   },
   {
     path: "/change-password/",
     name: "passwordChange",
     component: SetPswChange,
+    meta:{
+      public:false
+    }
   },
   {
     path: "/reset-password-failure/",
     name: "resetForgotPswFailure",
     component: PswForgotFailure,
+    meta:{
+      public:true
+    }
   },
   {
     path: '/general-ideas',
     name: 'ideaGeneral',
-    component: IdeaGeneral
+    component: IdeaGeneral,
+    meta:{
+      public:true
+    }
   },
   {
     path: '/personal-feed/',
     name: 'personalFeed',
     component: PersonalFeed,
-    // meta:{
-    //   requiresAuth:true
-    // }
+    meta:{
+      public:false
+    }
+    
   },
   {
     path: '/idea-detail/:slug',
     name: 'ideaDetail',
-    component: IdeaDetail
+    component: IdeaDetail,
+    meta:{
+      public:true
+    }
   },
   {   
     path: '/idea-create',
     name: 'ideaCreate',
     component: IdeaCreate,
-    // meta:{
-    //   requiresAuth:true
-    // }
+    meta:{
+      public:false
+    }
+    
   },
   {   
     path: '/idea-edit/:slug',
     name: 'editIdea', 
     component: IdeaEdit,
-    // meta:{
-    //   requiresAuth:true
-    // }
+    meta:{
+      public:false
+    }
   },
   
   {
     // to render all ideas for a given tag slug (unique)
     path: '/tags-slug/:slug',
     name: 'ideasBySlug',
-    component: IdeasByTagSlug
+    component: IdeasByTagSlug,
+    meta:{
+      public:true
+    }
   },
   {
     // to render all ideas for a given tag name (unique)
     path: '/tags-name/:name',
     name: 'ideasByName',
-    component: IdeasByTagName
+    component: IdeasByTagName,
+    meta:{
+      public:true
+    }
   },
   {
     // to render all ideas for a given category
     path: '/category-idea/:slug',
     name: 'categ',
-    component: CategIdeas
+    component: CategIdeas,
+    meta:{
+      public:true
+    }
   },
   {
     path: '/idea/search/:term',
     name: 'search',
-    component: IdeaSearch
+    component: IdeaSearch,
+    meta:{
+      public:true
+    }
   },
   {
     // path: '/idea/:sort/',
     path: '/idea/filter/:sort/:featured',
     name: 'filter',
     component: IdeaFilter,
+    meta:{
+      public:true
+    }
    
   },
   {
     path: '/profile/:id',
     name: 'profile',
-    component: ProfileDetail
+    component: ProfileDetail,
+    meta:{
+      public:true
+    }
   },
   // private profile routes
   {
     path: '/account-profile/:unid',
     name: 'accountProfile',
     component: AccountProfile,
-    // meta:{
-    //   requiresAuth:true
-    // }
+    meta:{
+      public:false
+    }
   },
   {
     path: '/profile-edit/:unid',
     name: 'editProfile',
     component: EditProfile,
-    // meta:{
-    //   requiresAuth:true
-    // }
+    meta:{
+      public:false
+    }
+    
   },
   {
     path: '/profile-delete',
     name: 'deleteAccount',
     component: DeleteAccount,
-    // meta:{
-    //   requiresAuth:true
-    // }
+    meta:{
+      public:false
+    }
   },
   {
     path: '/follow-view',
     name: 'followList',
-    component: FollowList
+    component: FollowList,
+    meta:{
+      public:true
+    }
   },
   {
    path: '/about',
     name: 'About',
+    meta:{
+      public:true
+    },
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -208,7 +277,10 @@ const routes = [
   {
     path: '*',
     name: 'notFound',
-    component: NotFound
+    component: NotFound,
+    meta:{
+      public:true
+    }
   },
 ]
 /* 
@@ -222,29 +294,22 @@ const router = new VueRouter({
   routes
 })
 
-
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth) {
-    const authUser = JSON.parse(window.localStorage.getItem('user')) // your oauth key
-    if (authUser && authUser.accessToken) {
-      next()
-    } else {
-      next({
-        name: 'login'
-      })
-    }
+ 
+  //console.log(store.getters[getterTypes.isLoggedIn]) // null if we just start via Menu req WHO?
+  //console.log(store.getters[getterTypes.currentUser]) // object: id,useranem,unid if we just start via Menu req WHO?
+  // current state: if user tries to access private content && dispite next=> to fullPath == 
+  // login?next=%2Faccount-profile%2unid
+  // user re-directed to home
+  // router guard on the way to private data
+  if (!to.meta?.public && !store.getters[getterTypes.isLoggedIn]) {
+    return next({
+      name: "login",
+      query: { next: to.fullPath },
+    });
   }
-  next()
-})
+  next();
+});
 
-//for each router meta => public
-// router.beforeEach((to, from, next) => {
-//   console.log("greet from main.js?")
-//   // console.log(getterTypes.isLoggedIn)
-//   if (!to.meta?.public && !localStorage.getItem('user')) {
-//     return next("/login");
-//   }
-//   next();
-// });
 
 export default router
