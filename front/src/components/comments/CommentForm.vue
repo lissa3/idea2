@@ -31,7 +31,7 @@
 
             <button v-if="hasCancelButton" class="btn btn-primary" @click="handleCancel">Cancel</button>
 
-            <button v-if="hasCancelButtonRoot" class="btn btn-primary" @click="handleCancelRootComment">Root Cancel</button>
+            <button v-if="hasCancelButtonRoot" class="btn btn-primary" @click="handleCancelRootComment">Cancel</button>
             </div>                 
              
                   

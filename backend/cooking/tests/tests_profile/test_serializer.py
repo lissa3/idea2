@@ -56,7 +56,7 @@ class ProfileSerializerTesCase(TestCase):
         """ let op: not arr but dict; 
         id is set to string (see ser-er CharField(read_only) """
         serial_profile = ProfileSerializer(self.profile).data
-        # print("from view",serial_profile)
+        print("from view",serial_profile)
         expected_data = {            
             'image': None,
             'website': "",
@@ -67,7 +67,8 @@ class ProfileSerializerTesCase(TestCase):
             'followers':[],
             'count_following':0,
             'count_followers':0,
-            'user':{"id": self.user.id,"username": self.user.username,"unid": self.profile.unid},          
+            'user':{"id": self.user.id,"username": self.user.username,"unid": self.profile.unid},
+            'remove_file':False          
         
         }
         # print("local",expected_data)

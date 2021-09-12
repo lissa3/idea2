@@ -8,8 +8,11 @@
                 <div v-if="!activeComment">To delete... active component now is null</div> -->
 
             <div class="col-md-12" v-if="isLoggedIn">
-                <h5 @click="openForm">Write your comment</h5>
-                <!-- <div v-if="isWriting" class="col-md-12"> -->
+                <div class="d-flex justify-content-center">
+                <b-button @click="openForm" variant="secondary">Write Comment</b-button>
+                </div>
+                
+                
                 <div v-if="goWrite" class="col-md-12">
                     <app-comment-form
                     submitLabel="Write"
@@ -22,9 +25,9 @@
                  </div>
                 
             </div>        
-            <div  class="comment-list ml-2 col-md-12">
+            <div  class="comment-list mt-2 ml-2 col-md-12">
                 <div class="section-comments">
-                    <h4>Comments</h4>                
+                    <!-- <h4>Comments</h4>                 -->
                     <div v-if="warning" class="flesh-msg-error">{{warning}}</div>                         
                 </div>                              
                 <app-comment 
