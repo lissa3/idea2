@@ -39,35 +39,34 @@
           <!-- <b-form-input v-model="term" size="sm" class="mr-sm-2" placeholder="Search"></b-form-input> -->
           <!-- <b-button @click="doSearch" size="sm" class="my-2 my-sm-0" type="submit">Search</b-button> -->
         </b-nav-form>       
-      <template v-if="isLoggedIn">
-          <b-nav-item href="#" >
-            <router-link :to="{ name: 'ideaCreate' }" class="link-decor" active-class="active"
-              >New Idea</router-link>
-        </b-nav-item>
-          <!-- <b-nav-item href="#">IsLoggedIn</b-nav-item>               -->
-          <b-nav-item href="#" >
-            <a href="#" @click="doSignOut" class="link-decor" >Sign Out</a>
-          </b-nav-item> 
-          <b-nav-item href="#" >
-            <b-icon icon="person-fill"></b-icon>
-            <a href="#" class="link-decor" >Welcome, &nbsp;{{currentUser.username}}</a>
-          </b-nav-item>
-          <b-nav-item-dropdown right>
-            <!-- Using 'button-content' slot -->
-              <template #button-content>
-                <b-icon-tools></b-icon-tools>
-              </template>
-              <b-dropdown-item href="#" @click="showProfile">Profile</b-dropdown-item>
-              <b-dropdown-item href="#" @click="changePsw">Change Password</b-dropdown-item>
-              <b-dropdown-item href="#" @click="deleteAccount" class="danger">Delete Account</b-dropdown-item>
-            </b-nav-item-dropdown>  
-      </template>
-        
-        
-      </b-navbar-nav>
-    </b-collapse>
-  </b-navbar>
-</div>
+          <template v-if="isLoggedIn">
+              <b-nav-item href="#" >
+                <router-link :to="{ name: 'ideaCreate' }" class="link-decor" active-class="active"
+                  >New Idea</router-link>
+            </b-nav-item>
+              <!-- <b-nav-item href="#">IsLoggedIn</b-nav-item>               -->
+              <b-nav-item href="#" >
+                <a href="#" @click="doSignOut" class="link-decor" >Sign Out</a>
+              </b-nav-item> 
+              <b-nav-item href="#" >
+                <b-icon icon="person-fill"></b-icon>
+                <a href="#" class="link-decor" >Welcome, &nbsp;{{currentUser.username}}</a>
+              </b-nav-item>
+              <b-nav-item-dropdown right>
+                <!-- Using 'button-content' slot -->
+                  <template #button-content>
+                    <b-icon-tools></b-icon-tools>
+                  </template>
+                  <b-dropdown-item href="#" @click="showProfile">Profile</b-dropdown-item>
+                  <b-dropdown-item href="#" @click="changePsw">Change Password</b-dropdown-item>
+                  <b-dropdown-item href="#" @click="deleteAccount" class="danger">Delete Account</b-dropdown-item>
+                </b-nav-item-dropdown>  
+          </template>        
+          
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
+  </div>
 </header>  
   <app-delete-account-confirmation v-if="makeModalVisible" @close="close" @deleteAccount="deleteAccount">
     <template v-slot:header>
@@ -83,26 +82,44 @@
         <button class="btn btn-sm btn-success" @click="close">No</button>
     </template>
   </app-delete-account-confirmation>
+  <!-- warning: user should know that his session is expired -->   
+  <app-warning-server-no-responding v-if="servDown" @close="close">
+    <template v-slot:header>
+        <h3>Warning</h3>
+    </template>
+      <template v-slot:body>
+        <h4>Our serve experiencing temporary problems. Will will fix them as soon as possible</h4>
+    </template>
+    <!-- <template v-slot:modal-footer>
+        <div>If you want to continue as an authorized user, please login again</div>      
+        <button class="btn btn-sm btn-success" @click="close">Close warning</button>
+    </template> -->
+  </app-warning-server-no-responding>
 </div> 
 </template>
 <script>
 import {mapGetters} from 'vuex'
+import {mapState} from 'vuex'
 import {actionTypes} from '@/store/modules/auth'
+// import {mutationTypes} from '@/store/modules/auth'
 import {actionTypes as profileActionTypes} from '@/store/modules/profile'
 import {getterTypes} from '@/store/modules/auth'
 
 import AppDeleteAccountConfirmation from '@/components/Modal.vue'
+import AppWaringServerNotResponding from '@/components/Modal.vue'
 
 
 export default {
     name:'Menu',
     components:{
-      AppDeleteAccountConfirmation
+      AppDeleteAccountConfirmation,
+      AppWaringServerNotResponding
     },
     data(){
       return {
         term:'',
         makeModalVisible: false,
+        makeModalVisible2: false,
         
       }
     },
@@ -113,8 +130,12 @@ export default {
         isAnonymous:getterTypes.isAnonymous,
         // foo: gT.fooProfile
         }),
-        
-          
+        ...mapState({           
+           
+            error:state=>state.auth.error,            
+            servDown:state=>state.auth.noRespServer,
+            
+        }),         
      
     },
     methods:{
@@ -179,20 +200,97 @@ export default {
     },
     mounted(){
       this.$store.dispatch(actionTypes.getUser)
-      // console.log("action type from menu", actionTypes.getUser)
-      // console.log("menu mounted, call for getUser from store")
-    },
+      .then((resp)=>{
+        // from store auth.js resp = number (status)
+        console.log("Menu top: resp",resp)       
+        
+        if(resp===200){
+          console.log("line 181 Menu:",resp.status) //undefined
+          // console.dir(resp)
+        }else if(resp===401){
+           console.log("line 210 Menu: status 401?",resp) //undefined
+          // console.dir(resp)          
+          let refreshToken = localStorage.getItem('refreshToken')
+          if(refreshToken){
+            const timeNow = Math.ceil(Date.now()/1000)
+            console.log("now is ",timeNow)
+            const tokenRefreshPayload = JSON.parse(atob(refreshToken.split('.')[1]));
+             const expTerm = tokenRefreshPayload.exp
+             if(expTerm>timeNow){
+              console.log("refresh token present and valid")              
+              this.$store.dispatch(actionTypes.fetchFreshAccessToken,refreshToken)
+              .then((resp)=>{
+                console.log("line 224 Menu: resp",resp) 
+                this.$store.dispatch( actionTypes.getUser)                 
+              })
+              .catch((err=>{
+                console.log("line 227 err in Menu")
+              }))
+          }else{
+            console.log("refresh token is NOT valid")
+            //console.log("modal/alert: session is expired?")
+            //alert("your session expired, login again if you want")
+            localStorage.clear()             
+          }           
+
+          }
+          if(!refreshToken){
+            console.log("No refresh token found")
+          }
+        }
+      })
+      .catch((err)=>{
+        console.log("Menu final err : ",err)
+      })     
+      
+     },
     created(){
      setInterval(()=>{ 
-       // sending request for a new access token each 60 min
+       // 1 min 60000 millisec
+       // sending request for a new access token each 60 min (600 000 msec)
        console.log("setimeout calling, time is voorbij, asking for a new access token")
-       let refresh = localStorage.getItem('refreshToken')
-      //  let access = localStorage.getItem('accessToken')
-      //  console.log("access is is",access)
-       this.$store.dispatch(actionTypes.fetchFreshAccessToken,refresh) 
-       }, 600000);
-      //  this.$store.dispatch(actionTypes.fetchFreshAccessToken,refresh) 
-      //  }, 3600000);
+       const timeNow = Math.ceil(Date.now()/1000)
+       console.log("now is ",timeNow)
+       let refreshToken = localStorage.getItem('refreshToken')
+       if(refreshToken){
+            // deel if refresh present
+             const now = Math.ceil(Date.now()/1000)
+             console.log("now is ",now)
+             const tokenRefreshPayload = JSON.parse(atob(refreshToken.split('.')[1]));
+             const expTerm = tokenRefreshPayload.exp
+             console.log("exp term: ",expTerm)
+             //TODO: warning if time gap aproaches 1 min (60)
+             // const oneMinWarning = 60         
+            // if refresh valid
+            if(expTerm>now){
+                console.log("refresh token present and valid")
+                this.$store.dispatch(actionTypes.fetchFreshAccessToken,refreshToken)
+                .then((resp)=>{
+                  console.log("line 206 Menu: resp",resp)                  
+                })
+                .catch((err=>{
+                  console.log("line 210 err in Menu")
+                }))
+            }
+            // if refresh is NOT valid => call mutation to clear LS and     
+            else{
+              console.log("refresh token is NOT valid")
+              //console.log("modal/alert: session is expired?")
+              //alert("your session expired, login again if you want")
+               this.$store.commit(mutationTypes.CLEAR_CREDS)      
+              
+
+            }            
+            
+        }
+         // deel refresh NOT present 
+       else{
+         console.log("refresh token NOT found")
+       }
+        
+       }, 1800000 );
+       // 1 min = 60000 millisec 30 min => 18,060,000 millisec(access valid 35 min)
+      
     }
 }
 </script>

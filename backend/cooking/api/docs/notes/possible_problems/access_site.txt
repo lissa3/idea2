@@ -1,0 +1,9 @@
+Smooth flow in auth
+
+interceptors   vs setTimeout(current)
+
+
+1. Why NOT interceptors?
+Ans: First request when Menu mounted => users/me
+user first on site and not auth-ed=> resp 401 => lookup for refresh => No refresh => re-direct to login=> UI not friendly
++  response undefined (?) TODO

@@ -3,7 +3,7 @@
       <h3 class="mb-4 text-center">This is a main idea place</h3>
         <div class="row py-3">
           <div class="col col-md-2 py-3">
-            <div><app-loader></app-loader></div>
+            <!-- <div><app-loader></app-loader></div> -->
             <section class="categs-space">
               <app-categs></app-categs>
             </section>
@@ -23,7 +23,7 @@
 import AppIdea from '@/components/Idea'
 import AppTags from '@/components/Tags'
 import AppCategs from '@/components/categs/Categs'
-import AppLoader from '@/components/Loader'
+// import AppLoader from '@/components/Loader'
 
 export default {
     name:'AppIdeaGeneral',
@@ -31,7 +31,7 @@ export default {
         AppIdea,
         AppTags,
         AppCategs, 
-        AppLoader       
+        // AppLoader       
     },
     computed:{
         searchTerm() {

@@ -9,6 +9,9 @@ from ideas.logic import calc_rating, calc_count_likes,calc_max_rating
 User = get_user_model()
 
 class IdeaTestCase(APITestCase):
+    """
+    test only of postgres
+    """
     def setUp(self):
         self.category = Category.objects.create(name="chat")
         self.user1 = User.objects.create(username="snork", email="zoo@mail.com", password="viola34")

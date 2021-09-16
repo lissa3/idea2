@@ -1,7 +1,7 @@
 import random
 import string
 from django.utils.text import slugify
-import os
+# import os
 
 
 def get_random_str(size):

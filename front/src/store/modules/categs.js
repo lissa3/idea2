@@ -8,7 +8,7 @@ export const actionTypes = {
 
 export const mutationTypes = {
     LOADING_CATEGS:'[cats] Load categories',
-    GET_CATEGS_SUCCESS:'[cats] Set list categs',
+    GET_CATEGS_SUCCESS:'[cats] Success list categs',
     GET_CATEGS_FAILURE:'[cats] Fail get categs',
     
 }
@@ -45,7 +45,7 @@ const actions = {
           if(resp.status === 200){                         
             commit(mutationTypes.GET_CATEGS_SUCCESS,resp.data)
             // commit(mutationTypes.GET_CATEGS_FAILURE,error=null)     
-            // console.log("got categs from server OK")       
+            console.log("got categs from server OK, still loading?")       
             return resp.data      
             }
           }

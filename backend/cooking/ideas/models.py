@@ -10,6 +10,7 @@ from taggit.managers import TaggableManager
 
 from timestamp.models import TimeStamp
 from timestamp.broadcast_utils.idea_utils import upload_img
+from timestamp.broadcast_utils.base_utils import get_random_str
 from timestamp.broadcast_utils.validators import validate_size
 
 # from django.core.exceptions import ValidationError
@@ -21,7 +22,7 @@ ALLOWED_EXTENTIONS = ('JPG', 'JPEG', 'PNG')
 User = get_user_model()
 
 import logging
-logger = logging.getLogger('custom')
+logger = logging.getLogger('django')
 
 class CategoryManager(models.Manager):
     pass
@@ -129,6 +130,25 @@ class Idea(TimeStamp):
     def get_absolute_url(self):
         return reverse('ideas:detail', kwargs={'slug': self.slug})
 
+    def save(self,*args,**kwargs):
+        """
+        try to catch bug with idea formed without slug
+        """
+        start_creating = not self.pk
+        if start_creating:
+            try:                
+                super().save(*args,**kwargs)                
+                if not self.slug:
+                    self.slug = get_random_str(10)
+                    self.save()  
+            except Exception as e:
+                logger.warning(f'Failed creating idea with exception {e}')                
+            else:
+                logger.info(f'Idea object created id: {self.id}')          
+            finally:
+                pass
+        else:
+            super().save(*args,**kwargs)    
     
          
 
@@ -167,20 +187,19 @@ class UserIdeaRelation(models.Model):
         from .logic import calc_rating,calc_count_likes,calc_max_rating
         # if like or rating changed |=> re-calc total likes on idea
         start_creating = not self.pk
-        print("obj is just created and has no pk")
         super().save(*args,**kwargs) # here idea gets (if triggered by change rating event) 
         new_rating = self.rating
         new_like = self.like
-        # print("new rating",self.rating)
+        
         if self.old_rating!=new_rating or start_creating:
             # print("obj is already exist,so working on condition old!=new")
             calc_rating(self.idea)
             calc_max_rating(self.idea)            
-            # print("########################################")   
+              
         if self.old_like != new_like or start_creating:
             # print("user-idea-rel is just created< see calc")           
             calc_count_likes(self.idea)
-            # print("########################################")   
+            
 
         
 

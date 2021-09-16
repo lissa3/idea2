@@ -1,2 +1,15 @@
 
-
+WARNING 2021-09-14 16:54:20,172 idea_ser 736 user tata deleted img from aws
+WARNING 2021-09-14 17:01:16,012 idea_ser 757 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-14 17:30:42,599 idea_ser 803 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-14 18:28:20,675 idea_ser 849 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-14 18:31:35,295 idea_ser 854 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-14 18:34:45,286 idea_ser 863 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-14 18:51:31,850 idea_ser 863 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-14 18:59:17,147 idea_ser 885 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-14 19:07:12,531 idea_ser 896 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-14 19:58:46,876 idea_ser 904 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-14 20:52:26,433 idea_ser 1029 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-14 20:56:12,393 idea_ser 1048 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-15 19:35:09,583 idea_ser 1119 General exception in idea ser-er 'NoneType' object has no attribute 'pk'
+WARNING 2021-09-15 19:35:39,082 idea_ser 1119 user sniff deleted img 

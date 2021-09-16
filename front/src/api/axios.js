@@ -1,4 +1,5 @@
 import axios from 'axios'
+
 let baseUrl = 'http://127.0.0.1:8000'
 
 
@@ -16,32 +17,73 @@ axios.interceptors.request.use(config=>{
     return config
 })
 
+
+
+
 // axios.interceptors.response.use((resp)=>{
 //         return resp
 //     },
-//     function(error){
+//     async function(error){
+//         console.log("starting interceptors line 29")
 //         const originalRequest = error.config
 //         originalRequest._retry = false
-//         if(error.response.status ===401 &&originalRequest.url ==="/auth/jwt/refresh/"){
-//             // console.log("refresh is not fresh any more");
-//             window.location.href = '/login';
+//         if(typeof error.reponse ==='undefined'){
+//             console.log("error.reponse undefined line 33 interceptor")
+//             // alert(
+//             //         'A server/network error occurred. ' +
+//             //             'Looks like CORS might be the problem. ' +
+//             //             'Sorry about this - we will get it fixed shortly.'
+//             //     );
+//             // return Promise.reject(error);
+            
 //         }
-//         if(error.response.status ===401&&!originalRequest._retry){
-//             originalRequest._retry = true
-//             return axios.post('/auth/jwt/refresh/',{'refresh':localStorage.getItem('refreshToken')})
-//             .then(res=>{
-//                 if(resp.status ===200){
-//                     // put access token to LS
-//                     localStorage.setItem('accessToken',resp.data.access)
-//                     // change auth header
-//                     axios.defaults.headers.common['Authorization'] = `JWT ${resp.data.access}}` 
-//                     // return origina req with axios
-//                     return axios(originalRequest)
+//         if (error.response.status === 401&&!originalRequest._retry &&originalRequest.url ===  '/auth/jwt/refresh/'){		   originalRequest._retry = true
+//             console.log("refresh is not fresh any more");
+// 			window.location.href = '/login/';
+// 			return Promise.reject(error);
+// 		}
+//         refreshToken = localStorage.getItem('refreshToken')
+        
+//         if(refreshToken){
+//             console.log("LS has a refresh token")
+//             if(error.response.status ===401&&!originalRequest._retry){
+//                 originalRequest._retry = true
+                
+//                 const now = Math.ceil(Date.now()/1000)
+//                 console.log("now is ",now)
+//                 const tokenRefreshPayload = JSON.parse(atob(refreshToken.split('.')[1]));
+//                 const expTerm = tokenRefreshPayload.exp
+//                 console.log("exp term: ",expTerm)
+//                 if(expTerm>now){
+//                     return axios.post('/auth/jwt/refresh/',{'refresh':refreshToken})
+//                     .then((resp)=>{
+//                         console.log("sending refresh & asking for new access token ==200?",resp.status)
+//                         const newAccessToken = resp.data.access
+//                         localStorage.setItem('accessToken',newAccessToken)
+//                         this.$store.commit(mutationTypes.SET_ACCESS_TOKEN(resp.data.access ))      
+//                         this.$store.commit(mutationTypes.SET_NEW_ACCESS_TOKEN_SUCCESS) 
+//                         axios.defaults.headers['Authorization'] = 'JWT ' + response.data.access
+//                         originalRequest.headers['Authorization'] = 'JWT ' + response.data.access;
+//                         return axios(originalRequest)
+//                     })
+//                     .catch((err)=>{
+//                         console.log("line 59 error")
+//                     })
 //                 }
-//             })
-//         }else{
-//             window.location.href = '/login/';
+
+//             }
+//             else{
+//                 console.log('Refresh token is expired', tokenParts.exp, now);
+//                 window.location.href = '/login/';
+//                 // option N2
+                   //localStorage.removeItem('accessToken');
+                  //window.location.reload(true);
+//             }
 //         }
+//         else{
+//             console.log('Refresh token not available.');
+// 				window.location.href = '/login/';
+//         }       
 //     }
 // )
 

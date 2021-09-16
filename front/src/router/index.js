@@ -32,6 +32,7 @@ import IdeasByTagSlug from '@/views/IdeasByTagSlug'
 import IdeasByTagName from '@/views/IdeasByTagName'
 import FollowList from '@/views/FollowList'
 import NotFound from '@/views/NotFound'
+import NoPerms from '@/views/NoPerms'
 
 
 Vue.use(VueRouter)
@@ -273,6 +274,14 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+  },
+  {
+    path: '/no-permissions',
+    name: 'noPerms',
+    component: NoPerms,
+    meta:{
+      public:true
+    }
   },
   {
     path: '*',

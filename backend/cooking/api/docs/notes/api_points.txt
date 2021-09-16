@@ -1,3 +1,8 @@
+INITIAL NOTE:
+HomePage is a static page without data (at this point)
+Only Menu component makes first request for data by mounting: http://127.0.0.1:8000/auth/users/me/
+
+
 A. 
 A1 Auth (djoser)
 ====================================================================================================

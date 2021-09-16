@@ -98,6 +98,9 @@ export default {
          this.servResp.netWorkErr = 'Sorry. Our server is enduring some problems.Please try later'
        }else if(resp.status === 500){
          this.servResp.netWorkErr = 'A server/network error occured.Sorry about this - we will get it fixed shortly.'
+       }else if(resp.status === 403){
+         this.servResp.nonFieldErr = 'Not authorized access'
+         this.$router.push({name:'noPerms'}) 
        }else{
          console.log("err response in vue component from store",resp)
             this.servResp.categErr = resp.categErr

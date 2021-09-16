@@ -44,9 +44,8 @@ class TagIdeasListName(generics.ListAPIView):
     def get_queryset(self):
         name = self.kwargs.get('name')
         if name is not None:
-            print("server got a tag:", name)
-            print("founs following ideas for this tag", Idea.objects.filter(tags__name__in=(name,)))
-
+            # print("server got a tag:", name)
+            # print("found following ideas for this tag", Idea.objects.filter(tags__name__in=(name,)))
             return Idea.objects.filter(tags__name__in=(name,))
         else:
             return Response(status=400)            

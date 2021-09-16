@@ -213,6 +213,11 @@
                  <p class="is_danger"><strong>{{errors.notAuthorized.notAuthorized}}</strong></p> 
               </div>  
             </div>
+          <div v-if="errors.noPerms">
+              <div class="warn mb-1">
+                 <p class="is_danger"><strong>{{errors.noPerms.noPermission}}</strong></p> 
+              </div>  
+            </div>
 <!-- end server side bad request not auth-ed-->
             <b-button type="submit" variant="primary" class="pull-xs-right btn btn-large btn-success"
             :disabled="submitButDisable">

@@ -2,7 +2,7 @@ from rest_framework.permissions import BasePermission
 
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 # is_banned
-
+# IsAuthorOrIsStaffOrReadOnly
 
 class IsAuthorOrIsStaffOrReadOnly(BasePermission):
     """
@@ -16,7 +16,14 @@ class IsAuthorOrIsStaffOrReadOnly(BasePermission):
         # so we'll always allow GET, HEAD or OPTIONS requests.
         # Instance must have an attribute named `author`.
         # print("method of req was", request.method)
-        # print("is this user banned")
+        # print("line on top: user is",request.user)
+        # try:
+        #     print("line 19 perms is this user banned",request.user.is_banned)
+        # except: 
+        #     print("line 23 user is not banned? req.user",request.user)   
+        # finally:
+        #    pass
+        
         return bool(
             request.method in SAFE_METHODS or
             request.user and
@@ -46,12 +53,12 @@ class IsAuthenticatedAndNotBanned(BasePermission):
 class IsOwnerOrIsStaff(BasePermission):
     """
     Instance must have an attribute named `user_id`.
-    Only user == owner of the obj OR user == staff can RUD operations on obj
+    Only user == owner of the obj and NOT banned; OR user == staff can RUD operations on obj
     """
 
     def has_object_permission(self, request, view, obj):
-        print("user id",request.user)
-        print("obj user is",obj.user_id)
+        # print("user id",request.user)
+        # print("obj user is",obj.user_id)
         return bool(
             request.user and request.user.is_authenticated and
             not request.user.is_banned and

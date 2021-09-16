@@ -45,7 +45,7 @@ class RetrieveFollowers(APIView):
         try:
             user = get_object_or_404(User,id=id)
             followers = user.followed_by.all()
-            print(followers)
+            # print(followers)
             profiles = ProfileSerializer(followers,many=True)
             return Response({'data':profiles.data},status=status.HTTP_200_OK)
         except:
@@ -78,7 +78,6 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
         super().__init__(*args, **kwargs)
 
     def get_object(self):
-        print("inside get obj")
         try:
             """ can check user is banned here """
             # print("in kwargs unid:", self.kwargs.get('unid'))
@@ -88,20 +87,16 @@ class ProfileRetrUpdateDestrView(generics.RetrieveUpdateDestroyAPIView):
             )
             remote_address = get_ip(self.request)
             self.check_object_permissions(self.request, obj)
-            logger.info(f'accessed by id: {remote_address}')
-            print("try bloock")
+            logger.info(f'accessed by id: {remote_address} OK')
+            
         # except APIException:
-        except:
-            print("except block")
+        except Exception as e:
             unid = self.kwargs.get('unid')
             remote_address = get_ip(self.request)
-            print("fighting with perms")
-            logger.error(f'Permission denied for profile {unid} by {remote_address}')
+            logger.error(f'Permission denied for profile {unid} by {remote_address}: {e}')
             raise PermissionDenied
         finally:
-            print("finally")    
-            
-
+            pass  
         return obj
 
 

@@ -1,7 +1,9 @@
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
+from django.db.models import Count
 # from django.core.exceptions import ValidationError
 import logging
+# import base64
 
 
 from rest_framework import viewsets  # , permissions
@@ -19,12 +21,12 @@ from django_filters.rest_framework import DjangoFilterBackend # third party
 
 from api.serializers.ideas.idea_ser import IdeaSerializer
 from api.serializers.user_idea_rel.user_idea_relation_ser import UserIdeaRelSerializer
-from api.permissions import IsAuthorOrIsStaffOrReadOnly
+from api.permissions import IsAuthorOrIsStaffOrReadOnly,IsOwnerOrIsStaffOrReadOnly
 from timestamp.broadcast_utils.idea_utils import get_json_tags, checkTagStringLength
 from ideas.models import Idea, UserIdeaRelation
 
 User = get_user_model()
-logger = logging.getLogger('custom')
+logger = logging.getLogger('django')
 
 
 # TODO: make separ view list idea?
@@ -59,7 +61,7 @@ class IdeaViewSet(viewsets.ModelViewSet):
     # pagination_class=LimitOffsetPagination
     # PAGE_SIZE = 6
     serializer_class = IdeaSerializer
-    permission_classes = (IsAuthorOrIsStaffOrReadOnly,)
+    permission_classes = (IsAuthorOrIsStaffOrReadOnly,) #IsOwnerOrIsStaffOrReadOnly)
     lookup_field = 'slug'
     parser_classes = (FormParser, MultiPartParser)
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -71,59 +73,58 @@ class IdeaViewSet(viewsets.ModelViewSet):
     ordering = ('-created_at',)  
     
     # for dev
-    def get_queryset(self):
-        # let op: 2 times qs:? |=> distinct() in postgres        
-        queryset = Idea.objects.select_related('author','categ').prefetch_related('tags')
-        # print("viewset made qs:",queryset)  
-        return queryset 
-
-    # for postgresql   in prod  
     # def get_queryset(self):
     #     # let op: 2 times qs:? |=> distinct() in postgres        
-    #     queryset = Idea.objects.annotate(
-    #         users_comments=Count('comments',distinct=True)
-    #         ).select_related('author','categ').prefetch_related('tags')
-    #     # print("viewset made qs:",queryset)    
+    #     queryset = Idea.objects.select_related('author','categ').prefetch_related('tags')
+    #     # print("viewset made qs:",queryset)  
     #     return queryset 
+
+    # for postgresql   in prod  
+    def get_queryset(self):
+        # let op: 2 times qs:? |=> distinct() in postgres        
+        queryset = Idea.objects.annotate(
+            users_comments=Count('comments',distinct=True)
+            ).select_related('author','categ').prefetch_related('tags')
+        # print("viewset made qs:",queryset)    
+        return queryset 
 
     def update(self, request, *args, **kwargs):
         """let op: don't save twice to avoid err msg: file not img||corrupt
         thumbnail may come from front:
-        1.as empty string = not img attached or removed
-        2.as string = url of aws s3
-        3. as InMemoryUploadedFile which needs validation by ser-er        
-        """
+        1. as empty string = not img attached or removed
+        2. as string = url of aws s3
+        3. as InMemoryUploadedFile which needs validation by ser-er      
+        '_auth', '_authenticate', '_authenticator', '_content_type', '_data', '_default_negotiator', '_files', '_full_data', '_load_data_and_files', '_load_stream', '_not_authenticated', '_parse', '_request', '_stream', '_supports_form_parsing', '_user', 'accepted_media_type', 'accepted_renderer', 'auth',   
+        """       
         idea = self.get_object()
         setattr(request.data, '_mutable', True)
         # print("editing an idea",request.data)
         # request.data.get('thumbnail')) #'thumbnail': ['']}
         # from vue data https://boterland.s3.amazonaws.com/ideapot/idea_1/lemon1630705942.9574196.jpg
         thumbnail = request.data.get('thumbnail')
-        if thumbnail == "":
-            print("thumbnail is empty str")
-        else:
-            print("thumbnail is not an empty str",thumbnail)           
-        print("type thumb line 107 from front : ",type(thumbnail))
+        # if thumbnail == "":
+        #     print("thumbnail is empty str")
+        # else:
+        #     print("thumbnail is not an empty str",thumbnail)           
+        # print("type thumb line 107 from front : ",type(thumbnail))
         if type(thumbnail) == str and len(thumbnail)!=0:
             print('line 107: looks like img is url str')             
             request.data.pop('thumbnail')
-            logger.warning('thumbnail file is aws s3 url,cutting if from request; rest goes to ser-er')
+            # logger.warning('thumbnail file is aws s3 url,cutting if from request; rest goes to ser-er')
         # no img from front: thumbnail': ['']}|=> thumbnail = empty string     
         if type(thumbnail) == str and len(thumbnail)==0:
             # print('line 111: looks like img is empty str')
             request.data['remove_file'] = True
-            # logger.warning('front:no thumbnail, empty string in request')
-            
+            # logger.warning('front:no thumbnail, empty string in request')            
         if type(thumbnail) != str:
             # img from front: thumbnail: [<InMemoryUploadedFile: one.jpg (application/octet-stream)>]
             request.data['remove_file'] = True
-            # logger.warning('thumbnail is a real img')
-            
-          
+            # logger.warning('thumbnail is a real img')           
         tags = request.data.get('tags')
         if tags is not None:
             # print("server got the following tags", tags)
             if checkTagStringLength(tags):
+                logger.warning(f'status 400: user {self.user.id} loads too long tags')
                 return Response({"detail": "tag string is too long; shouls be max 50 chars"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 request.data['tags'] = get_json_tags(tags)
@@ -133,6 +134,7 @@ class IdeaViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             pass
         else:
+            logger.warning(f'status 400: {self.user.id} ser-er idea not valid {serializer.errors}')
             return Response(serializer.errors, status=400)
         serializer.is_valid(raise_exception=True)
         # print("yes,ser-er valid")
@@ -143,50 +145,22 @@ class IdeaViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
 
         """ create object but before adding auth user to request.data and clean tags input before adding them to data"""
+        print("create method calling: who is the user?",request.user)
+        print("checking if user is banned",request.user.is_banned)
+
+        if request.user.is_banned:
+            logger.warning(f'status 403: banned user {request.user.id} create idea ')
+            return Response({"error": "user is banned"}, status=status.HTTP_403_FORBIDDEN)
+
         setattr(request.data, '_mutable', True)
         tags = request.data.get('tags')
         if tags is not None:
             if checkTagStringLength(tags):
+                logger.warning(f'status 400: user {request.user.id} loads too long tags')
                 return Response({"detail": "tag string is too long; shouls be max 50 chars"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 request.data['tags'] = get_json_tags(tags)
         setattr(request.data, '_mutable', False)
         return super().create(request, *args, **kwargs)
-    # def _allowed_methods(self):
-    #     print([m.upper() for m in self.http_method_names if hasattr(self, m)])
-    #     return [m.upper() for m in self.http_method_names if hasattr(self, m)]     
-
-"""
-вот почему произошло это чудо: с фронта приходит "нет картинки", а она таки персестирует в дб?
-исходно в дб была картинка, связанная с объектом
-
-и хотя viewset && ser-or что-то делали, но они так и не изменили () объект в дб!
-и картинка так и осталась
-Итог: с vue.js приходит пустая строка, если файл не прицеплён. 
-и по-другому это сделать не получиться.
-Ошибка была не в формате данных с фронта, а в необходимости переписать сериализатор .save()!
-instance.thumbnail.delete()
-
-viewset.py request 
-
-updating idea <QueryDict: {'categ': ['8'], 'title': ['Tea'], 'lead_text': ['Take some tea'], 'main_text': ['Simple way to relax'], 'thumbnail': ['']}>
-line 101 viewset thumnalis = None
-
-serializer.py
-
-update ser-er method, obj is: {'title': 'Tea', , 'thumbnail': None}
-
-########## WHY!!!!!!!!!!!############################################################
-model.py  .save()
-
-(before super().save(...))
-self.__dict__ 
-{ 'id': 5, 'title': 'Tea',   'thumbnail': 'ideapot/idea_1/tired1629925107.4117696.JPG',  'max_rating': None, '_prefetched_objects_cache': {'tags': <QuerySet []>}}
-
-model.py save()
-self.__dict__
-after super().save(...)
-{ 'id': 5, 'title': 'Tea','thumbnail': <ImageFieldFile: ideapot/idea_1/tired1629925107.4117696.JPG>, 'max_rating': None, '_prefetched_objects_cache': {'tags': <QuerySet []>}}
-
-"""   
-
+    
+    

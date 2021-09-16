@@ -1,12 +1,5 @@
 import authAPI from '@/api/auth'
-import jwt_decode from "jwt-decode";
 
-
-function isRefreshValid(token){
-  const {exp} = jwt_decode(token);
-  // console.log("isrefreshValid",exp > Math.ceil(Date.now() / 1000))
-  return exp > Math.ceil(Date.now() / 1000);
-}
 export const mutationTypes = {
   CLEAR_CREDS:'[auth] CLEAR_CREDS',
   PASS_EMAIL_POTENTIAL_USER:'[auth] PASS_EMAIL_POTENTIAL_USER',
@@ -95,6 +88,7 @@ const state ={
 
   netWorkErr:false,
   status500:false,
+  noRespServer:false
 
 }
 const getters = {
@@ -223,7 +217,9 @@ const mutations = {
     state.errEvent = err
   },
   [mutationTypes.SET_NEW_ACCESS_TOKEN_SUCCESS](){},
-  [mutationTypes.FETCH_NEW_ACCESS_FAILURE](){}
+  [mutationTypes.FETCH_NEW_ACCESS_FAILURE](){
+    state.noRespServer = true
+  }
   
 }
 const actions = {
@@ -354,18 +350,30 @@ const actions = {
     //console.log("inside getUser")   
     try{
       // commit(mutationTypes.GET_CURRENT_USER_START)   
-      const resp= await authAPI.getUser()
-      if(resp.status === 200){          
-        let user = resp.data             
-        commit(mutationTypes.SET_CURRENT_USER,user)
-        commit(mutationTypes.SET_LOG_IN) 
-        commit(mutationTypes.SET_LOGIN_SUCCESS) 
-        return resp      
-        }
-      }
+      const resp= await authAPI.getUser()     
+       
+          let user = resp.data             
+          commit(mutationTypes.SET_CURRENT_USER,user)
+          commit(mutationTypes.SET_LOG_IN) 
+          commit(mutationTypes.SET_LOGIN_SUCCESS) 
+          console.log("passing resp to Menu",resp.status)
+          if(resp.status){
+            return resp.status     
+
+          }
+          else{
+            console.log("resp is undefined")
+            return resp
+          }
+        
+      }    
+      
       catch(err){
+        console.log("store line 364, err",err)
+        console.log("passing result of access toekn failure to Menu: err:",err)
         commit(mutationTypes.GET_CURRENT_USER_FAILURE)
-        localStorage.clear()
+        // localStorage.clear()
+        return err.response.status
       }
     },    
   async [actionTypes.signOut]({commit}){
@@ -525,10 +533,8 @@ const actions = {
 },
   async [actionTypes.fetchFreshAccessToken]({commit},refresh){
     try{
-      if(isRefreshValid(refreshToken)){
-        console.log('refresh token is valid')
-        // commit(mutationTypes.FETCH_NEW_ACCESS)
-      console.log('asking for a new access token with refresh')
+      
+      console.log('store func line 531 asking for a new access token with refresh')
       // console.log(authAPI.getNewAccessToken)
       const resp= await authAPI.getNewAccessToken({refresh:refresh})
       if(resp.status === 200){          
@@ -537,10 +543,7 @@ const actions = {
         commit(mutationTypes.SET_ACCESS_TOKEN,newAccess)        
         commit(mutationTypes.SET_NEW_ACCESS_TOKEN_SUCCESS) 
         return resp      
-        }
-      }else{
-        console.log("refresh token is expired; need to log in")
-      }
+        }  
       
 
     }catch(err){

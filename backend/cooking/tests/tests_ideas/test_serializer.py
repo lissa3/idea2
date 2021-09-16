@@ -15,7 +15,7 @@ User = get_user_model()
 # ser-er Avg |=> Decimal
 # 2.rating takes only integes but doesn't incl None
 
-
+# tests for post gresql
 class IdeaTestSerializerTesCase(TestCase):
     """ note: had to dismiss created_at field for the purpose of testing"""
 

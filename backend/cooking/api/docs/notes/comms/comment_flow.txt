@@ -4,7 +4,7 @@ TODO: banned, body deleted comment save(?)*
 ===============
 Comment model:   user-idea-body-reply_to(user)-banned-deleted
 
-
+MPTT UI in admin
 
 model: 
 sorted =  created_at (old on top)
@@ -14,7 +14,7 @@ url: need idea slug
 view: ListAPIView         
 sorted = created_at
 qs = Comment.objects.filter(idea=idea).select_related('idea')
-*if comment gets deleted |=> body=""&& deleted=True*
+*if comment gets deleted |=> body="" && deleted=True* (record of deleted comment in db )
 
 
 view: CreateModelMixin,UpdateModelMixin,DestroyModelMixin,RetrieveModelMixin,viewsets.GenericViewSet

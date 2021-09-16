@@ -72,11 +72,13 @@ header::before {
   width:100vw;
   height: 100vh;
   z-index: -1;
-  background-image: url(../assets/photos/bridge.jpg);
+  background-image: url(../assets/photos/bridge_final.jpg);
   background-position: center;
   background-size: cover;
-  transform: scale(1.4);
+  transform: scale(1.2);
+  /* transform: scale(1.4); */
   transition: transform 0.5s ease-in 0.5s;
+  /* transition: transform 0.5s ease-in 0.5s; */
 }
 
 .loaded header::before{

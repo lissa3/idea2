@@ -15,7 +15,8 @@ const state = {
         thumbnailErr:null,
         nonFieldErrs:null,
         netWorkErr:null,
-        status500:null
+        status500:null,
+        status403:null
       },
     
 }
@@ -32,6 +33,7 @@ export const mutationTypes = {
     // network-problem
     NETWORK_PROBELM:'[EditIdea] NETWORK_PROBELM',
     STATUS_500:'[EditIdea] STATUS 500 SERVER ERROR',
+    STATUS_403:'[EditIdea] STATUS 403 SERVER ERROR',
     // temp loader
     STOP_LOADER:'[editIdea] STOP SUBMIT LOADER',
 }
@@ -73,7 +75,11 @@ const mutations = {
         state.isSubmitting=false
     },
     [mutationTypes.STATUS_500](state){
-        state.err500 = true    
+        state.status500 = true    
+        state.isSubmitting=false
+    },    
+    [mutationTypes.STATUS_403](state){
+        state.status403 = true    
         state.isSubmitting=false
     },    
       
@@ -152,13 +158,20 @@ const actions = {
                 servResp.status = err.response.status
                 console.log("500 error gets sent to vue page",servResp)
                 return servResp
-            } else{     
+            }else if(err.response.status === 403) {
+                commit(mutationTypes.STATUS_403)
+                // DONE  
+                servResp.status = err.response.status
+                console.log("403 error gets sent to vue page",servResp)
+                return servResp
+            }else{     
                 servResp.status = err.response.status
                 servResp.titleErr = err.response.data.title
                 servResp.leadTextErr = err.response.data.lead_text
                 servResp.mainTextErr = err.response.data.main_text
                 servResp.categErr = err.response.data.categ
-                servResp.tagsErr = err.response.data.detail||err.response.tags
+                // let op: dif combi error (tags,thumbnail)
+                servResp.tagsErr = err.response.data.detail|| response.tags
                 servResp.thumbnailErr = err.response.data.thumbnail
                 servResp.nonFieldErrs = err.response.data.non_field_errors
                 // servResp.removeFile = err.data.remove_file

@@ -12,8 +12,7 @@
                 <app-idea-form v-if="initialValues"
                   :categories ="categList" 
                   :initial-values="initialValues"
-                  :errors="servResp"
-                  
+                  :errors="servResp"                  
                   :is-submitting="isSubmitting"
                   @ideaSubmit="submitEd"
                 ></app-idea-form>
@@ -109,6 +108,13 @@ export default {
             this.servResp.featuredErr = resp.featuredErr
             this.servResp.thumbnail = resp.thumbnailErr
             this.servResp.nonFieldErr = resp.nonFieldErr
+            if(resp.status===403){
+              this.servResp.noPerms = {
+                noPermission:
+                "Sorry.You don't have permission to to this"
+              }
+              this.$router.push({name:'noPerms'})
+            }
             if(resp.status===400){              
               this.servResp.error400 = {
                 badRequest:
@@ -161,7 +167,8 @@ export default {
           ...mapState({
               isLoading:state=>state.ideaEdit.isLoading,
               isSubmitting: state=> state.ideaEdit.isSubmitting,
-              idea:state=>state.ideaEdit.idea
+              idea:state=>state.ideaEdit.idea,
+              errors:state=>state.ideaEdit.servErrs
               // validationErrors: state=>state.ideaCreative.servErrs,
               // tags:state=>state.ideaCreative.data
 

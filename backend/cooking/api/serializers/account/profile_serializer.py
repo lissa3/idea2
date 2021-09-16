@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Count
+# from django.db.models import Count
 
 from rest_framework import serializers as ser
 from profiles.models import Profile
@@ -7,6 +7,9 @@ from api.serializers.account.user_serializer import UserSerializer
 from timestamp.broadcast_utils.validators import validate_size
 
 User = get_user_model()
+
+import logging
+logger = logging.getLogger('upload')
 
 
 
@@ -47,10 +50,17 @@ class ProfileSerializer(ser.ModelSerializer):
             if self.instance.pk and img is None and del_previous_file: 
                 self.instance.image.delete()
                 print("deleted image from db ang aws s3")     
-        except:
-            print('in block except')        
-        # print("") 
-
+        except ValueError as e:
+                logger.warning(f'Value err in profile ser-er {e}')
+                print('Val err in profile ser-er',e)
+        except TypeError as e:
+                logger.warning(f'Type error in profile ser-er {e}')
+                print('Type error in ser-er',e)
+        except Exception as e:
+                logger.warning(f'General exception in profile ser-er {e}')
+                print('Val err in ser-er',e)      
+        finally:
+            pass         
         super().save(*args,**kwargs)
 
         

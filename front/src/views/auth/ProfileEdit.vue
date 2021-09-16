@@ -254,7 +254,7 @@ export default {
         console.log('inital path to uploaded img is:',this.$refs.file.value)
         let img = this.$refs.file.files[0]
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']
-        const MAX_SIZE = 50   //2000000
+        const MAX_SIZE = 2000000
         const tooBig = img.size > MAX_SIZE
         if(allowedTypes.includes(img.type)&&!tooBig){
           this.image = img

@@ -1,0 +1,26 @@
+Menu is pivotal element in smooth flow
+
+1. when Menu renders(mounted) => request to dj server GET with axios header Authorization: null or access jwt
+
+2. if resp 401 (un-auth-ed) = > repeat each 30 min a new request to dj server 
+
+2. if resp 200 (auth-ed) = > all user features for UI rendered in MENU
+ and then repeat a new request to the server (each 30 min) to get new access if refresh token is valid 
+otherwise logout via mutation
+
+
+// vue.js 
+
+//import jwt_decode from "jwt-decode";
+//function isRefreshValid(token){
+  //const {exp} = jwt_decode(token);
+  // console.log("isrefreshValid",exp > Math.ceil(Date.now() / 1000))
+  //return exp > Math.ceil(Date.now() / 1000);
+//}
+
+// js native
+
+const now = Math.ceil(Date.now()/1000)
+             console.log("now is ",now)
+             const tokenRefreshPayload = JSON.parse(atob(refreshToken.split('.')[1]));
+             const expTerm = tokenRefreshPayload.exp

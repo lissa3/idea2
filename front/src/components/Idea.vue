@@ -1,16 +1,22 @@
 <template>
     <div class="container">        
         <div v-if="isLoading"><app-loader></app-loader></div>
+        <div v-if="!ideasToDisplay&&!isLoading" 
+        class="not-found h-100 d-flex justify-content-center align-items-center"
+        >{{notFoundMsg}}</div>
+        
+
+        <!-- <div v-if="!ideasToDisplay">{{notFoundMsg}}</div>         -->
         <div  v-if="ideasToDisplay" class="wrapper">            
             <div class="row main-row" v-for="idea in ideas" :key="idea.id">
                 <div   class="col-lg-4 col-md-12 col-sm-12">
                     <div class="idea-img mb-2">
                         <div v-if="idea.thumbnail">                            
                             
-                            <img  :src="idea.thumbnail" alt="img idea" class="img-fluid">
+                            <img  :src="idea.thumbnail" alt="img idea" class="img-fluid" title="idea.title">
                         </div>
                         <div v-else>
-                            <img src="@/assets/photos/ava_cat.png" alt="img" class="img-fluid">
+                            <img src="@/assets/photos/ava_cat.jpg" alt="img" class="img-fluid">
                         </div>
                     </div>
                     <div class="row">
@@ -82,6 +88,14 @@
                 <div class="idea-main-text mb-2">
                     <p><strong>Lead text: </strong> {{idea.lead_text}}</p>
                 </div>
+                <div>
+                <div v-if="idea.users_comments" class="idea-main-text mb-2">
+                    <p><strong>Comments</strong> {{idea.users_comments}}</p>
+                </div>
+                <div v-else class="idea-main-text mb-2">
+                    <p><strong>No Comments</strong></p>
+                </div>
+                </div>
                 <div class="idea-read-more mb-2">
                     <router-link :to="{ name: 'ideaDetail',params:{slug:idea.slug} }"
                        class="idea-link">
@@ -101,7 +115,6 @@
               </div>
             </div>
         </div>        
-        <div v-if="!ideasToDisplay">{{notFoundMsg}}</div>        
         <div v-if="ideasToDisplay">
             <div >
                 <div class="col-lg-8 col-md-12 col-sm-12 pagination">
@@ -141,7 +154,7 @@ export default {
     name:'AppIdea',
     data(){
         return{
-            notFoundMsg:"Sorry. Nothing found at this moment",
+            notFoundMsg:"Sorry. No results at this moment",
             ideaLikes:0 
         }
     },
@@ -248,6 +261,14 @@ export default {
 }
 </script>
 <style>
+/* search without results msg */
+.not-found{
+    background-color: #e9ecefbf;
+    font-size: 2rem;
+
+
+}
+
 .main-row{
     margin:8%;
     background-color: blanchedalmond;

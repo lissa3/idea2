@@ -33,7 +33,7 @@ class CommentAPIView(CreateModelMixin,UpdateModelMixin,DestroyModelMixin,Retriev
 
     def perform_create(self, serializer):
         # print("self is",self)
-        print("self.data",self.request.data)
+        # print("self.data",self.request.data)
         # print("line 35 inside perform create",self.request.data)
         # user = self.request.user
         # print("line 35",user)
@@ -42,9 +42,9 @@ class CommentAPIView(CreateModelMixin,UpdateModelMixin,DestroyModelMixin,Retriev
         idea = get_object_or_404(Idea,id=self.request.data['idea'])
         parent = self.request.data.get('parent')
         if parent is not None:
-            print("parent not None")
-            print("parent is",parent)
-            print("idea is",idea)
+            # print("parent not None")
+            # print("parent is",parent)
+            # print("idea is",idea)
             comment_parent = get_object_or_404(Comment,id = parent,idea=idea)            
             recep_id = comment_parent.user_id 
         else:

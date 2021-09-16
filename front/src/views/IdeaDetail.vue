@@ -66,16 +66,18 @@
               <div class="card mb-4 box-shadow">
                 <div   class="col-lg-12 col-md-12 col-sm-12 px-0" >
                   <div class="mb-2">
-                         <div v-if="idea.thumbnail" class="">
+                    <div v-if="idea.thumbnail" class="">
                                                        
-                            <img  :src="idea.thumbnail" alt="img idea" class="rounded d-block  idea-img">                            
+                      <img  :src="idea.thumbnail" alt="img idea" class="rounded d-block  idea-img" title="idea.title">                            
                             <!-- <img  :src="idea.thumbnail" alt="img idea" class="idea-img">                             -->
                             <!-- <img  :src="idea.thumbnail" alt="img idea" class="rounded mx-auto d-block"> -->
-                        </div>
-                        <div v-else>
-                          <img class="card-img-top"  style="height: 225px; width: 100%; display: block;" src="../assets/logo.png" data-holder-rendered="true">                        
-                        </div>
+                    </div>                        
+                    <div v-else>
+                      <img src="@/assets/photos/ava_cat.jpg" alt="img" style=" width: 40%; display: block;"
+                      class="img-fluid">
                         
+                          <!-- <img class="card-img-top"  style="height: 225px; width: 100%; display: block;" src="../assets/logo.png" data-holder-rendered="true">                         -->
+                    </div>                        
                   </div>
                 </div>
                 <div class="d-flex justify-content-around mt-3 px-2 make-vertical">   
@@ -257,6 +259,8 @@ export default {
         }else if(resp.status ===404){
           console.log("404 not found")
           this.$router.push({name:'notFound'})
+        }else if(resp.status===500){
+          this.$router.push({name:'servErr'})
         }
       })      
     },
@@ -293,8 +297,13 @@ export default {
       this.makeModalVisible=false
       this.$store.dispatch(singleIdeaActionType.deleteIdea,{slug})
       .then((resp)=>{
-        console.log("idea deleted with status 204",resp.status)
-        this.$router.push({name:'ideaGeneral'})
+        if(resp.response.status===204){
+          console.log("idea deleted with status 204",resp.response.status)
+          this.$router.push({name:'ideaGeneral'})
+
+        }else if(resp.response.status===403){
+          this.$router.push({name:'noPerms'})
+        }
       }).catch(err=>console.log("err from component",err))
     },
     addToFollow(authorId){

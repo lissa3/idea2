@@ -33,20 +33,14 @@ class IdeasPerCategListView(generics.ListAPIView):
     
     def get_queryset(self):
         slug = self.kwargs.get('slug')
-        print("got a categ with slug:",slug)
-        categ = get_object_or_404(Category, slug=slug)
-        qs2 = Idea.objects.filter(categ = categ)
-        print("qs2",qs2)
+        categ = get_object_or_404(Category, slug=slug)       
         if categ.get_children():
-            print("categ has children")
-            print(categ.children.exists())
+            # print("categ has children")
+            # print(categ.children.exists())
             categ_descend = categ.get_descendants(include_self=True)
             qs = Idea.objects.filter(categ__in =categ_descend)
         else:
-            print("categ has no children")
             qs = Idea.objects.filter(categ=categ) 
-            print("qs line 86 len",qs) 
-        print("returning qs with len to tests",qs.count())      
         return qs 
 
      
@@ -56,12 +50,9 @@ class TagIdeasListSlug(generics.ListAPIView):
     serializer_class = IdeaSerializer
     permission_classes = (AllowAny,)
     
-    def get_queryset(self):
-        # print("inside  tag view on idea slug")
+    def get_queryset(self):        
         slug = self.kwargs.get('slug')
-        if slug is not None:
-            # result = Idea.objects.filter(tags__slug__in=(slug,))
-            # print("result is", result)
+        if slug is not None:            
             return Idea.objects.filter(tags__slug__in=(slug,))
         else:
             return Response(status=400)

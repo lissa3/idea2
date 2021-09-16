@@ -3,7 +3,8 @@ import ideaAPI from '@/api/idea'
 const state = {
     data:null,
     isLoading:false,
-    error:null,    
+    error:null,
+    status403:null    
     
 }
 
@@ -15,6 +16,7 @@ export const mutationTypes = {
     DELETE_IDEA_LOADING:'[single idea] DELETE idea start',
     DELETE_IDEA_SUCCESS:'[single idea] DELETE idea success',
     DELETE_IDEA_FAILURE:'[single idea] DELETE idea failure',
+    STATUS_403:'[single idea] status 403 No perms',
 
     LIKE_START:'[single idea] GIVE like start',
     SET_LIKE_SUCCESS:'[single idea] UPDATE like idea success',
@@ -57,22 +59,28 @@ const mutations = {
         state.data = null
     }, 
     [mutationTypes.DELETE_IDEA_FAILURE](state,err){
+        state.isLoading = false
         state.error = err
+        state.status403 = true
+    },
+    [mutationTypes.STATUS_403](state){
+        state.isLoading = false       
+        state.status403 = true
     },
     [mutationTypes.LIKE_START](state){},
     [mutationTypes.SET_LIKE_SUCCESS](state){},
     [mutationTypes.LIKE_FAILURE](state,err){
-        state.error,err
+        state.error=err
     },
     [mutationTypes.GET_INITIAL_LIKE_START](){},
     [mutationTypes.GET_INITIAL_LIKE_SUCCESS](){},
     [mutationTypes.GET_INITIAL_LIKE_FAILURE](state,err){
-        state.error,err
+        state.error=err
     },
     [mutationTypes.RATING_START](state){},
     [mutationTypes.SET_RATING_SUCCESS](state){},
     [mutationTypes.RATING_FAILURE](state,err){
-        state.error,err
+        state.error=err
     },       
     
 }
@@ -104,9 +112,12 @@ const actions = {
             commit(mutationTypes.DELETE_IDEA_SUCCESS)                        
             return resp           
         } catch(err){
-            console.log("error by deleteIdea request",err)
+            console.log("error by deleteIdea request",Object.keys(err))
+            console.log("error by deleteIdea request",err.response.status)
             // example: incorrect url in request ot dj server
             commit(mutationTypes.DELETE_IDEA_FAILURE,err)        
+            commit(mutationTypes.STATUS_403)  
+            return err      
         }          
     },
     // async [actionTypes.register]({commit},creds){
