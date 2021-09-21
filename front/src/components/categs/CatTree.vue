@@ -5,7 +5,7 @@
  <!-- render categs children if present        -->
         <div v-if="node.children && node.children.length" class="left-shift">
           <!-- <div v-if="tree.children.length > 0" class="left-shift"> -->
-            <div v-if="node.name">{{node.name}}</div>           
+            <!-- <div v-if="node.name">{{node.name}}</div>            -->
           <app-node-tree
             :name="node.name"
             :children="node.children"

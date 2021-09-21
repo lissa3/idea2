@@ -133,13 +133,11 @@ see computed -->
 import {mapGetters} from 'vuex'
 import {getterTypes} from '@/store/modules/auth'
 import AppCommentForm from '@/components/comments/CommentForm.vue'
-// import AppDeleteCommentConfirmation from '@/components/Modal.vue'
-// import AppComment  from '@/components/comments/Comment'
+
 
 export default {
   components: { 
-    AppCommentForm,
-    // AppDeleteCommentConfirmation,    
+    AppCommentForm,      
     AppComment: () => import('@/components/comments/Comment')
     },
     data(){
@@ -171,17 +169,16 @@ export default {
     methods:{  
       // methods to pass id to the parent about current(active) comment    
         commReply(commId){
-            console.log("edit comment",commId)
+            
             this.makeButtonInvisible = true
             this.$emit('commReply',commId)
         },
         commEdit(commId){
-            // console.log("edit comment",commId)
+            
             this.makeButtonInvisible = true
             this.$emit('commEdit',commId)
         },
-        commDelete(commId){
-            // console.log('deleting comment',commId)
+        commDelete(commId){            
             this.makeButtonInvisible = true
             this.showConfirmDelete = false
             this.$emit('commDelete',commId)
@@ -189,24 +186,20 @@ export default {
         updateComment(commentBody){
           // attr 'body' edited in form
           //here attr 'id' added
-            console.log("editing data without id",commentBody)
             // check if commentBody does not have id ( otherwise perm denied)=> goes to recurs level 
             // and will change id for parent id
             if(!commentBody.id){
               commentBody.id=this.comment.id
 
             }
-            console.log("editing data after id ",commentBody)
+            
             this.$emit('updateComment',commentBody)
         },
-        replyComment(commentData){           
-            console.log("replying data",commentData)
-            // commentBody.parent=this.comment.id
-            console.log("replying data",commentData)
-            this.$emit('replyComment',commentData)
+        replyComment(commentData){          
+            
+          this.$emit('replyComment',commentData)
         },
         onSubmit(commentData){
-            console.log("submitting line 114")
             this.$emit('onSubmit',commentData)
         },
         handleCancel(){
@@ -214,7 +207,7 @@ export default {
             this.$emit('handleCancel')
         },
         close() {
-          console.log("closing modal");
+          
           this.showConfirmDelete = false;
         }, 
         showModal(){

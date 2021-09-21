@@ -20,8 +20,6 @@
 <script>
 
 import AppBanner from '@/components/Banner'
-// import {mapGetters} from 'vuex'
-// import {getterTypes} from '@/store/modules/auth'
 export default {
   name: 'AppHome',
   data(){
@@ -33,7 +31,6 @@ export default {
     AppBanner
   },
   mounted(){
-    console.log("elem is loaded")
     this.ready = true
   } 
 }

@@ -62,39 +62,28 @@ const mutations = {
 }
 const actions = {
     async [actionTypes.unFollowUser]({commit},userId){
-        console.log("inside action")
-        console.log("zzz",actionTypes.unFollowUser)
-        commit(mutationTypes.START_UNFOLLOW_LOADING)
-    //   commit(mutationTypes.RESET_NETWORK_PROBELM)     
-    //   commit(mutationTypes.RESET_STATUS_500)   
-    //   const servResp = {}       
+        commit(mutationTypes.START_UNFOLLOW_LOADING)         
         try{
-          const resp = await followAPI.unFollow(userId)
-          console.log("resp in store:",resp) 
+          const resp = await followAPI.unFollow(userId)          
           commit(mutationTypes.UNFOLLOW_SUCCESS) 
            return resp
-
         }
-        catch(err){
-            console.log("to vue err",err)
+        catch(err){            
             commit(mutationTypes.UNFOLLOW_FAILURE)
             return err
         }
     }, 
     async [actionTypes.addToFollowing]({commit},authorId){
-        console.log("line 73 store",authorId)
         commit(mutationTypes.START_ADD_FOLLOWING) 
         const servResp = {}        
         try{
           const resp = await followAPI.addToFollowing(authorId)
-          console.log("resp in store:",resp) 
           commit(mutationTypes.ADD_FOLLOWING_SUCCESS) 
           servResp.status = resp.status
           servResp.data = resp.data          
           return servResp
         }
         catch(err){
-            console.log("to vue err",err)
             servResp = err
             commit(mutationTypes.ADD_FOLLOWING_FAILURE)
             if(err.response === undefined){

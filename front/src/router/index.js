@@ -7,8 +7,9 @@ import store from "@/store";
 
 import Activate from '@/views/auth/Activate'
 import ConfirmEmail from '@/views/auth/ConfirmEmail'
-import Google from '@/views/auth/Google'
-import GoogleForm from '@/views/auth/GoogleForm'
+
+// import Google from '@/views/auth/Google'
+// import GoogleForm from '@/views/auth/GoogleForm'
 import Home from "@/views/Home";
 import IdeaGeneral from '@/views/IdeaGeneral'
 import IdeaSearch from '@/views/IdeaSearch'
@@ -16,8 +17,11 @@ import IdeaDetail from '@/views/IdeaDetail'
 import IdeaCreate from '@/views/IdeaCreate'
 import IdeaEdit from '@/views/IdeaEdit'
 import IdeaFilter from '@/views/IdeaFilter'
-import PersonalFeed from '@/views/PersonalFeed'
+import IdeasByTagSlug from '@/views/IdeasByTagSlug'
+import IdeasByTagName from '@/views/IdeasByTagName'
 import CategIdeas from '@/views/CategIdeas'
+import PersonalFeed from '@/views/PersonalFeed'
+// auth + profile
 import Login from '@/views/auth/Login'
 import SignUp from "@/views/auth/SignUp";
 import PswForgotStart from "@/views/auth/PswForgotStart"
@@ -28,8 +32,6 @@ import ProfileDetail from '@/views/auth/ProfileDetail'
 import AccountProfile from '@/views/auth/AccountProfile'
 import EditProfile from '@/views/auth/ProfileEdit'
 import DeleteAccount from '@/views/auth/DeleteAccount'
-import IdeasByTagSlug from '@/views/IdeasByTagSlug'
-import IdeasByTagName from '@/views/IdeasByTagName'
 import FollowList from '@/views/FollowList'
 import NotFound from '@/views/NotFound'
 import NoPerms from '@/views/NoPerms'
@@ -67,22 +69,7 @@ const routes = [
       public:true
     }
   },
-  {
-    path: "/google-login",
-    name: "google",
-    component: Google,
-    meta:{
-      public:true
-    }
-  },
-  {
-    path: "/google",
-    name: "google-form",
-    component: GoogleForm,
-    meta:{
-      public:true
-    }
-  },
+  
   {
     path: "/confirm-email-link/",
     name: "confirmEmail",
@@ -291,6 +278,22 @@ const routes = [
       public:true
     }
   },
+  // {
+  //   path: "/google-start",
+  //   name: "google",
+  //   component: Google,
+  //   meta:{
+  //     public:true
+  //   }
+  // },
+  // {
+  //   path: "/google",
+  //   name: "google-form",
+  //   component: GoogleForm,
+  //   meta:{
+  //     public:true
+  //   }
+  //},
 ]
 /* 
 11.07.2021 : problem can't go back from not found page

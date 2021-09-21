@@ -12,16 +12,7 @@
             
             </b-form-select>
         </b-form-group> 
-        <!-- <div class="input-group mb-3">
-             <div class="input-group-prepend">
-                <label class="input-group-text" for="inpSelect">Categories</label>
-            </div>
-            <select class="custom-select" id="inputSelect">
-                <option selected>Choose a category,please</option>
-                <option v-for="opt in setCategNames" :key="opt.id" :value="opt.value">{{opt.text}}</option>
-                
-            </select>
-        </div> -->
+        
         
       </div>
 </template>         
@@ -47,7 +38,6 @@
         
         methods:{
             catVal(){
-                // this.category 'number'
                 this.$emit('getCateg', this.getCateg);
             }
         },

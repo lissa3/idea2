@@ -172,7 +172,7 @@
 <!-- buttons group -->
             <b-row class="text-center mt-4">
               <b-col cols="6">
-                <b-button type="submit"  variant="success" :disabled="$v.$invalid && $v.$error||!this.checkSelected">Sign Up</b-button>
+                <b-button type="submit"  variant="success" :disabled="$v.$invalid && $v.$error||!this.checkSelected">Save</b-button>
               </b-col >
               <b-col cols="6">
                 <b-button type="reset" variant="danger" @click="getRidErr">Reset</b-button>
@@ -180,10 +180,14 @@
               </b-col>
             </b-row>              
           </b-form> 
-          <p class="mt-3">
-            Already have an account? <router-link to="/login">Login</router-link>
-          </p>  
+          
       </div>
+      <div class="d-flex justify-content-between">
+         <p class="mt-3">
+            Already have an account? <router-link to="/login">Login</router-link>
+          </p> 
+      <!-- <button class="btn btn-success btn-lg" @click="goGoogle">Continue with Google</button> -->
+    </div>
     </div>
     </div> 
 </template>
@@ -353,7 +357,8 @@ export default {
       this.servResp.pswErr=null      
       this.servResp.netWorkErr=null      
       this.servResp.err500=null      
-    }    
+    },
+    
     
   },
   created(){

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <section >             
+        <section>             
             <div v-if="tags" class="tag-list">                
                 <router-link v-for="tag in tags" :key="tag.id" :to="{name:'ideasByName',params:{name:tag}}" class="tag">
                     <b-badge variant="secondary" class="tag px-2 mx-1">{{tag}}</b-badge>          
@@ -19,12 +19,7 @@ export default {
         type:Array
       },
     },
-    // methods:{
-    //     showIdeasForTag(tag){
-    //         console.log("user wants ideas for the tag with name",tag)
-
-    //     }
-    // }  
+    
    
 }
 </script>

@@ -12,21 +12,14 @@ class User(AbstractUser):
     login: email
     """
     username = models.CharField(_("Username"), unique=True, max_length=120)
+    # first_name = models.CharField(_('first_name'),max_length=120,default='',blank=True)
+    # last_name = models.CharField(_('last_name'),max_length=120,default='',blank=True)
     email = models.EmailField(_('Email address'), unique=True, max_length=255)
     date_joined = models.DateTimeField(default=timezone.now)
     is_banned = models.BooleanField(default=False)
     blackListEmail = models.BooleanField(default=False)
     # uuid = models.UUIDField(db_index=True, unique=True, default=uuid.uuid4)
-    # TODO: check flow signup active via admin vs front (djoser)
-    # subscribers = models.ManyToManyField(
-    #             'self',related_name = 'subscriptions',symmetrical=False,blank=True)
-    # show_notifications = models.BooleanFieled(default=True)
-    # show_subscription_notif =  models.BooleanFieled(default=True)
-
-    # def in_subscribers(self,user):
-    #     return user.id in self.subscribers.values_list('id',flat=True)
-
-    
+        
     USERNAME_FIELD = 'email'
 
     # REQUIRED_FIELDS: to create superuser: list containing other fields than UUSERNAME_FIELD
@@ -39,4 +32,9 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+    def get_name(self):
+        if self.first_name and self.last_name:
+            return f'{self.first_name} {self.last_name}'   
+        else:
+            return self.username     
 

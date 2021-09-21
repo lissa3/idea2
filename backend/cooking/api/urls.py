@@ -10,8 +10,8 @@ from api.views_pack.tags_views import TagList, TagIdeasListName
 from api.views_pack.categs_views import CatListIdeaForm,CategoryList
 
 from api.views_pack.profile_views import (                    
-                    ProfileRetrUpdateDestrView,ProfileRetrView,                   
-                    UserDeleteAPIView, ShowFollowingRetrView,
+                    ProfileRetrUpdateDestroyView,ProfileRetrView,                   
+                    ShowFollowingRetrView,
                     RetrieveFollowers,UnFollowUser,FollowAuthorView,   
                     )
 from api.views_pack.comment_views import CommentAPIView,CommentListView                    
@@ -31,16 +31,16 @@ urlpatterns = [
     path('ideas-collection/', include(router.urls)),# ideas,relations,comments
     path('feed-ideas/<unid>/',IdeasFollowing.as_view(),name='user-following-ideas'),
     # private api for profile,userinfo (profile + user)
-    path('profile-owner/<unid>/', ProfileRetrUpdateDestrView.as_view(), name="profile-owner"),
+    path('profile-owner/<unid>/', ProfileRetrUpdateDestroyView.as_view(), name="profile-owner"),
     # public api profile
     path('profile-info/<pk>/', ProfileRetrView.as_view(), name="profile-info"),
+    # user account delete
+    # path('delete-account/<unid>/',UserDeleteAccountAPIView.as_view(),name="delete-account"),
     # tags
     path('tags/', TagList.as_view(), name="tags-list"),
     path('tags/<slug>/', TagIdeasListSlug.as_view(), name="tag-per-ideas-slug"),
     # TODO: may be all should be name?
     path('tags-name/<name>/', TagIdeasListName.as_view(), name="tag-per-ideas-name"),
-    # user account delete
-    path('delete-account/',UserDeleteAPIView.as_view(),name="delete-account"),
     # following smb
     path('following/<unid>/',ShowFollowingRetrView.as_view(),name='show-following'),
     path('followers/<id>/',RetrieveFollowers.as_view(),name='show-followers'), # add follow

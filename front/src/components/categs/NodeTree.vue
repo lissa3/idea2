@@ -55,7 +55,7 @@ export default {
 .tree-menu .label-wrapper {
   padding-bottom: 10px;
   margin-bottom: 10px;
-  border-bottom: 1px solid #ccc;
+  /* border-bottom: 1px solid #ccc; */
   cursor: pointer;
 }
 </style>>

@@ -112,17 +112,13 @@ export default {
             //console.log("parent delete comm ",commId)
             this.deleteComment(commId)
         },
-        openForm(){
-            console.log("open form")
+        openForm(){            
             this.goWrite = true
-            this.activeComment={id:null,type:'writing'}
-             
+            this.activeComment={id:null,type:'writing'}             
         },        
         
-        handleCancel(){
-            console.log("cancel signal from NOT root components")
-            this.activeComment = null
-            
+        handleCancel(){            
+            this.activeComment = null            
         }, 
         handleCancelRoot(){
             console.log("root cancel")
@@ -131,27 +127,24 @@ export default {
             this.goWrite=false
         }, 
         replyComment(replyComment){
-            console.log("adding reply com")        
-            console.log("line 99 data",replyComment)
-            console.log("parent is(line 100",replyComment.parent)            
+                     
             let commentData = {
                 body: replyComment.body,
                 idea:this.ideaId,
                 parent:replyComment.parent,
                 }
-                console.log("data",commentData)
+                
                 this.$store.dispatch(actionTypes.sendRootComm,commentData)
                 .then((resp)=>{
-                console.log("resp",resp)
+                
                 this.activeComment = null
-                console.log("replied done, active comment null")
+                
                 })
                 .catch(err=>console.log(err))    
         },       
         addRootComment(data){
             console.log("adding root comment...")        
             // let user = this.currentUser
-            console.log("line 92 data",data)            
             let commentData = {
                 body: data.body,
                 // user: user,
@@ -160,58 +153,42 @@ export default {
                 }
                 console.log("data",commentData)
                 this.$store.dispatch(actionTypes.sendRootComm,commentData)
-                .then((resp)=>{
-                console.log("resp",resp)
-                    if(resp.status===201){
-                        console.log("successfully created a new comment")
+                .then((resp)=>{                
+                    if(resp.status===201){                        
                         this.activeComment=null
                         this.cleanForm = true
-                        this.goWrite = false
-                        console.log("add root comment done, active comment null")
+                        this.goWrite = false                        
                     }
                     if(resp.status===400&&resp.body===undefined){
                         // from store custom msg(status:400,body:undefined)
-                        console.log("resp status",resp.status)                        
-                        console.log("resp status",resp.body)  
                         this.warning = 'comment can not be empty'                        
                         setTimeout(()=>{
                             this.warning = ''                    
                         },2000) 
-                    }
-                    
-                    })
+                    }                    
+                 })
                 .catch((err) =>{
-                    console.log('line 152 comment vue error:',err)
+                    console.log(err)
                     
                 })        
         },        
-        updateComment(data){
-            console.log("edit comm line 118 comments.vue",data) 
+        updateComment(data){            
             this.$store.dispatch(actionTypes.editComm,data)
-                .then((resp)=>{
-                console.log("resp",resp)
-                if(resp.status===403){
-                    console.log("permission denied")
-                    this.warning = "Permission denied"
-                }
-                    this.activeComment=null
-                    console.log("update comment done, active comment null")
+                .then((resp)=>{                
+                if(resp.status===403){                    
+                    this.warning = "Permission denied"                }
+                    this.activeComment=null                    
                 })
                 .catch(err=>console.log(err))        
         }, 
         deleteComment(commId){
-            console.log("sending request to the dj server to delete com",commId)
             this.$store.dispatch(actionTypes.deleteComm,commId)
             .then((resp)=>{
-                console.log(resp.status)                
-
+                console.log(resp)               
             })
             .catch(err=>console.log(err))
         },
-        isWriting(){
-            console.log('writing')
-            // return this.activeComment&&this.activeComment.id===null&&this.activeComment.type==='writing'
-    },           
+             
     },    
     computed:{
         ...mapState({
@@ -219,11 +196,10 @@ export default {
             error: state=>state.comments.error,
             comments:state=>state.comments.data,
             fladToRednder:state=>state.comments.flagRerender
-
         }),
          ...mapGetters({        
-            isLoggedIn:getterTypes.isLoggedIn,        
-        // foo: gT.fooProfile
+            isLoggedIn:getterTypes.isLoggedIn,       
+        
         }),
         getRootComms(){
             // console.log(this.comments.filter(comm=> comm.parent === null))

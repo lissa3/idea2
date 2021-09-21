@@ -1,5 +1,6 @@
 import authAPI from '@/api/auth'
 
+
 export const mutationTypes = {
   CLEAR_CREDS:'[auth] CLEAR_CREDS',
   PASS_EMAIL_POTENTIAL_USER:'[auth] PASS_EMAIL_POTENTIAL_USER',
@@ -37,6 +38,11 @@ export const mutationTypes = {
   START_DELETE_ACCOUNT:'[auth] DELETE account',
   DELETE_ACCOUNT_SUCCESS:'[auth] DELETE account success',
   DELETE_ACCOUNT_FAILURE:'[auth] SET_LOGIN_FAILURE',
+  // google flows
+   
+  START_GOOGLE_START:'[auth] SET_GOOGLE_fIRST_STEP',
+  START_GOOGLE_SUCCESS:'[auth] SET_GOOGLE_START_SUCCESS',
+  START_GOOGLE_FAILURE:'[auth] SET_GOOGEL_START_FAILURE'
   
 
 }
@@ -50,7 +56,8 @@ export const actionTypes = {
   setNewPswAfterForget:'[auth] setNewPswAfterForget',
   setNewPswAChange:'[auth] setNewPswAChange',
   deleteAccount:'[auth] delete user account',
-  fetchFreshAccessToken:'[auth] fetch new access with refresh token'
+  fetchFreshAccessToken:'[auth] fetch new access with refresh token',
+  registerGoogle:'[auth] first visit to Goole'
 
 }
 export const getterTypes = {
@@ -121,7 +128,6 @@ const mutations = {
     
   },
   [mutationTypes.PASS_EMAIL_POTENTIAL_USER](state,email) {
-    console.log("inside mutation PASS EMAIL POT USER with email",email)
     state.showEmail=email;
   },
   [ mutationTypes.REGISTER_SUCCESS](state){
@@ -152,9 +158,9 @@ const mutations = {
     localStorage.setItem("refreshToken",refresh)
     state.refreshToken = refresh
   },
-  [mutationTypes.GET_CURRENT_USER_START](state){
-    state.isLoading = true
-  },
+  // [mutationTypes.GET_CURRENT_USER_START](state){
+  //   state.isLoading = true
+  // },
   [mutationTypes.SET_CURRENT_USER](state,payload){
     state.isLoading = false    
     state.user = payload
@@ -219,8 +225,20 @@ const mutations = {
   [mutationTypes.SET_NEW_ACCESS_TOKEN_SUCCESS](){},
   [mutationTypes.FETCH_NEW_ACCESS_FAILURE](){
     state.noRespServer = true
-  }
-  
+  },
+  [mutationTypes.START_GOOGLE_START](state){   
+    state.isSubmitting = true     
+    
+  }, 
+    [mutationTypes.START_GOOGLE_SUCCESS](state){   
+      state.isSubmitting = false     
+      
+  }, 
+  [mutationTypes.START_GOOGLE_FAILURE](state){
+      state.isSubmitting = false
+      
+  },
+    
 }
 const actions = {
     async [actionTypes.register]({commit},creds){
@@ -229,20 +247,16 @@ const actions = {
       const servResp = {}       
         try{
           const resp = await authAPI.register(creds)        
-            //console.log("response is",resp) //.config,.data (f_name,l_name,email),status=201
+            
             servResp.status = resp.status;
             console.log('in store action register status is:',resp.status)
             servResp.email = resp.data.email; 
             servResp.status = 201    
             commit(mutationTypes.PASS_EMAIL_POTENTIAL_USER,resp.data.email); 
-            console.log("sending to vue",servResp)            
             return servResp
         }catch(err) {
-          // let op: don't set here check console.log(err.status because it can be undefined)
-          // console.log("auth sign up err:",err)
-          // console.log("auth sign up  err keys:",Object.keys(err))
-          // console.dir(err)
-          console.log(err)
+          // let op: don't set here check console.log(err.status because it can be undefined)         
+          
           commit(mutationTypes.REGISTER_FAILURE)
           if(err.response === undefined){
             // DONE
@@ -250,32 +264,24 @@ const actions = {
             servResp.servDown = true  
             return servResp         
           }else if(err.response.status ===400){
-            // DONE частично
-            console.dir(err)            
             servResp.status = err.response.status
             servResp.emailErr = err.response.data.email            
             servResp.usernameErr = err.response.data.username
             servResp.pswErr = err.response.data.password
             servResp.psw2Err = err.response.data.re_password
             servResp.nonFieldErr = err.response.data.non_field_errors
-            // console.log("sent to vue",servResp)
-            // console.log("sent to vue keys",Object.keys(servResp))
+            
             return servResp
                         
           }else if(err.response.status ===500){
-            commit(mutationTypes.STATUS_500)
-            // DONE  
-            servResp.status = err.response.status
-            console.log("sending to vue page",servResp)
+            commit(mutationTypes.STATUS_500)            
+            servResp.status = err.response.status            
             return servResp
-          }else if(err.response.status === 404){
-            console.log("page not found")
+          }else if(err.response.status === 404){            
             servResp.status=404
             return servResp
           }else{
-            console.log("Server can't be reach; check your internet connection, please")
-            servResp.status = 404
-            console.log("sending to vue page",servResp)
+            servResp.status = 404            
             return servResp
           }
         }  
@@ -291,12 +297,12 @@ const actions = {
       .then((resp)=>{
         // dj server response == 204        
         commit(mutationTypes.SET_CONFIRM);
-        //console.log("msg from store: email confirmed")
+        
         status = resp.status
         resolve(status)
       })
       .catch((err)=>{
-        //console.log("err during email confirmation");
+        
         status = err.response.status;
         commit('REGISTER_FAILURE')
         reject(status)
@@ -309,36 +315,30 @@ const actions = {
     try{
       const resp = await authAPI.login(creds) 
         commit(mutationTypes.RESET_NETWORK_PROBELM)     
-        commit(mutationTypes.RESET_STATUS_500)   
-        //console.log("got from server",resp) 
+        commit(mutationTypes.RESET_STATUS_500) 
+        
         if(resp.status ===200){   
-          console.log("making mutaions in store")     
+              
           commit(mutationTypes.SET_LOGIN_SUCCESS)  
           commit(mutationTypes.SET_ACCESS_TOKEN,resp.data.access)
           commit(mutationTypes.SET_REFRESH_TOKEN,resp.data.refresh)
         }
-        console.log("passing resp to component",resp)
-        console.log("calling for getUser for info")
-        // call for user data (user = {id,first_name,last_name,email})
+        
         servResp.status = resp.status
         servResp.data = resp.data   
         return resp
-    }  catch(err){
-        console.log("store passes this error to component:",err)           
+    }  catch(err){                 
         commit(mutationTypes.SET_LOGIN_FAILURE)
-        if(err.response === undefined){
-          // DONE
-          console.log("chec mutaion nwp?")
+        if(err.response === undefined){          
           commit(mutationTypes.NETWORK_PROBELM)
           servResp.servDown = true  
           return servResp         
         }else if(err.response.status ===500){
           commit(mutationTypes.STATUS_500)
-          // DONE  
+          
            return resp
         }else{
-          localStorage.clear()
-          //console.log("login failed and Local storage is cleaned")        
+          localStorage.clear()                
           return err
         }        
         
@@ -346,62 +346,54 @@ const actions = {
     
   },  
   async [actionTypes.getUser]({commit}){    
-    // data from djoser:userId,
-    //console.log("inside getUser")   
+   
+      
     try{
       // commit(mutationTypes.GET_CURRENT_USER_START)   
-      const resp= await authAPI.getUser()     
+      const resp= await authAPI.getUser()  
        
-          let user = resp.data             
+          let user = resp.data                   
           commit(mutationTypes.SET_CURRENT_USER,user)
           commit(mutationTypes.SET_LOG_IN) 
           commit(mutationTypes.SET_LOGIN_SUCCESS) 
-          console.log("passing resp to Menu",resp.status)
+          
           if(resp.status){
-            return resp.status     
-
+            return resp.status
           }
           else{
-            console.log("resp is undefined")
+            // console.log("resp is undefined")
             return resp
           }
         
-      }    
+      }   
       
       catch(err){
-        console.log("store line 364, err",err)
-        console.log("passing result of access toekn failure to Menu: err:",err)
+       
         commit(mutationTypes.GET_CURRENT_USER_FAILURE)
         // localStorage.clear()
         return err.response.status
       }
     },    
   async [actionTypes.signOut]({commit}){
-      //console.log("store starts sign out")
+      
       commit(mutationTypes.CLEAR_CREDS)
-      console.log("local storage is clear")
+      
   },
-  async [actionTypes.confirmEmailForgottenPsw]({commit},creds){   
-    // Sally2020#
-    console.log("inside 372 store")
+  async [actionTypes.confirmEmailForgottenPsw]({commit},creds){  
     commit(mutationTypes.START_CONFIRM_PSW_RESET) 
     const servResp = {}    
     try{
-      let email = {"email":creds.email}
-      console.log("to server email",creds)         
-      const resp = await authAPI.confirmEmailPswForget(email)
-      console.log("resp in auth.js",resp) 
+      let email = {"email":creds.email}             
+      const resp = await authAPI.confirmEmailPswForget(email)      
       commit(mutationTypes.EMAIL_EXIST_PSW_RESET,email)
       /* if email exists in db=> resp.status=204,data="" statusText="No content" */     
       return resp 
 
-    }catch(err){
-      console.log("where are my mutations?",err)
-      console.dir(err)
+    }catch(err){     
       // commit(mutationTypes.PASS_EMAIL_POTENTIAL_USER,null)
       commit(mutationTypes.SET_EMAIL_CONFIRM_PSW_RESET_FAILURE,creds.email)
       if(err.response === undefined){
-        commit(mutationTypes.NETWORK_ERROR)
+        commit(mutationTypes.NETWORK_PROBELM)
         // console.log("err resp",err.response)
         servResp.servDown = true
       }
@@ -416,8 +408,7 @@ const actions = {
     }
 
   },
-  async [actionTypes.setNewPswAfterForget]({commit},creds){
-    // Sally2020#
+  async [actionTypes.setNewPswAfterForget]({commit},creds){   
     commit(mutationTypes.START_CONFIRM_PSW_RESET) 
     const payload = {
       "new_password":creds.psw,
@@ -426,22 +417,19 @@ const actions = {
       "token":creds.token,
     };    
     try{
-      const resp = await authAPI.requestNewPsw(payload)
-          
-      commit(mutationTypes.RESET_NEW_PSW_SUCCESS)
-      console.log("resp success after forget",resp) 
+      const resp = await authAPI.requestNewPsw(payload)          
+      commit(mutationTypes.RESET_NEW_PSW_SUCCESS)       
       return resp
        
     }catch(err){
       commit(mutationTypes.RESET_NEW_PSW_FAILURE)
-      console.log("my arrorz:",err)
+      
       
     }
   },
   //requestChangePsw
-  async [actionTypes.setNewPswAChange]({commit},creds){
-    // Sally2020#
-    // console.log("line 300 with creds",creds)
+  async [actionTypes.setNewPswAChange]({commit},creds){   
+    
     commit(mutationTypes.START_CONFIRM_PSW_RESET)
     const servResp = {}      
     const payload = {
@@ -450,20 +438,15 @@ const actions = {
         "current_password":creds.currentPsw           
     }   
     try{      
-      // console.log("payload is",payload) 
-      const resp = await authAPI.requestChangePsw(payload)               
-      commit(mutationTypes.RESET_NEW_PSW_SUCCESS)      
-      // console.log("status is",resp.status) 
-      servResp.status = resp.status
-      // console.log("resp park:",servResp)
+       const resp = await authAPI.requestChangePsw(payload)               
+      commit(mutationTypes.RESET_NEW_PSW_SUCCESS)     
+      servResp.status = resp.status     
       return servResp
        
     }catch(err){
-      commit(mutationTypes.RESET_NEW_PSW_FAILURE)
-      // console.log("store auth.js err",Object.keys(err))
-      console.dir(err)
-      if(err.response === undefined){
-        console.log("err resp",err.response)
+      commit(mutationTypes.RESET_NEW_PSW_FAILURE)    
+      
+      if(err.response === undefined){        
         servResp.servDown = true
 
       }else{
@@ -473,17 +456,16 @@ const actions = {
         servResp.currentPsw = err.response.data.current_password,
         servResp.nonFieldErr = err.response.data.non_field_errors
       }
-      console.log("from store err obj",servResp)
+      
       return servResp
       
     }
   },
-  async [actionTypes.deleteAccount]({commit},{psw}){
-    console.log("store starts to delete account")
+  async [actionTypes.deleteAccount]({commit},data){   
+    
     const servResp = {}  
     try{      
-      console.log("try to del block")         
-      const resp = await authAPI.deleteAccount({"current_password":psw})      
+      const resp = await authAPI.deleteAccount(data)      
       commit(mutationTypes.DELETE_ACCOUNT_SUCCESS)
       servResp.status = resp.status
       return servResp 
@@ -494,36 +476,28 @@ const actions = {
     }catch(err){
       commit(mutationTypes.DELETE_ACCOUNT_FAILURE,err)      
       if(err.response === undefined){
-        // DONE
+        
         commit(mutationTypes.NETWORK_PROBELM)
         servResp.servDown = true  
         return servResp         
-      }else if(err.response.status ===400){
-        // DONE частично
-        // console.dir(err)            
+      }else if(err.response.status ===400){                 
         servResp.status = err.response.status             
-        servResp.pwsErr = err.response.data.current_password
+        servResp.pwsErr = err.response.data.current_password       
         
-        // console.log("sent to vue",servResp)
-        // console.log("sent to vue keys",Object.keys(servResp))
         return servResp
                     
-      }else if(err.response.status ===401){
-        // DONE частично
-        // console.dir(err)            
-        servResp.status = err.response.status             
-        // console.log("sent to vue",servResp)
-        // console.log("sent to vue keys",Object.keys(servResp))
+      }else if(err.response.status ===401){                   
+        servResp.status = err.response.status           
+        
         return servResp
                     
       }else if(err.response.status ===500){
         commit(mutationTypes. STATUS_500)
-        // DONE  
+       
         servResp.status = err.response.status
-        console.log("sending to vue page",servResp)
+        
         return servResp
-      }else if(err.response.status === 404){
-        console.log("page not found")
+      }else if(err.response.status === 404){        
         servResp.status=err.response.status
         return servResp
       }
@@ -532,24 +506,37 @@ const actions = {
     
 },
   async [actionTypes.fetchFreshAccessToken]({commit},refresh){
-    try{
+    try{     
       
-      console.log('store func line 531 asking for a new access token with refresh')
-      // console.log(authAPI.getNewAccessToken)
       const resp= await authAPI.getNewAccessToken({refresh:refresh})
       if(resp.status === 200){          
         let newAccess = resp.data.access  
-        console.log("line 525 data",newAccess)           
+                  
         commit(mutationTypes.SET_ACCESS_TOKEN,newAccess)        
         commit(mutationTypes.SET_NEW_ACCESS_TOKEN_SUCCESS) 
         return resp      
-        }  
-      
+        }       
 
     }catch(err){
       commit(mutationTypes.FETCH_NEW_ACCESS_FAILURE) 
-      console.log('error during fetching new access token')
+      
+      return err
     }
+
+  },
+  async [actionTypes.registerGoogle]({commit}){
+    
+    commit(mutationTypes.START_GOOGLE_START)
+    try{
+      const resp = await authAPI.registerGoogle()    
+      commit(mutationTypes.START_GOOGLE_SUCCESS) 
+      
+      return resp    
+  }catch(err){
+    commit(mutationTypes.START_GOOGLE_FAILURE) 
+    
+    return err
+  }
 
   }
   

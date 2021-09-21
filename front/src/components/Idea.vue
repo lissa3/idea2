@@ -92,7 +92,7 @@
                 <div v-if="idea.users_comments" class="idea-main-text mb-2">
                     <p><strong>Comments</strong> {{idea.users_comments}}</p>
                 </div>
-                <div v-else class="idea-main-text mb-2">
+                <div v-else class="idea-main-text mb-2 ">
                     <p><strong>No Comments</strong></p>
                 </div>
                 </div>
@@ -139,10 +139,6 @@ import {mapState,mapGetters} from 'vuex'
 import {actionTypes} from '@/store/modules/ideas'
 
 import {getterTypes as authGetterTypes} from '@/store/modules/auth'
-
-
-
-// import {actionTypes as singleIdeaActionType} from '@/store/modules/singleIdea'
 import {limit} from '@/helpers/vars'
 import  AppPagination from '@/components/Pagination'
 import AppLoader from '@/components/Loader'
@@ -185,7 +181,7 @@ export default {
            isAnonymous:authGetterTypes.isAnonymous
         }),
         baseUrl() {
-        //  console.log("route.path is",this.$route.path)
+        
          return this.$route.path
         },
         currentPage() {
@@ -206,7 +202,6 @@ export default {
     },    
     watch: {
         currentPage() {
-            // console.log("watcher here; see changes")
             this.fetchIdeas()
         },
          baseUrl(){
@@ -220,7 +215,6 @@ export default {
     },
     methods:{
         fetchIdeas(){
-            // console.log("looking for idease...")
             const parsedUrl = parseUrl(this.apiUrl)
             // console.log("step 1 parsed url:",parsedUrl)
             // console.log("parsedUrl",parsedUrl)
@@ -234,14 +228,8 @@ export default {
             })
             const apiUrlWithParams = `${parsedUrl.url}?${stringifiedParams}`
             
-            // console.log("calling store func for request")           
-            //this.$store.dispatch(actionTypes.getIdeas, {apiUrl: this.apiUrl})       
             this.$store.dispatch(actionTypes.getIdeas, {apiUrl: apiUrlWithParams})
-            //.then((resp)=>{
-            //    console.log("Ok")
-                // console.log("resp.data",resp.data)
-           // })
-            // .catch(err=>console.log("getIdea error",err))       
+                  
             },
         
     },    
@@ -265,6 +253,7 @@ export default {
 .not-found{
     background-color: #e9ecefbf;
     font-size: 2rem;
+    
 
 
 }

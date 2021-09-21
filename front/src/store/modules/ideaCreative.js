@@ -56,31 +56,24 @@ const mutations = {
 }
 const actions = {    
     async [actionTypes.createIdea]({commit},ideaInput){
-        console.log("store dispatching create ideas")
         commit(mutationTypes.CREATE_IDEA_START);
         const servResp = {}
         try{
            // let op: you can get resp.data already ( see api) if you want            
-           const resp = await ideaAPI.createIdea(ideaInput)  
-            console.log("response from create:",resp)
+           const resp = await ideaAPI.createIdea(ideaInput)             
             commit(mutationTypes.CREATE_IDEA_SUCCESS)  
             servResp.slug = resp.data.slug 
-            servResp.status = 201
-            console.log("to vue",servResp)                     
+            servResp.status = 201                                
             return servResp           
-        } catch(err){
-            console.dir(err)
+        } catch(err){            
             // servResp.status = err.response.status
             if(err.response === undefined){
-                // DONE
                 commit(mutationTypes.NETWORK_PROBELM)
                 servResp.servDown = true  
                 return servResp
             }else if(err.response.status === 500) {
-                commit(mutationTypes.STATUS_500)
-                // DONE  
-                servResp.status = err.response.status
-                console.log("500 error gets sent to vue page",servResp)
+                commit(mutationTypes.STATUS_500)                  
+                servResp.status = err.response.status                
                 return servResp
             } else{     
                 servResp.status = err.response.status
@@ -91,9 +84,7 @@ const actions = {
                 servResp.mainTextErr = err.response.data.main_text
                 servResp.tagsErr = err.response.data.detail||err.response.tags
                 servResp.thumbnailErr = err.response.data.thumbnail
-                servResp.nonFieldErrs = err.response.data.non_field_errors
-                console.log("error by create Idea request",err)
-                console.dir(err)
+                servResp.nonFieldErrs = err.response.data.non_field_errors                
                 // example: incorrect url in request ot dj server            
                 commit(mutationTypes.CREATE_IDEA_FAILURE)  
                 return servResp

@@ -4,7 +4,7 @@
         
         <app-toggle-feed></app-toggle-feed>
         <div class="row py-3">
-          <div class="col col-md-2 py-3">
+          <div class="col col-md-2 py-3 color">
             <section class="categs-space">
               <app-categs></app-categs>
             </section>
@@ -12,7 +12,7 @@
           <div class="col col-md-8 py-3">
             <app-idea :api-url="getApiUrl"></app-idea>
           </div>
-          <div class="col col-md-2 py-3">
+          <div class="col col-md-2 py-3 color">
             <section class="tags-space">             
             <app-tags></app-tags>
             </section>
@@ -39,9 +39,7 @@ export default {
     computed:{
          ...mapGetters({
         currentUser:getterTypes.currentUser,
-        //isLoggedIn:getterTypes.isLoggedIn,
-        // isAnonymous:getterTypes.isAnonymous,
-        
+                
         }),
         getApiUrl(){
             return `/api/v1/feed-ideas/${this.currentUser.unid}/`

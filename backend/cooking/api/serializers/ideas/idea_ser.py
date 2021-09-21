@@ -91,15 +91,76 @@ class IdeaSerializer(TaggitSerializer, ser.ModelSerializer):
             pass         
         super().save(*args,**kwargs)  
 
+"""
 
+def create(self, validated_data):
+        user = validated_data["user"]
+        return settings.SOCIAL_AUTH_TOKEN_STRATEGY.obtain(user)
+
+    def validate(self, attrs):
+        request = self.context["request"]
+        if "state" in request.GET:
+            print("found state in request; passing it to dunder ")
+            self._validate_state(request.GET["state"])
+            print("line 23 -Done")
+
+        strategy = load_strategy(request)
+        print("line 26",dir(strategy))
+        print("line 27 dict",strategy.__dict__)
+        redirect_uri = strategy.session_get("redirect_uri")
+
+        backend_name = self.context["view"].kwargs["provider"]
+        backend = load_backend(strategy, backend_name, redirect_uri=redirect_uri)
+
+        try:
+            user = backend.auth_complete()
+        except exceptions.AuthException as e:
+            raise serializers.ValidationError(str(e))
+        return {"user": user}
+
+    def _validate_state(self, value):
+        request = self.context["request"]
+        strategy = load_strategy(request)
+        print("line 42",strategy.__dict__)
+        redirect_uri = strategy.session_get("redirect_uri")
+        print("redirect uri line 40",redirect_uri)
+
+        backend_name = self.context["view"].kwargs["provider"]
+        print("line 43 backend name",backend_name)
+        backend = load_backend(strategy, backend_name, redirect_uri=redirect_uri)
+        print("45 line backend",backend)
+
+        try:
+            backend.validate_state()
+            print("Done")
+        except exceptions.AuthMissingParameter:
+            raise serializers.ValidationError(
+                "State could not be found in request data."
+            )
+        except exceptions.AuthStateMissing:
+            raise serializers.ValidationError(
+                "State could not be found in server-side session data."
+            )
+        except exceptions.AuthStateForbidden:
+            raise serializers.ValidationError("Invalid state has been provided.")
+
+        return value
+        
+    def validate(self, attrs):
+        user_email_service = attrs.get("email").split('@')[1]
+        email_service_is_trusted = TrustedRegistrationEmail.objects.filter(service_domain=user_email_service).exists()
+        if not email_service_is_trusted:
+            raise serializers.ValidationError(
+                {"email": ["Your email service is not allowed for register"]}
+            )
+        return super().validate(attrs)
+    
+
+
+"""
     
      
 
-    
-"""
-line 47 in save method of ser-er self.instance is: Balcon
-line 52 inst dict is: {'_state': <django.db.models.base.ModelState object at 0x7fb616f7dc10>, 'id': 22, 'created_at': datetime.datetime(2021, 9, 3, 11, 37, 9, 25508, tzinfo=<UTC>), 'updated_at': datetime.datetime(2021, 9, 3, 12, 8, 17, 245790, tzinfo=<UTC>), 'author_id': 1, 'categ_id': 7, 'title': 'Balcon', 'slug': 'balcon', 'lead_text': 'Verzorgen', 'main_text': 'Met water en zo', 'view_count': 0, 'thumbnail': '', 'featured': False, 'is_public': True, 'status': 0, 'avg_rate': None, 'an_likes': 0, 'max_rating': None, 'remove_file': False, '_prefetched_objects_cache': {'tags': <QuerySet []>}}
-before save {'_state': <django.db.models.base.ModelState object at 0x7fb616f7dc10>, 'id': 22, 'created_at': datetime.datetime(2021, 9, 3, 11, 37, 9, 25508, tzinfo=<UTC>), 'updated_at': datetime.datetime(2021, 9, 3, 12, 8, 17, 245790, tzinfo=<UTC>), 'author_id': 1, 'categ_id': 7, 'title': 'Balcon', 'slug': 'balcon', 'lead_text': 'Verzorgen', 'main_text': 'Met water en zo', 'view_count': 0, 'thumbnail': <ImageFieldFile: None>, 'featured': False, 'is_public': True, 'status': 0, 'avg_rate': None, 'an_likes': 0, 'max_rating': None, 'remove_file': False, '_prefetched_objects_cache': {'tags': <QuerySet []>}}
-"""
+  
 
     

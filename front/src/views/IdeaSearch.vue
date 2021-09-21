@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid">
-      <h3 class="mb-4 text-center">This is a main idea place</h3>
+      <h3 class="mb-3 mt-2 text-center">Search results</h3>
         <div class="row py-3">
           <div class="col col-md-2 py-3">
             <!-- <div><app-loader></app-loader></div> -->
@@ -8,7 +8,7 @@
               <app-categs></app-categs>
             </section>
           </div>
-          <div class="col col-md-8 py-3">
+          <div class="col col-md-8 py-3 px-0">
             <app-idea :api-url="apiUrl"></app-idea>
           </div>
           <div class="col col-md-2 py-3">

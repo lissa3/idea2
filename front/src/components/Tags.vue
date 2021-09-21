@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="color fill-color pl-1">
         <section >
             <h3>Tags: </h3>
             <div v-if="isLoading"><app-loader></app-loader></div>        
@@ -45,7 +45,7 @@ export default {
 .tag-list{
     display: flex;
     flex-direction: row;
-    justify-content: right;
+    justify-content: left;
     flex-wrap: wrap;
     
 }
@@ -56,4 +56,8 @@ export default {
 .tag:hover{
     cursor: pointer;
 }
+.color{
+    background-color: #ffebcd;
+}
+
 </style>

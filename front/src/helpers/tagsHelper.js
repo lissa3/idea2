@@ -9,14 +9,13 @@
 
 const  tagsHelp ={
     trimInputTag(initialString) {
-        console.log('initial tags str',initialString)
-      // get str input(items separ by ',') and return an cleaned string with items
+        // get str input(items separ by ',') and return an cleaned string with items
       let idxLastComma = initialString.lastIndexOf(",");
       // get rid of possible , at the ens of input
       if (initialString.lastIndexOf(",") === initialString.length - 1) {
           console.log("inside if ")
         initialString = initialString.substr(0, idxLastComma).toLowerCase();
-        console.log("result is",initialString)
+        
       } 
       initialString.toLowerCase();
       let arrFromSplitStr = initialString.split(",");
@@ -33,10 +32,8 @@ const  tagsHelp ={
       //get tag arr and return str where tags separated by ',' 
       let collector = "";
       arrTags.forEach((item) => {
-        console.log("item from convert is",item)
         collector += `${item.trim()},`;
       });
-      console.log("Done, got a string",collector)
       return collector;
     }
   }

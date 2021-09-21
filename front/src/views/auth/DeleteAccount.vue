@@ -6,9 +6,9 @@
             <b-icon icon="exclamation-circle-fill" variant="danger"></b-icon>        
         </div>      
             
-        <div v-if="successMsg" class="successMsg col-md-12">
-            <b-icon icon="three-dots" animation="cylon" font-scale="4"></b-icon>  {{successMsg}} 
-            <b-icon icon="exclamation-circle-fill" variant="info"></b-icon>
+        <div v-if="successMsg" class="successMsg col-md-12 mt-5 mb-3">
+            <p>{{successMsg}}</p> 
+            <!-- <b-icon icon="exclamation-circle-fill" variant="info"></b-icon> -->
         </div>
         </div>
          <div class="row">            
@@ -16,34 +16,19 @@
                 <div class='container'>
                     <div v-if="isLoading"><app-loader></app-loader></div>
                     <div class="wrapper">
-                        <h1>To delete your account you need to enter your password:</h1>                        
+                        <h2>Do you really want to delete your account?</h2>                        
                         <b-form @submit.prevent="requestDeleteAccount">
-<!-- current password -->
-                            <b-form-group id="input-group-2" class="required">          
-                                <label id="input-group-2" class="control-label">Current password</label> 
-                                <div class="row border">
-                                    <div class="col-md-10 sync">
-                                    <b-form-input
-                                        id="input-2"
-                                        class="search-text"
-                                        autocomplete="off"
-                                        v-model.trim="currentPsw"
-                                        type="password"
-                                               
-                                    >
-                                    <!-- @blur="$v.currentPsw.$touch()"
-                                        :class="{ 'is-invalid warning': this.$v.currentPsw.$error }"    -->
-                                    </b-form-input>
-                                    </div>
-                                    <!-- <div class="col-md-2  pt-1 point-it">
-                                    <span ><b-icon-eye @click="toggleShowPws" /></span>
-                                </div> -->
-                                </div>
-<!--psw front side errors  -->
-                           <!-- <b-form-invalid-feedback v-if="currentPswRequired" 
-                            >{{ fieldRequired }}
-                            </b-form-invalid-feedback>     -->
-<!--psw serv side errors  -->
+                            <div class="d-flex justify-content-between">
+                            <b-col cols="6">
+                            <b-button type="submit" variant="outline-danger">Yes, delete my account</b-button>                            
+                            </b-col >              
+                            <b-col cols=6>
+                                <router-link :to="{ name: 'home' }" class="btn btn-outline-success" 
+                                >No</router-link>
+                            </b-col>
+                               
+                            </div>
+
                             <div class="errMsg" v-if="servErr.currentPsw">
                                 
                             </div>
@@ -55,11 +40,11 @@
                                 </ul>
                             </div>     
 
-                        </b-form-group>
+                        
 
 <!-- django server is down -->
 <!-- {{servErr}} -->
-                        <div v-if="servErr.servDown" class="warn col-md-12 mb-3">
+                        <div v-if="servErr.servDown" class="warn col-md-12 mb-3 mt-5">
                             Error message: {{servDownMsg}}
                             <b-icon icon="exclamation-circle-fill" variant="danger"></b-icon>        
                         </div>  
@@ -67,15 +52,8 @@
                         <div class="px-1">{{unauthMsg}}</div>
                         </div>
 <!-- buttons group -->
-                    <b-row class="text-center mt-4">
-                        <b-col cols="6">
-                            <b-button type="submit"  variant="outline-danger">Delete</b-button>                            
-                        </b-col >                       
-                        <b-col cols=6>
-                            <router-link :to="{ name: 'home' }" class="btn btn-outline-success" 
-                            >Go home</router-link>
-                        </b-col>
-                    </b-row>    
+                                          
+                     
                 </b-form>  
 <!--go home!--  -->
                
@@ -86,8 +64,11 @@
     </div>
 </template>
 <script>
+import {mapState,mapMutations,mapGetters} from 'vuex'
+
 import {actionTypes} from '@/store/modules/auth'
-import {mapState} from 'vuex'
+import {getterTypes} from '@/store/modules/auth'
+import {mutationTypes} from '@/store/modules/auth'
 import AppLoader from '@/components/Loader'
 export default {
     name:'AppDeleteAccount',
@@ -107,36 +88,25 @@ export default {
             servErr:{servDown:false},
             servDownMsg:'Sorry. Our server"s exper temp problems.Try again a little bit later',            
             tokenExp:false,
-            unauthMsg:'Sorry your login session is expired.Please login agaon',                     
+            unauthMsg:'Sorry your login session is expired.Please login again',                     
             
         }
-    },
-    // validations: {
-    //     currentPsw:{required},
-    //     newPsw: {
-    //     required,
-    //     minLength: minLength(8),
-    //     maxLength: maxLength(128),
-    //     },
-        
-    // },
+    },    
     computed:{
         ...mapState({
-            isLoading:state=>state.auth.isLoading,                                       
+            isLoading:state=>state.auth.isLoading,                                                  
            
         }),
-        // formInValid() {
-        //     return this.$v.$invalid
-        // },        
-        // currentPswRequired() {
-        // return this.$v.currentPsw.$dirty && !this.$v.currentPsw.required;
-        // },        
+        ...mapGetters({
+            currentUser:getterTypes.currentUser            
+      }),
+                
     },
     methods:{
-        requestDeleteAccount(){           
-            this.$store.dispatch(actionTypes.deleteAccount,{
-                currentPsw:this.currentPsw,                
-            })
+        requestDeleteAccount(){  
+            const data = this.currentUser.unid  
+            console.log("data line 114: del account",data)   
+            this.$store.dispatch(actionTypes.deleteAccount,data)
             .then((resp)=>{
                 // also for servErr's
                 console.log("in  vue",resp)
@@ -147,15 +117,22 @@ export default {
                 }else if(resp.status === 204){
                     console.log("account deleted, re-directing to home");
                     this.successMsg = "Your account has been deleted"
+                    this.$store.commit(mutationTypes.CLEAR_CREDS)
+                    console.log("Ls clean")
                     setTimeout(()=>{
-                        this.$router.push({name:"home"});  
+                        this.$router.push({name:"home"}); 
+                        window.location.reload() 
                                          
-                    },5000)
+                    },1000)
                      
                 }else if(resp.status===401){
                     console.log("status 401 unauth-ed",resp.status)                                      
                     this.tokenExp = true                
                    
+                }else if(resp.status ===403){
+                    console.log("status 403.Forbidden")
+                    this.errorMsg = "Permission denied"
+                    return
                 }else if(resp.status===400){
                     console.log("status 400 calling",resp.status)
                     // let msg = resp.pswErr
@@ -165,7 +142,7 @@ export default {
                 // incorrect psw => page not found 404 !
                 console.log(Object.keys(err))
                 console.log("final err",err)
-                this.errorMsg = "Something went wrong during password change. Be sure that you use a correct password" 
+                this.errorMsg = "Something went wrong during password change.Please try a little bit later" 
                 
             })            
         },

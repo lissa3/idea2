@@ -10,6 +10,7 @@
 <!-- form             -->
             <div class="col-xs-12 col-md-10 py-3 text-center offset-md-1">            
                 <app-idea-form v-if="initialValues"
+                  :action="edit"
                   :categories ="categList" 
                   :initial-values="initialValues"
                   :errors="servResp"                  
@@ -54,6 +55,7 @@ export default {
       categList:[],
       // initial values should be computed property
       // only categ field should be pre-filled      
+      edit:'edit',
       servResp:{
           status:null,
           categErr:null,
@@ -77,14 +79,11 @@ export default {
   },
   methods:{   
     submitEd(ideaInput){      
-      const slug = this.$route.params.slug 
-     console.log("idea input is:",ideaInput)    
-     console.log("idea input is:",Object.keys(ideaInput))
+      const slug = this.$route.params.slug
+     
     // this.$store.dispatch(singleIdeaActionType.getIdea,{slug:this.$route.params.slug}) 
      this.$store.dispatch(ideaActionType.editIdea,{slug,ideaInput})
-     .then((resp)=>{
-       console.log("status",resp.status)
-       console.log("resp",resp)
+     .then((resp)=>{       
        if(resp.status ===200){
         this.loadImg = true
          setTimeout(()=>{           
@@ -98,7 +97,6 @@ export default {
        }else if(resp.status === 500){
          this.servResp.netWorkErr = 'A server/network error occured.Sorry about this - we will get it fixed shortly.'
        }else{
-         console.log("err response in vue",resp)
             // this.servResp.status = resp.status
             this.servResp.categErr = resp.categErr
             this.servResp.titleErr = resp.titleErr
@@ -136,10 +134,8 @@ export default {
   created(){
     // fetching array of categories
     const slug=this.$route.params.slug
-    console.log("created method calling with slug",slug)
     this.$store.dispatch(categActionType.getCategsForm)
     .then((resp) => {
-      // console.log("resp",resp)
       const arrCategNames = [
         {
           text: 'Choose... ',
@@ -160,7 +156,7 @@ export default {
     // const slug = this.$route.params.slug
     this.$store.dispatch(ideaActionType.getIdea,slug)
     .then((resp)=>{
-      console.log("idea to edit fetched",resp.status)
+      console.log(resp.status)
     }).catch(err=>console.log("can't fetch idea with this slug",err))
   },
     computed:{

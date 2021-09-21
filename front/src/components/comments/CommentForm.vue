@@ -91,18 +91,14 @@ export default {
     body: { required, maxLength:maxLength(6500) },
     
     },
-    methods:{
-        ha(){
-            console.log("haaaaaaaaaaaaa")
-        },
+    methods:{       
         onSubmit(){
             // this.handleSubmit(this.text)
-            console.log("form says:start submit ")            
+                      
             if(this.submitLabel==='Edit'){
                 let commentData = {
                     body:this.body                
                 }
-                console.log("line 67 - form - sends to comment data",commentData)
                 this.$emit('updateComment',commentData)
 
             }else if(this.submitLabel==='Reply'){
@@ -112,31 +108,22 @@ export default {
                 }
                 this.$emit('reply',commentData)
             }else if(this.submitLabel==='Write'&&!this.formInValid){
-                console.log("title",this.submitLabel==='Write')
-                console.log("is form invalid",this.formInValid)
+                
                 let commentData = {
                 body:this.body,
                 parent:null
                 }
                 this.$emit('addRootComment',commentData)
-                if(this.cleanForm){
-                    console.log("form tries to clean body")
-                    this.body = ""
-                    console.log("body clean")
+                if(this.cleanForm){                    
+                    this.body = ""                    
                 }
-            }else{
-                console.log("condit did not work")
             }
             
         },
-        handleCancel(){
-            console.log('edit-reply is canceled')                      
+        handleCancel(){                                
             this.$emit('handleCancel')
         },
         handleCancelRootComment(){
-            console.log('root is canceled')  
-            //  this.$refs.zoo.reset(); 
-            //  console.log("reset Done")      
             this.$emit('handleCancelRootComment')
         }
 

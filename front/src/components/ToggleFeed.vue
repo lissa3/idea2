@@ -1,21 +1,22 @@
 <template>
     <div class="row py-2">         
+         <!-- <div class="col col-md-8 py-3 mx-auto d-flex justify-content-left"> -->
          <div class="col col-md-8 py-3 mx-auto d-flex justify-content-around">
           <div class="col col-md-4 line-right sm-mod">
               <router-link :to="{ name: 'ideaGeneral' }" 
-              class="link-decor px-3 py-2" :class="{'active-item px-3 py-2':routeName==='ideaGeneral'}">
+              class="link-decor px-2 py-2" :class="{'active-item px-3 py-2':routeName==='ideaGeneral'}">
                 General Feed
               </router-link>
            </div>
           <div class="col col-md-4 sm-mod" v-if="isLoggedIn">
               <router-link :to="{ name: 'personalFeed' }" 
-              class="link-decor px-3 py-2" :class="{'active-item px-3 py-2':routeName==='personalFeed'}">
+              class="link-decor px-2 py-2" :class="{'active-item px-3 py-2':routeName==='personalFeed'}">
               Personal Feed
               </router-link>
            </div>
           <div class="col col-md-4 line-left" v-if="tagSlug">
             <router-link :to="{name:'ideasBySlug',params:{slug:tagSlug}}" 
-              class="link-decor px-3 py-2"
+              class="link-decor px-2 py-2"
               :class="{'active-item px-3 py-2':routeName==='ideasBySlug'}"                      
             >
                 <b-icon-hash></b-icon-hash>{{tagSlug}}       

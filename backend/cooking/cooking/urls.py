@@ -18,23 +18,22 @@ from django.urls import path,include,re_path
 from django.conf.urls import url
 from django.conf import settings
 from django.conf.urls.static import static
-
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.views.generic import TemplateView
+# from .views import RedirectSocial for testing
 # for dj toolbar
 # import debug_toolbar
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path to djoser end-points
     path('auth/', include('djoser.urls')),
-    # jwt auth
     path('auth/', include('djoser.urls.jwt')),
-    url('', include('social_django.urls', namespace='social')),
     url('auth/', include('djoser.social.urls')),
+    # path('account/profile/', RedirectSocial.as_view()),
     path('api/v1/', include('api.urls'))
 ]
-urlpatterns += [re_path(r'^.*',  include("start.urls"))]
+urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name="index.html"))]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

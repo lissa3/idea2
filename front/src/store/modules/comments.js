@@ -81,17 +81,11 @@ const mutations = {
         state.isLoading = true        
     },
     [mutationTypes.EDIT_COMMENT_SUCCESS](state,editedComm){
-        state.isLoading = false
-        console.log("inside mutation edit")
-        console.log("edited obj id:",editedComm.id)
-        console.log("new body:",editedComm.body)
-        state.data.forEach((comm)=>{
-            console.log("found" ,comm.id===editedComm.id)
+        state.isLoading = false        
+        state.data.forEach((comm)=>{            
             if(comm.id===editedComm.id){
-                console.log("found match line 81")
-                console.log('old body is',comm.body)
                 comm.body=editedComm.body
-                console.log('new body:',comm.body)
+                
             }          
         })        
     },
@@ -102,7 +96,7 @@ const mutations = {
     [mutationTypes.DELETE_COMMENT_START](){},
         
     [mutationTypes.DELETE_COMMENT_SUCCESS](state,commId){    
-        console.log("mutation is dealing with del comm",commId)    
+          
         state.data.map((comm)=>{
             if(comm.id===commId){
                 comm.author_comment='comment deleted'
@@ -111,19 +105,7 @@ const mutations = {
                 comm.created_at = null
             }
         })
-        // state.data.forEach((comm)=>{
-        //     console.log("vs",comm.id===editedComm.id)
-        //     if(comm.id===editedComm.id&&!editedComm.parent){
-        //         console.log("found match line 81")
-        //         console.log(comm.body)
-        //         comm.body=editedComm.body
-        //     }else{
-        //         console.log("comment should have a patent",editedComm.parent)
-        //         console.log("searching for parent")
-                
-        //     }
-            
-        // }) 
+        
     },      
     [mutationTypes.DELETE_COMMENT_FAILURE](state,error){       
         state.error = error
@@ -154,7 +136,7 @@ const actions = {
             return servResp
         
         }catch(err){
-            console.log("hm... you have an error")
+            
             commit(mutationTypes.SEND_COMMENT_FAILURE,err)
             if(err.response ===undefined){
                 commit(mutationTypes.NETWORK_PROBELM)
@@ -165,27 +147,24 @@ const actions = {
                 servResp.status =err.response.status
                 return servResp
             }else{
-                console.log("err resp status (store line 168)",err.response.status)
+                
                 servResp.status=err.response.status
                 servResp.body=err.response.body
-                console.log("store err 108",Object.keys(err))
-                console.dir(err)
+                
                 return servResp
             }            
         }        
     },    
     async [actionTypes.editComm]({commit},{id,body}){ 
-        console.log("store 130; data to send",id,body)
+        
         const servResp = {}
         let data = {
             body:body
         }
-        console.log("to dj data is",data)
+        
         try{          
-        const resp= await getCommentAPI.editComment(id,data) 
-        console.log("edited comm is:",resp.data)
+        const resp= await getCommentAPI.editComment(id,data)         
         commit(mutationTypes.EDIT_COMMENT_SUCCESS,resp.data)
-
         servResp.status = resp.status
         servResp.data = resp.data
         return servResp
@@ -202,9 +181,7 @@ const actions = {
                 return servResp
             }else{
                 servResp.status=err.response.status
-                servResp.body=err.response.body
-                console.log("store err 155",Object.keys(err))
-                console.dir(err)
+                servResp.body=err.response.body                
                 return servResp
             }            
         }        
@@ -217,12 +194,11 @@ const actions = {
             commit(mutationTypes.FETCH_COMMENTS_SUCCESS,resp.data)
             return resp
         }catch(err){
-            console.log(err)
             commit(mutationTypes.FETCH_COMMENTS_FAILURE,err)
         }        
     } ,
     async [actionTypes.deleteComm]({commit},commId) {
-        console.log("store sends req to serv")
+        
         const servResp ={}
         try{
             const resp= await getCommentAPI.deleteComment(commId) 
@@ -233,7 +209,7 @@ const actions = {
 
         }catch(err){
             commit.DELETE_COMMENT_FAILURE(err)
-            console.log("deleting comment failed")
+            
             if(err.response ===undefined){
                 commit(mutationTypes.NETWORK_PROBELM)
                 servResp.servDown = true  
@@ -245,8 +221,7 @@ const actions = {
             }else{
                 servResp.status=err.response.status
                 servResp.body=err.response.body
-                console.log("store err 155",Object.keys(err))
-                console.dir(err)
+                
                 return servResp
             }       
         }

@@ -86,6 +86,15 @@ html, body {
   content: " *";
   color: red;
 }
+/* for side bars */
+.color{
+    background-color: #ffebcd;
+}
+.fill-color{
+   height: 100vh;
+   margin: 0; 
+   border-radius: 5px;
+}
 /* .container {
     width: 600px;
     height: 350px;

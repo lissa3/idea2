@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid">
-      <h3 class="mb-4 text-center">This is a main idea place</h3>
+      <!-- <h3 class="mb-4 text-center">Results</h3> -->
         <div class="row py-3">
           <div class="col col-md-2 py-3">
             <section class="categs-space">
@@ -31,16 +31,13 @@ export default {
         AppCategs,        
     },
     computed:{
-      sortBy() {
-        // console.log("params are",this.$route.params.sort)
+      sortBy() {        
         return this.$route.params.sort
     },
-      filterBy() {
-        // console.log("params are",this.$route.params.featured)
+      filterBy() {        
         return this.$route.params.featured
     },
     apiUrl(){           
-          // return `/api/v1/ideas-collection/ideas/?ordering=${this.sortBy}`
           return `/api/v1/ideas-collection/ideas/?ordering=${this.sortBy}&featured=${this.filterBy}`
     }
   }    

@@ -103,17 +103,15 @@ const actions = {
         }          
     },
     async [actionTypes.deleteIdea]({commit},{slug}){
-        console.log("store dispatching deleteIdeas with slug",slug)
+        
         commit(mutationTypes.SET_IDEA_LOADING);
         try{
            // let op: you can get resp.data already ( see api) if you want            
-           const resp = await ideaAPI.deleteIdea(slug)  
-            console.log("response from delete:",resp)
+           const resp = await ideaAPI.deleteIdea(slug) 
+            
             commit(mutationTypes.DELETE_IDEA_SUCCESS)                        
             return resp           
-        } catch(err){
-            console.log("error by deleteIdea request",Object.keys(err))
-            console.log("error by deleteIdea request",err.response.status)
+        } catch(err){            
             // example: incorrect url in request ot dj server
             commit(mutationTypes.DELETE_IDEA_FAILURE,err)        
             commit(mutationTypes.STATUS_403)  
@@ -125,19 +123,16 @@ const actions = {
         commit(mutationTypes.LIKE_START);        
         const servResp = {}         
         try{
-            // console.log(obj.like) 
+            
             const resp = await ideaAPI.giveLike(likeInfo) 
             commit(mutationTypes.SET_LIKE_SUCCESS);           
             // resp.data = {"like":true/false}
             servResp.status = resp.status
             servResp.data = resp.data 
-            console.log("dj serv sends data:",resp.data.like)
-            console.log("to vue: serv resp data",servResp)                     
+                               
             return servResp            
 
         } catch(err){
-            console.log(servResp,"serv resp")
-            console.log("error by give like request",Object.keys(err))
             commit(mutationTypes.LIKE_FAILURE,err);
             servResp.status = err.response.status
             return servResp     
@@ -160,7 +155,6 @@ const actions = {
             return servResp            
 
         } catch(err){
-            // console.log(servResp,"serv resp")           
             commit(mutationTypes.GET_INITIAL_LIKE_FAILURE,err);
             servResp.status = err.response.status
             return servResp     
@@ -169,17 +163,15 @@ const actions = {
         }          
     },
     async [actionTypes.handleRating]({commit},ratingInfo){      
-        commit(mutationTypes.RATING_START);  
-        console.log("rating info from singleIdea store",ratingInfo)      
-        try{
-            // console.log(obj.like)          
+        commit(mutationTypes.RATING_START); 
+           
+        try{                  
             const resp = await ideaAPI.giveRating(ratingInfo) 
             commit(mutationTypes.SET_RATING_SUCCESS);           
             // resp.data = {"rating":3}                      
-            return resp           
+            return resp          
 
-        } catch(err){
-            console.log("error by getIdea request",err)
+        } catch(err){            
             commit(mutationTypes.RATING_FAILURE,err); 
             
         }          

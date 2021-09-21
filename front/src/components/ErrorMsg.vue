@@ -1,7 +1,8 @@
 <template>
-  <div class="about">
-    <p>Temp msg:This is an error msg block</p>
-    <p v-if="errorSingleIdea">Sorry, PAGE NOT FOUND</p>
+  <div class="container">
+    <div class="d-flex justify-content-center">
+      <p v-if="errorSingleIdea" class="style-msg">Oops.Sorry.Something went wrong</p>
+    </div>
   </div>
 </template>
 
@@ -20,5 +21,13 @@ export default {
             errorSingleIdea:state=>state.idea.error
         })
   },
+  
 }
 </script>
+<style>
+
+.bg{
+  background-color: whitesmoke;
+}
+
+</style>

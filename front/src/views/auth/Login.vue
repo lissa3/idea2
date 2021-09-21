@@ -115,14 +115,16 @@
                   </b-col >       
                 </b-row>
             <p class="mt-3">Not registed?<span class="mute-link"><router-link :to='{name:"signup"}'>  Sign Up</router-link></span>  </p>
-        <p class="mt-3">Forgot your password?<span><router-link :to="{name:'resetForgotPsw'}"> Reset password</router-link></span></p>    
+        <p class="mt-3">Forgot your password?<span><router-link :to="{name:'resetForgotPsw'}"> Reset password</router-link></span></p>  
         
            
          </b-form> 
+         
         <!-- <p class="mt-3">Not registed?<span class="mute-link"><router-link :to='{name:"signup"}'>Sign Up</router-link></span>  </p>
         <p class="mt-3">Forgot yout password?<span class="mute-link"><a href="#">Here</a></span></p> -->
       </div>
     </div>
+    
   </div>         
 </template>
 

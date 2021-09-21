@@ -13,8 +13,13 @@ LOGGING = {
             'style': '{',
         },        
     },
-    'handlers': {        
-       'dj': {
+    'handlers': { 
+        'console':{
+            'level':'INFO',
+            'class':'logging.StreamHandler',
+            'formatter':'simple'
+        },
+        'dj': {
             'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
             'formatter':'verbose',                     
@@ -46,7 +51,7 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['dj'],
+            'handlers': ['dj','console'],
             # 'handlers': ['mail_admin','dj'],
             'level': 'WARNING',
             'propagate': False,

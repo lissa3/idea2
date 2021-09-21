@@ -16,7 +16,7 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('email', 'username')
     form = UserChangeForm
     add_form = UserCreationForm
-    list_display = ('id','email', 'username', 'last_login', 'is_active', 'is_superuser', 'is_banned')
+    list_display = ('id','email', 'username', 'first_name','last_name','last_login','is_active', 'is_superuser', 'is_banned')
     list_filter = ('is_banned', 'is_active', 'is_superuser')
 
     # add key 'classes' with value [collapse ] to toggle Important Dates

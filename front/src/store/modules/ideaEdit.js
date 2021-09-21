@@ -89,13 +89,13 @@ const mutations = {
 const actions = {  
     // console.log("url?????",actionTypes.getIdea)  
     async [actionTypes.getIdea]({commit},slug){
-        console.log("store fetching idea before edit")
+        
         commit(mutationTypes.SET_IDEA_LOADING);
         const servResp = {}
         try{
            // let op: you can get resp.data already ( see api) if you want            
            const resp = await ideaAPI.getIdeaBeforeEdit(slug)  
-            console.log("response from edit:",resp)
+            
             commit(mutationTypes.GET_IDEA_SUCCESS,resp.data)  
             // servResp.slug = resp.data.slug 
             // servResp.title = resp.data.title
@@ -107,23 +107,19 @@ const actions = {
             console.log("to vue",servResp)                     
             return servResp           
         } catch(err){
-            console.dir(err)
+            
             // servResp.status = err.response.status
             if(err.response === undefined){
-                // DONE
+                
                 commit(mutationTypes.NETWORK_PROBELM)
                 servResp.servDown = true  
                 return servResp
             }else if(err.response.status === 500) {
-                commit(mutationTypes. STATUS_500)
-                // DONE  
-                servResp.status = err.response.status
-                console.log("500 error gets sent to vue page",servResp)
+                commit(mutationTypes. STATUS_500)                
+                servResp.status = err.response.status                
                 return servResp
-            } else{     
+            } else{           
                 
-                console.log("error by fetching idea before editing",err)
-                console.dir(err)
                 // example: incorrect url in request ot dj server            
                 commit(mutationTypes.GET_IDEA_FAILURE)  
                 return servResp
@@ -131,38 +127,30 @@ const actions = {
         }          
     },
     async [actionTypes.editIdea]({commit},{slug,ideaInput}){
-        console.log("store dispatching edit ideas")
+        
         commit(mutationTypes.EDIT_IDEA_START);
         const servResp = {}
         try{
            // let op: you can get resp.data already ( see api) if you want  
-           console.log("edited data",typeof ideaInput)   
-           console.log(Object.keys(ideaInput))       
-           const resp = await ideaAPI.editIdea(slug,ideaInput)  
-            console.log("response from edit:",resp)
+               
+           const resp = await ideaAPI.editIdea(slug,ideaInput)              
             commit(mutationTypes.EDIT_IDEA_SUCCESS)  
             servResp.status = resp.status
-            console.log("to vue",servResp)                     
             return servResp           
         } catch(err){
             console.dir(err)
             // servResp.status = err.response.status
             if(err.response === undefined){
-                // DONE
                 commit(mutationTypes.NETWORK_PROBELM)
                 servResp.servDown = true  
                 return servResp
             }else if(err.response.status === 500) {
-                commit(mutationTypes. STATUS_500)
-                // DONE  
+                commit(mutationTypes. STATUS_500)               
                 servResp.status = err.response.status
-                console.log("500 error gets sent to vue page",servResp)
                 return servResp
             }else if(err.response.status === 403) {
-                commit(mutationTypes.STATUS_403)
-                // DONE  
+                commit(mutationTypes.STATUS_403)               
                 servResp.status = err.response.status
-                console.log("403 error gets sent to vue page",servResp)
                 return servResp
             }else{     
                 servResp.status = err.response.status
@@ -175,8 +163,6 @@ const actions = {
                 servResp.thumbnailErr = err.response.data.thumbnail
                 servResp.nonFieldErrs = err.response.data.non_field_errors
                 // servResp.removeFile = err.data.remove_file
-                console.log("error by edit Idea request",err)
-                console.dir(err)
                 // example: incorrect url in request ot dj server            
                 commit(mutationTypes.EDIT_IDEA_FAILURE)  
                 return servResp

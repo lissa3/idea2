@@ -1,7 +1,6 @@
 <template>
     <div>
       <section >
-          <h1>Create New Idea</h1>
           <p class="text-muted"><span class="control-label">Fields marked with </span> are required</p>
           
 <!-- loader  submit         -->
@@ -263,9 +262,9 @@ export default {
             type:Boolean,
             required:true
         },
-        // edit:{
-        //   type:Boolean
-        // }
+        action:{
+          type:String
+        }
     },
     data(){
         return {
@@ -306,51 +305,38 @@ export default {
             data.append('title', this.title)
             data.append('lead_text', this.leadText)
             data.append('main_text', this.mainText) 
-            // data.append('remove_file',this.clickRemoveFile)           
-            console.log("user wanted to del img?",this.clickRemoveFile)
-            // console.log(data)
+            // data.append('remove_file',this.clickRemoveFile)         
+            
             if(this.tags){
             // clean tag string from #$56 ect
-            const cleanTags = tagsHelp.trimInputTag(this.tags);
-            console.log("tags string is",cleanTags)
+            const cleanTags = tagsHelp.trimInputTag(this.tags);            
             data.append('tags', cleanTags)         
             }
-
-            if (this.resizedThumbnail) {
-              console.log("form gets a resized image")
+            if (this.resizedThumbnail) {              
             data.append('thumbnail', this.resizedThumbnail)
           } else if(this.clickRemoveFile){
-            console.log("user removed prev-initial thumbnail")
+            
             // user removes attached file so this.thumbnail = ""
             data.append('thumbnail', '')
           }else if(!this.clickRemoveFile
                   &&typeof this.thumbnail==='string'
                   &&this.thumbnail.includes('https://boterland.s3.amazonaws.com')){
-            // https://boterland.s3.amazonaws.com/ideapot/idea_1/lemon1630705942.9574196.jpg
-            console.log("form gets initial str",this.initialValues.thumbnail)
             data.append('thumbnail',this.initialValues.thumbnail)
           }
-          else{
-            
-            console.log("form gets initial str",this.initialValues.thumbnail)
-            // data.append('thumbnail',this.initialValues.thumbnail)
+          else{         
             data.append('thumbnail','')
-          }
-          console.log("idea form for edit data:",data)
-            this.$emit('ideaSubmit',data)
-            // console.log("do you seen me in parent?")
+          }          
+            this.$emit('ideaSubmit',data)            
         },
-        readCategVal(cat){
-            console.log(cat)
-            this.categ = cat
-            
+        readCategVal(cat){            
+            this.categ = cat            
         },
         async onFileChange() {
           // clear prev error msg and uncheck state
           this.$refs.check.checked = false
           this.localErr = false
           // this.browserFileUploadMsg = ''
-          console.log("initial path to a file",this.$refs.file.value)
+          
           // temp variable for uploaded img to check size && type;
           let img = this.$refs.file.files[0]
           const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']
@@ -359,16 +345,14 @@ export default {
           const tooBig = img.size > MAX_SIZE
           if (allowedTypes.includes(img.type) && !tooBig) {
             // accept image only if type &&size OK; this thumnail will keep the name/size of uploaded img
-            this.thumbnail = img
-            console.log('check is OK,initial size is:', this.thumbnail.size)
-            console.log("path to a file after OK validation",this.$refs.file.value)
-            // TODO: css/js nice uploading bar
+            this.thumbnail = img          
+            
             // this.browserFileUploadMsg = 'loading this file'
             // resize uploaded image with custom js util (aprox 7-8- times)
             const resizedPhoto = await optimizePhoto(this.thumbnail)
             // resizedPhoto is blob|=> convert it to a file
             this.resizedThumbnail = new File([resizedPhoto], this.thumbnail.name)
-            // console.log('created a resized img')
+            
           } else {
             this.localErr = true
             // this.browserFileUploadMsg = tooBig ? `File too large.MAX sise is ${MAX_SIZE / 1000}kB`: `Only images are allowed`
@@ -385,14 +369,11 @@ export default {
         },
         clearCheckboxUploadFile(){
           // if upload button clicked|=> intention to upload a (new) file|=> checkbox input gets cleared
-          console.log("upload file: make checkbox input clear")
+          
           this.$refs.check.checked = false // boolean
         },
         detachFile(){
-          console.log("checkbox clicked")          
-          console.log("detaching file started with intial path:",this.$refs.file.value)
           this.$refs.file.value = '' // path to file on local machine
-          console.log("after detachement path is:",this.$refs.file.value)
           this.localErr = false
           // this.thumbnail = null
           this.clickRemoveFile=true
@@ -458,6 +439,7 @@ export default {
         return tagsErrors
       
     },
+    
   }   
 }
 </script>

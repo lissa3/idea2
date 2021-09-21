@@ -1,6 +1,6 @@
 <template>
 <div class="container-fluid mt-3">
-      <!-- <h3 class="mb-4 text-center">Create a new Idea</h3> -->
+      <h3 class="mb-1 text-center">Create a new Idea</h3>
       <!-- <p>create errs:{{validationErrors}}</p> -->
 
       <div class="row py-3">
@@ -12,7 +12,8 @@
 
 <!-- form             -->
             <div class="col-xs-12 col-md-10 py-3 text-center offset-md-1">            
-                <app-idea-form 
+                <app-idea-form
+                  :action="create" 
                   :categories="categories"
                   :initial-values="initialValues"
                   :errors="servResp"
@@ -60,8 +61,9 @@ export default {
         mainText:'',
         thumbnail:null,
         featured:false,
-        tags:''
+        tags:''        
         },
+        create:'create',
         servResp:{
           status:null,
           categErr:null,
@@ -81,12 +83,10 @@ export default {
   },
   methods:{   
     submitEd(ideaInput){      
-    console.log("idea create vue gets input from form",ideaInput)     
-      
+         
      this.$store.dispatch(ideaActionType.createIdea,ideaInput)
      .then((resp)=>{
-       console.log("status",resp.status)
-       console.log("resp",resp)
+       
        if(resp.slug||resp.status ===201){
           this.loadImg = true
          setTimeout(()=>{           
@@ -102,7 +102,7 @@ export default {
          this.servResp.nonFieldErr = 'Not authorized access'
          this.$router.push({name:'noPerms'}) 
        }else{
-         console.log("err response in vue component from store",resp)
+         
             this.servResp.categErr = resp.categErr
             this.servResp.featuredErr = resp.featuredErr 
             this.servResp.titleErr = resp.titleErr

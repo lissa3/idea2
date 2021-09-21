@@ -75,7 +75,7 @@ export default {
             else if(this.userChoice==='aOnTop'){
                 return "title"
             }else if(this.userChoice==='rateOnTop'){
-                return "-max_rating"
+                return "max_rating"
             }else if(this.userChoice ==='zOnTop') {
                 return "-title"            }
             else{

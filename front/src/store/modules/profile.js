@@ -19,14 +19,14 @@ const actions = {
     
      async [actionTypes.retrieveProfile]({commit},id){
         //retrieve public info
-         console.log("store dispatching get profile,id",id)  
+         
           
         commit(mutationTypes.START_PROFILE_LOADING);
         const servResp={}
         try{
            //console.log(profileAPI.getProfile ) 
            const resp = await profileAPI.getProfile(id)            
-            console.log("response getProfile is",resp)
+            
             commit(mutationTypes.GET_PROFILE_SUCCESS,resp.data)   
             
             servResp.data = resp.data; 
@@ -45,9 +45,7 @@ const actions = {
     },
     async [actionTypes.showPersonalInfo]({commit},unid){
     
-         commit(mutationTypes.RESET_ERROR)     
-         console.log("store dispatching private profile,unid",unid)
-     
+        commit(mutationTypes.RESET_ERROR)             
         commit(mutationTypes.RESET_NETWORK_PROBELM)
         commit(mutationTypes.RESET_STATUS_500) 
         commit(mutationTypes.START_PROFILE_LOADING);
@@ -55,7 +53,7 @@ const actions = {
         try{
         //    console.log(profileAPI.getProfile ) 
            const resp = await profileAPI.profileOwnerAction(unid)            
-            console.log("response getProfile is",resp)
+            
             commit(mutationTypes.GET_PROFILE_SUCCESS,resp.data)                        
             servResp.data = resp.data; 
             servResp.status = resp.status                       
@@ -63,7 +61,7 @@ const actions = {
 
         } catch(err){
             commit(mutationTypes.GET_PROFILE_FAILURE,err)
-            console.log("smth went wrong;catch block, status:",err.response.status)
+            
 
             if(err.response === undefined){
                 commit(mutationTypes.NETWORK_PROBELM),     
@@ -87,27 +85,24 @@ const actions = {
         try{
         //    console.log(profileAPI.getProfile ) 
            const resp = await profileAPI.profileOwnerEdit(unid,profileData)            
-            console.log("response edit profile",resp)
+            
             commit(mutationTypes.CHANGE_PROFILE_SUCCESS,resp.data)   
             servResp.status = resp.status
             servResp.data = resp.data                     
             return resp            
 
         } catch(err){
-            console.dir(err)
+            
             // commit(mutationTypes.CHANGE_PROFILE_FAILURE,err)   
             if(err.response===undefined){
                 // commit(mutationTypes.NETWORK_PROBELM)
                 servResp.servDown = true 
                 return servResp                 
             }else if(err.response.status === 500){
-                // commit(mutationTypes. STATUS_500)
-                // DONE  
-                servResp.status = err.response.status
-                console.log("500 error gets sent to vue page",servResp)
+                // commit(mutationTypes. STATUS_500)                
+                servResp.status = err.response.status                
                 return servResp
             } else{        
-                console.log("line 119 calling",err.response.status)
                 servResp.status = err.response.status
                 servResp.imgErr = err.response.data.image
                 servResp.bioErr = err.response.data.bio

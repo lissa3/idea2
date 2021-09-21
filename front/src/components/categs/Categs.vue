@@ -1,9 +1,9 @@
 <template>
-    <div>
-        <section >                   
+    <div class="color vh-100">
+        <section class="" >                   
             <div v-if="isLoading"><app-loader></app-loader></div>        
             <div  class="d-flex flex-column">
-                <div class="section-categs mb-2">Categories:</div>
+                <div class="section-categs mb-2 pl-2">Categories:</div>
                 <app-categ-tree :treeData="categs"></app-categ-tree>                       
             </div>
             <div v-if="error">Smth went wrong</div>            
@@ -79,5 +79,8 @@ export default {
 }
 .section-categs li:hover {
   background-color: darkcyan;
+}
+.color{
+    background-color: #ffebcd;
 }
 </style>

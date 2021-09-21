@@ -21,7 +21,7 @@ from django_filters.rest_framework import DjangoFilterBackend # third party
 
 from api.serializers.ideas.idea_ser import IdeaSerializer
 from api.serializers.user_idea_rel.user_idea_relation_ser import UserIdeaRelSerializer
-from api.permissions import IsAuthorOrIsStaffOrReadOnly,IsOwnerOrIsStaffOrReadOnly
+from api.permissions import IsAuthorOrIsStaffOrReadOnly #IsOwnerOrIsStaffOrReadOnly
 from timestamp.broadcast_utils.idea_utils import get_json_tags, checkTagStringLength
 from ideas.models import Idea, UserIdeaRelation
 

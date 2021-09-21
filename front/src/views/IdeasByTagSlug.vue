@@ -2,8 +2,7 @@
   <div class="container-fluid">
         <app-toggle-feed :tag-slug="tagSlug"></app-toggle-feed>
         <div class="row">
-          <h3>I am a tag idea by slug component</h3>
-          <div class="col col-md-2">
+          <div class="col col-md-2 categ-space color">
             <section class="categs-space">
               <app-categs></app-categs>            
             </section> </div>
@@ -34,7 +33,7 @@ export default {
   },
   computed: {
     tagSlug() {
-      console.log("do you see slug (ideaByTagSlu)",this.$route.params.slug)
+      
       return this.$route.params.slug
     },
     apiUrl() {
@@ -44,3 +43,8 @@ export default {
   
 }
 </script>
+<style scoped>
+.categs-space{
+  height:100vh;
+}
+</style>

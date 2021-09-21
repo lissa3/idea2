@@ -33,10 +33,31 @@ const requestChangePsw = (creds)=>{
     return axios.post('/auth/users/set_password/',creds)
 }
 
+const getProfile = (id)=>{
+    // public access profile
+    return simpleAPI.get(`/api/v1/profile-info/${id}/`)
+}
+
+const profileOwnerAction = (unid)=>{
+    // private access to profile section in Menu
+    return axios.get(`/api/v1/profile-owner/${unid}/`)
+}
+
+const profileOwnerEdit = (unid,profileData)=>{
+    // private access to edit profile 
+    return axios.patch(`/api/v1/profile-owner/${unid}/`,profileData)
+}
+
+const deleteAccount = (unid)=>{    
+    return axios.delete(`api/v1/profile-owner/${unid}/`)
+}
+
+// redirect_uri: http://localhost:8000/google
+//http://localhost:8000
 const registerGoogle = ()=>{
     console.log("api auth prepares url to send ")
-    let url = 'http://localhost:8080'
-    return axios.get(`/auth/o/google-oauth2/?redirect_uri=${url}/google`)
+    let url = 'http://localhost:8000'
+    return simpleAPI.get(`/auth/o/google-oauth2/?redirect_uri=${url}/google`)
 }
 const googleAuth = async (state,code)=>{
     if(state&&code&& !localStorage.getItem('accessToken')){
@@ -61,24 +82,6 @@ const googleAuth = async (state,code)=>{
             console.log("signing up with google is failed")
         }
     }
-}
-const getProfile = (id)=>{
-    // public access profile
-    return simpleAPI.get(`/api/v1/profile-info/${id}/`)
-}
-
-const profileOwnerAction = (unid)=>{
-    // private access to profile section in Menu
-    return axios.get(`/api/v1/profile-owner/${unid}/`)
-}
-
-const profileOwnerEdit = (unid,profileData)=>{
-    // private access to edit profile 
-    return axios.patch(`/api/v1/profile-owner/${unid}/`,profileData)
-}
-
-const deleteAccount = (psw)=>{
-    return axios.delete(`api/v1/users/me/`,psw)
 }
 
 

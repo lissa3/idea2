@@ -1,19 +1,18 @@
 <template>
     <div class="container-fluid">
-      <h3 class="mb-2 text-center mt-2">This is a main idea place</h3>
+      <!-- <h3 class="mb-2 text-center mt-2">This is a main idea place</h3> -->
         <app-toggle-feed></app-toggle-feed>
         <div class="row py-3">
-          <div class="col col-md-2 py-3">
+          <div class="col col-md-2 py-3 color">
             <section class="categs-space">
               <app-categs></app-categs>
             </section>
           </div>
-          <div class="col col-md-8 py-3">
+          <div class="col col-md-8 py-3 px-0">
             <app-idea :api-url="apiUrl"></app-idea>
           </div>
-          <div class="col col-md-2 py-3 push-down">
-            <section class="tags-space p-1">
-             
+          <div class="col col-md-2 py-3 push-down color">
+            <section class="tags-space p-1">             
             <app-tags></app-tags>
             </section>
           </div>
@@ -48,7 +47,10 @@ export default {
   border:1px solid black;
 }
 .push-down{
-  margin-bottom: 0.5em;
+  /* margin-bottom: 0.5em; */
+}
+.color{
+    background-color: #ffebcd;
 }
 
 </style>

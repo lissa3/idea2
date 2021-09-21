@@ -69,14 +69,12 @@
                     <div v-if="idea.thumbnail" class="">
                                                        
                       <img  :src="idea.thumbnail" alt="img idea" class="rounded d-block  idea-img" title="idea.title">                            
-                            <!-- <img  :src="idea.thumbnail" alt="img idea" class="idea-img">                             -->
-                            <!-- <img  :src="idea.thumbnail" alt="img idea" class="rounded mx-auto d-block"> -->
+                            
                     </div>                        
                     <div v-else>
                       <img src="@/assets/photos/ava_cat.jpg" alt="img" style=" width: 40%; display: block;"
-                      class="img-fluid">
-                        
-                          <!-- <img class="card-img-top"  style="height: 225px; width: 100%; display: block;" src="../assets/logo.png" data-holder-rendered="true">                         -->
+                      class="img-fluid">                        
+                                              
                     </div>                        
                   </div>
                 </div>
@@ -237,9 +235,7 @@ export default {
           // console.log("calc if current user is the author")  
           return this.currentUser.id === this.idea.author          
         },
-        // showLike(){
-        //   return this.ideaLikes
-        // }, 
+        
                  
         
   },
@@ -251,10 +247,9 @@ export default {
       // console.log("component created, slug:",this.$route.params.slug)      
       this.$store.dispatch(singleIdeaActionType.getIdea,{slug:this.$route.params.slug})
       .then((resp)=>{
-        // console.log("component calling; resp",resp)
-        // console.log("with keys",Object.keys(resp))
+        
         if(resp.status ===200){
-          // console.log("OK 200")
+          console.log("200")
           // this.ideaObj = resp.data
         }else if(resp.status ===404){
           console.log("404 not found")
@@ -265,66 +260,55 @@ export default {
       })      
     },
     async doStar(rateNum){
-      console.log(rateNum)      
-      console.log("click on start",rateNum);  
       const ratingData = {'rating':rateNum} 
       const ratingInfo = {
                     rating:ratingData,
                     id:this.idea.id
         }; 
-      console.log("rating to server",ratingInfo) 
       this.$store.dispatch(singleIdeaActionType.handleRating,ratingInfo)  
       .then((resp)=>{
-        if(resp.status===200){
-          console.log("dj serv give status 200")
+        if(resp.status===200){          
           this.thxRating = true
            setTimeout(()=>{
                  this.thxRating = false
-               },1000)
-         
+               },1000)         
         }
       })      
     },      
-    showModal(){
-      console.log("user wants to delte his idea")
+    showModal(){      
       this.makeModalVisible = true;
     },
     close() {
-      console.log("closing modal");
       this.makeModalVisible = false;
     },
     deleteIdea(slug){
       this.makeModalVisible=false
       this.$store.dispatch(singleIdeaActionType.deleteIdea,{slug})
       .then((resp)=>{
-        if(resp.response.status===204){
-          console.log("idea deleted with status 204",resp.response.status)
+        if(resp.status===204){
           this.$router.push({name:'ideaGeneral'})
 
         }else if(resp.response.status===403){
           this.$router.push({name:'noPerms'})
         }
-      }).catch(err=>console.log("err from component",err))
+      }).catch(err=>console.log(err))
     },
     addToFollow(authorId){
       console.log("adding to following",authorId)
       this.$store.dispatch(followActionType.addToFollowing,{authorId})
-      .then((resp)=>{
-        console.log("resp",resp)
+      .then((resp)=>{        
         if(resp.servDown){
           setTimeout(()=>{
           this.errMsg = false
           },2000)
-        }else{
-          console.log("resp",resp.status)
+        }else{          
           this.addToFollowMsg = true
           setTimeout(()=>{
             this.addToFollowMsg = false
             },4000)
         }
       })
-      .catch((err)=>{
-        console.log(err)
+      .catch((err)=>{        
         this.errMsg = true
         setTimeout(()=>{
           this.errMsg = false
@@ -333,10 +317,9 @@ export default {
     },
     
     fetchComments(ideaSlug){
-      console.log("fetching comments",ideaSlug)
       this.$store.dispatch(commentActionType.fetchCommentList,ideaSlug)
       .then((resp)=>{
-        console.log(resp.status)
+        console.log(resp)
       })
       .catch(err=>console.log(err))
     }  
@@ -361,7 +344,6 @@ export default {
 .banner{
   height: 200px;
   max-height: 250px;
-  /* background-color: #e2ede8; */
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -385,9 +367,7 @@ export default {
 
   }
 }
-/* @media all and (max-width: 700px){
-  
-} */
+
 .banner-collection{
   display: flex;
   flex-wrap: wrap;

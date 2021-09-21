@@ -26,16 +26,13 @@ export default {
   components:{
       AppIdea,
       AppTags,
-      AppCategs,
-      
+      AppCategs,      
   },
   computed: {
-    tagName() {
-      console.log("tag(name) is:",this.$route.params.name)
+    tagName() {      
       return this.$route.params.name
     },
     apiUrl() {
-      console.log("api url is",`/api/v1/tags-name/${this.tagName}/`)
       return `/api/v1/tags-name/${this.tagName}/`
     }
   },

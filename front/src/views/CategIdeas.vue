@@ -1,9 +1,8 @@
 <template>
   <div class="container-fluid">     
-        <div class="row">
-          <h3>I am a categ idea component</h3>
+        <div class="row mt-3">
           <div class="col col-md-2">
-            <section class="categs-space">
+            <section class="">
                 <app-categs></app-categs>               
             </section>
           </div>
@@ -43,3 +42,6 @@ export default {
   
 }
 </script>
+<style scoped>
+
+</style>
